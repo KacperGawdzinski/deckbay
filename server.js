@@ -8,6 +8,7 @@ var server = http.createServer(app);
 var io = socket(server);
 
 app.use('/public', express.static('public'));
+app.use('/src', express.static('src'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
