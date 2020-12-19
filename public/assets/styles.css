@@ -1,27 +1,35 @@
 * {
     margin: 0;
     padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.logo {
-    min-width: 300px;
-    max-width: 15%;
-    max-height: 80px;
-    margin-top: 18px;
+@font-face {
+    font-family: SuperNintendo;
+    src: url(SN.ttf);
+  }
+
+.content {
+    background-color: #36393E;
 }
 
-.logo_href {
+.header {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    background-color: #0D1317;
+}
+
+.header a{
     margin-left: 42.5%;
     margin-right: auto;
 }
 
-.header {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    background-color: #0D1317;
-    height: 100px;
-    line-height: 80px;
+.header img {
+    min-width: 300px;
+    max-width: 15%;
+    max-height: 80px;
+    margin-top: 18px;
 }
 
 .header_button {
@@ -34,14 +42,14 @@
     outline: none;
     color: white;
     margin: 1%;
-    padding-left: 2.5%;
-    padding-right: 2.5%;
+    padding-left: 1%;
+    padding-right: 1%;
     min-width: 100px;
     font-size: 20px;
 }
 
-.content {
-    background-color: #36393E;
+.header_button:hover {
+    color: lightgray;
 }
 
 .game {
@@ -52,12 +60,35 @@
     background-color: lightgray;
     border-style: solid;
     padding: 30px;
+    cursor: pointer;
 }
 
-p {
+.game img {
+    transition: transform .5s ease;
+}
+
+.game:hover img{
+    transform: scale(1.1);
+}
+
+.game p {
+    margin-top: 22px;
     text-align: center;
-    font-size: 24px;
-    margin-top: 20px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: SN;
+    font-size: 28px;
     font-weight: bold;
+    font-style: italic;
+}
+
+
+footer {
+    background-color: #0D1317;
+    color: lightgray;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    bottom: 0;
+    width: 100%;
+    height: 12px;
+    font-size: 10px;
 }
