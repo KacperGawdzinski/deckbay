@@ -15,6 +15,10 @@ app.get('/', function(req, res) {
     res.render('index.ejs');
 });
 
+app.get('/chess-list', function(req, res) {
+    res.render('chess_list.ejs', { rooms: io.sockets.adapter.rooms });
+});
+
 server.listen(process.env.PORT || 3000, () => {
     console.log( 'Server turned on' ); 
 });
