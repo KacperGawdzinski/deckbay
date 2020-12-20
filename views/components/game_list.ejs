@@ -1,0 +1,14 @@
+<link href= "/public/stylesheets/game_list.css" rel="stylesheet" type="text/css" />
+
+<div class="room_list">
+    <div class="list_header">
+        <button class="add_btn">+</button>
+        <%= game %> ROOM LIST
+    </div>
+
+    <% rooms.forEach( room => { %>
+        <div class="list_item">
+            <p> {{room}} </p>
+        </div>
+    <% }); %>
+</div>

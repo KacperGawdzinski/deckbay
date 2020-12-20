@@ -12,10 +12,17 @@
 <body class="content">
 
     <%- include('components/header.ejs'); %>
+    <%- include('components/game_list.ejs', { game: 'CHESS', rooms: rooms }); %>
 
 </body>
 <footer>
     2020-2021 | Deckbay by GBS
 </footer>
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    window.addEventListener('load', function() {
+        var socket = io();
+    });
+</script>
 </html>

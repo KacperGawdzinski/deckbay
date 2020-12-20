@@ -1,24 +1,42 @@
-var lmodal = document.getElementById("login_modal");
-var rmodal = document.getElementById("register_modal");
+const lmodal = document.getElementById("login_modal");
+const rmodal = document.getElementById("register_modal");
 
-var lbtn = document.getElementById("login_button");
-var rbtn = document.getElementById("register_button");
+const lbtn = document.getElementById("login_button");
+const rbtn = document.getElementById("register_button");
 
-var rexit = document.getElementsByClassName("close")[0];
-var lexit = document.getElementsByClassName("close")[1];
+const rexit = document.getElementsByClassName("close")[0];
+const lexit = document.getElementsByClassName("close")[1];
 
+const rsubmit = document.getElementById('register_send');
+const lsubmit = document.getElementById('login_send');
 
-lbtn.onclick = () => { lmodal.style.display = "block"; }
-    
-rbtn.onclick = () => { rmodal.style.display = "block"; }
+lbtn.addEventListener('click', () => { 
+    lmodal.style.display = "block"; 
+});
 
-lexit.onclick = () => { lmodal.style.display = "none"; }
+rbtn.addEventListener('click', () => { 
+    rmodal.style.display = "block"; 
+});
 
-rexit.onclick = () => { rmodal.style.display = "none"; }
+lexit.addEventListener('click', () => { 
+    lmodal.style.display = "none"; 
+}); 
 
-window.onclick = function(event) {
+rexit.addEventListener('click', () => { 
+    rmodal.style.display = "none"; 
+}); 
+
+window.addEventListener('click', function(event) {
     if (event.target == lmodal)
         lmodal.style.display = "none";
     else if(event.target == rmodal)
         rmodal.style.display = "none";
-}
+});
+
+rsubmit.addEventListener('click', () => {
+
+});
+
+lsubmit.addEventListener('click', () => {
+
+});

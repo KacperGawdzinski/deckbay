@@ -1,0 +1,49 @@
+@font-face {
+    font-family: SuperNintendo;
+    src: url(SN.ttf);
+}
+
+.room_list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 70px;
+}
+
+.list_header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3E3E3E;
+    width: 60%;
+    height: 50px;
+    font-family: SN;
+    font-size: 24px;
+    color: white;
+}
+
+.add_btn {
+    position: absolute;
+    left: 15px;
+    font-size: 50px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    color: white;
+}
+
+.list_item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    height: 50px;
+    color: white;
+}

@@ -1,7 +1,9 @@
-var http = require('http');
-var fs = require('fs');
-var socket = require('socket.io');
-var express = require('express');
+const http = require('http');
+const fs = require('fs');
+const socket = require('socket.io');
+const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
 
 var app = express();
 var server = http.createServer(app);
@@ -25,7 +27,5 @@ server.listen(process.env.PORT || 3000, () => {
 
 io.on('connection', function(socket) {
     console.log('client connected:' + socket.id);
-    socket.on('chat message', function(data) {
-    io.emit('chat message', data);
-    })
+    console.log();
 });
