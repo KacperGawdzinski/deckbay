@@ -8,12 +8,11 @@ var server = http.createServer(app);
 var io = socket(server);
 
 app.use('/public', express.static('public'));
-app.use('/src', express.static('src'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
-    res.render('home.ejs');
+    res.render('index.ejs');
 });
 
 server.listen(process.env.PORT || 3000, () => {

@@ -25,7 +25,6 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
     background-color: #0D1317;
 }
 
@@ -34,8 +33,7 @@ html {
 }
 
 .header_button {
-    display: none;
-    float: right;
+    position: absolute;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;
@@ -83,10 +81,10 @@ html {
 }
 
 .game p {
-    margin-top: 22px;
+    margin-top: 7%;
     text-align: center;
     font-family: SN;
-    font-size: 28px;
+    font-size: 2.5vw;
     font-weight: bold;
     font-style: italic;
 }
@@ -103,36 +101,7 @@ footer {
     bottom: 0px;
 }
 
-@media only screen and (max-width: 450px) {
-    .header {
-        justify-content: flex-start;
-        height: 70px;
-    }
-
-    .header a img {
-        width: 250px;
-        margin: 0;
-        margin-left: 5px;
-   }
-
-   .game_list {
-        margin-top: 20px;
-   }
-
-   .game {
-        max-height: 90px;
-        max-width: 75px;
-        padding: 15px;
-        margin: 10px 0;
-    }
-
-    .game p {
-        margin-top: 6px;
-        font-size: 14px;
-    }
-}
-
-@media only screen and (min-width: 321px) and (max-width: 450px) {
+@media only screen and (max-width: 1140px) {
     .header {
         justify-content: flex-start;
         height: 70px;
@@ -149,9 +118,24 @@ footer {
    }
 
    .game {
-        max-height: 120px;
-        max-width: 100px;
+        max-height: 42%;
+        max-width: 35%;
         padding: 15px;
-        margin: 10px 0;
+    }
+
+    .game p {
+        font-size: 3.5vw;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .game p {
+        font-size: 5vw;
+    }
+    .game {
+        margin: 5px 0;
+    }
+    .header_button {
+        display: none;
     }
 }
