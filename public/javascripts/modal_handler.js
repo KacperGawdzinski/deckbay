@@ -8,21 +8,13 @@ var rexit = document.getElementsByClassName("close")[0];
 var lexit = document.getElementsByClassName("close")[1];
 
 
-lbtn.onclick = function() {
-    lmodal.style.display = "block";
-}
+lbtn.onclick = () => { lmodal.style.display = "block"; }
+    
+rbtn.onclick = () => { rmodal.style.display = "block"; }
 
-rbtn.onclick = function() {
-    rmodal.style.display = "block";
-}
+lexit.onclick = () => { lmodal.style.display = "none"; }
 
-lexit.onclick = function() {
-    lmodal.style.display = "none";
-}
-
-rexit.onclick = function() {
-    rmodal.style.display = "none";
-}
+rexit.onclick = () => { rmodal.style.display = "none"; }
 
 window.onclick = function(event) {
     if (event.target == lmodal)
