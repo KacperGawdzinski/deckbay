@@ -15,22 +15,21 @@
         <button class="header_button" id="login_button">Sign in</button>
     </div>
 
-    <div style="display: flex; justify-content: space-between; margin-left: 15%; margin-right: 15%; margin-top: 100px;">
+    <div class="game_list">
         <%- include('game', {game_type: 'CHESS',
-                             game_icon: 'chess_icon.png'}); %>
+            game_icon: 'chess_icon.png'}); %>
         <%- include('game', {game_type: 'CHECKERS',
-                             game_icon: 'checkers_icon.png'}); %>
+            game_icon: 'checkers_icon.png'}); %>
         <%- include('game', {game_type: 'DOMINO',
-                             game_icon: 'domino_icon.png'}); %>
+            game_icon: 'domino_icon.png'}); %>
     </div>
 
     <%- include('modal.ejs', {id: 'register_modal'}); %>
     <%- include('modal.ejs', {id: 'login_modal'}); %>
-
-    <footer>
-        2020-2021 | Deckbay by GBS
-    </footer>
 </body>
+<footer>
+    2020-2021 | Deckbay by GBS
+</footer>
 
 <script src="src/modal_handler.js"></script>
 
