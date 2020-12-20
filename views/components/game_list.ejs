@@ -2,13 +2,10 @@
 
 <div class="room_list">
     <div class="list_header">
-        <button class="add_btn">+</button>
+        <button id="add_btn" class="add_btn">+</button>
         <%= game %> ROOM LIST
     </div>
+    <div id="rooms">
 
-    <% rooms.forEach( room => { %>
-        <div class="list_item">
-            <p> {{room}} </p>
-        </div>
-    <% }); %>
+    </div>
 </div>

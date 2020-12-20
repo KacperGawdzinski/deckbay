@@ -26,6 +26,32 @@ server.listen(process.env.PORT || 3000, () => {
 });
 
 io.on('connection', function(socket) {
-    console.log('client connected:' + socket.id);
-    console.log();
+    console.log('client connected');
+
+    socket.on('new_room', function(data) {
+        console.log('new room created');
+        console.log('room name ' + data);
+        socket.join(data);
+        console.log(socket.rooms);
+    });
+
+    socket.on('load_rooms', function(data) {
+        console.log('returning new rooms...');
+        var availableRooms = [];
+        var rooms = io.sockets.adapter.rooms;
+        for (let k of rooms.keys()) {
+            if(k.startsWith('chess'))
+                availableRooms.push(k);
+        }
+        console.log(availableRooms);
+        socket.emit('rooms', availableRooms);
+    });
 });
+
+/*
+    <% rooms.forEach( room => { %>
+        <div class="list_item">
+            <p> <%= room %></p>
+        </div>
+    <% }); %>
+    */
