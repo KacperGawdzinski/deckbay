@@ -30,11 +30,3 @@ window.onclick = function(event) {
     else if(event.target == rmodal)
         rmodal.style.display = "none";
 }
-
-function openNav() {
-    document.getElementById("mobile_menu").style.width = "100%";
-}
-
-function closeNav() {
-    document.getElementById("mobile_menu").style.width = "0%";
-}

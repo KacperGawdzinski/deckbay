@@ -108,9 +108,10 @@ footer {
     }
 
     .header a img {
-        width: 250px;
+        width: 220px;
         margin: 0;
         margin-left: 10px;
+        margin-top: 10px;
    }
 
    .game_list {
