@@ -1,9 +1,23 @@
 <link href= "/public/stylesheets/game_list.css" rel="stylesheet" type="text/css" />
+<link href= "/public/stylesheets/form.css" rel="stylesheet" type="text/css" />
 
 <div class="room_list">
     <div class="list_header">
         <button id="add_btn" class="add_btn">+</button>
         <%= game %> ROOM LIST
+    </div>
+    <div class="new_room_div">
+        <form name="login_form" autocomplete="off">
+
+            <label>Room name</label>
+            <input type="text" name="rname" placeholder="Your room name...">
+
+            <label>Password</label>
+            <input type="password" name="passwd" placeholder="(optional)">
+
+            <input id="new_room_submit" type="submit" value="Create new room!">
+
+        </form>
     </div>
     <div style="width: 60%;" id="rooms">
 

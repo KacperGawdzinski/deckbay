@@ -24,7 +24,7 @@ app.get('/chess-list', function(req, res) {
 
 app.get('/chess-list/:id', function(req, res){
     res.render('chess-game', { id: req.params.id });
-  });
+});
 
 server.listen(process.env.PORT || 3000, () => {
     console.log( 'Server turned on' ); 
@@ -34,13 +34,23 @@ io.on('connection', function(socket) {
     console.log('client connected');
 
     socket.on('new_room', function(data) {
-        socket.join(data.game + '-' + i/*data.room_name*/);
-        io.emit('rooms', availableRooms(data.game));
+        console.log('checking if redirect is available...');
+        socket.emit('join-new-room', { room: data.game + '-' + i})
         i++ 
     });
 
     socket.on('load_rooms', function(data) {
+        console.log('returning room list...');
         io.emit('rooms', availableRooms(data));
+    });
+
+    socket.on('joined-new-room', function (data) {
+        socket.join(data);
+        //socket.broadcast.emit('rooms', availableRooms(data.game));
+    });
+
+    socket.on('disconnect', function () {
+        
     });
 });
 
