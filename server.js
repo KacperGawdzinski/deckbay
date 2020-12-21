@@ -31,7 +31,7 @@ app.get('/chess-list/:id', function(req, res){
 });
 
 app.post('/validate-room', function(req, res) {
-    let ar = availableRooms(req.body.game)
+    let ar = availableRooms(req.body.game_type)
     if(ar.includes(req.body.room))
         res.send('false');
     res.send('true');
@@ -44,20 +44,15 @@ server.listen(process.env.PORT || 3000, () => {
 io.on('connection', function(socket) {  
     console.log('client connected');
 
-    socket.on('new_room', function(data) {
-        console.log('checking if redirect is available...');
-        socket.emit('join-new-room', { room: data.game + '-' + i})
-        i++ 
-    });
-
     socket.on('load_rooms', function(data) {
         console.log('returning room list...');
         io.emit('rooms', availableRooms(data));
     });
 
-    socket.on('joined-new-room', function (data) {
-        socket.join(data);
-        //socket.broadcast.emit('rooms', availableRooms(data.game));
+    socket.on('join-new-room', function (data) {
+        console.log(data.game + '-' + data.room);
+        socket.join(data.game + '-' + data.room);
+        socket.broadcast.emit('rooms', availableRooms(data.game));
     });
 
     socket.on('disconnect', function () {

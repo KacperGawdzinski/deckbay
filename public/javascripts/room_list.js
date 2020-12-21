@@ -4,12 +4,14 @@ const new_room_form = document.getElementById("new_room_form");
 const room_name_label = document.getElementById("room_name");
 const new_room_div = document.getElementsByClassName("new_room_div")[0];
 const list = document.getElementsByClassName("list_header")[0];
-
+var game_type = document.getElementById("game_type").innerHTML;
 let add_room_div_display = false;
 
 window.addEventListener('load', function() {
     var socket = io();
-    socket.emit('load_rooms', 'chess');
+    game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
+    console.log(game_type);
+    socket.emit('load_rooms', game_type);
 
     add_btn.onclick = ( () => {                         //open new room form
         if(add_room_div_display) {
@@ -29,11 +31,11 @@ window.addEventListener('load', function() {
         $.ajax({
             method: "POST",
             url: '/validate-room',
-            data: { game: 'chess', 
+            data: { game: game_type, 
                     room: input.value },
             success: function(msg) {
                 if(msg === 'true')
-                    window.location.href = '/chess-list/' + input.value;
+                    window.location.href = '/' + game_type + '-list/' + input.value;
                 else {
                     room_name_label.value = msg;
                     room_name_label.style.color = 'red';
