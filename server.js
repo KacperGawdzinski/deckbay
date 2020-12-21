@@ -10,6 +10,10 @@ var server = http.createServer(app);
 var io = socket(server);
 
 var i = 1;
+app.use(express.urlencoded({
+    extended: true
+  }))
+
 app.use('/public', express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -26,11 +30,18 @@ app.get('/chess-list/:id', function(req, res){
     res.render('chess-game', { id: req.params.id });
 });
 
+app.post('/validate-room', function(req, res) {
+    let ar = availableRooms(req.body.game)
+    if(ar.includes(req.body.room))
+        res.send('false');
+    res.send('true');
+});
+
 server.listen(process.env.PORT || 3000, () => {
     console.log( 'Server turned on' ); 
 });
 
-io.on('connection', function(socket) {
+io.on('connection', function(socket) {  
     console.log('client connected');
 
     socket.on('new_room', function(data) {
@@ -50,7 +61,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function () {
-        
+        console.log('client disconnected');
     });
 });
 
