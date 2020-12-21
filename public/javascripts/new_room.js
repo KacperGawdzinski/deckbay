@@ -4,18 +4,31 @@ const rooms =  document.getElementById("rooms");
 window.addEventListener('load', function() {
     var socket = io();
 
-    add_btn.onclick = ( () => {
-        console.log('creating new room...');
-        socket.emit('new_room', 'chess');
-        socket.emit('load_rooms');
+    socket.emit('load_rooms', 'chess');
+
+    add_btn.onclick = ( () => {     //add new room to list
+        socket.emit('new_room', { game: 'chess', room_name: 'table' });
     });
 
-    socket.on('rooms', function(data) {
-        console.log('new rooms created');
-        console.log(data)
-        rooms.remove();
+    socket.on('rooms', function(data) { //create room list
+
+        while (rooms.firstChild) {  //remove every kid - change for only necesarry ones
+            rooms.removeChild(rooms.firstChild);
+        }
         data.forEach(element => {
-            rooms.append('<div class="list_item"> <p>{{element}}</p> </div>');
+            var content = document.createElement('div');
+            content.innerHTML += '<a href="#"><div style="background-color:'+ getRandomColor() +
+                              ' " class="list_item"> <p>'+ element +'</p> </div></a>';
+            rooms.appendChild(content);
         });
     });
 });
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}

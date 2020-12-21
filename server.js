@@ -9,6 +9,7 @@ var app = express();
 var server = http.createServer(app);
 var io = socket(server);
 
+var i = 1;
 app.use('/public', express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -18,8 +19,12 @@ app.get('/', function(req, res) {
 });
 
 app.get('/chess-list', function(req, res) {
-    res.render('chess_list.ejs', { rooms: io.sockets.adapter.rooms });
+    res.render('chess_list.ejs');
 });
+
+app.get('/chess-list/:id', function(req, res){
+    res.render('chess-game', { id: req.params.id });
+  });
 
 server.listen(process.env.PORT || 3000, () => {
     console.log( 'Server turned on' ); 
@@ -29,29 +34,22 @@ io.on('connection', function(socket) {
     console.log('client connected');
 
     socket.on('new_room', function(data) {
-        console.log('new room created');
-        console.log('room name ' + data);
-        socket.join(data);
-        console.log(socket.rooms);
+        socket.join(data.game + '-' + i/*data.room_name*/);
+        io.emit('rooms', availableRooms(data.game));
+        i++ 
     });
 
     socket.on('load_rooms', function(data) {
-        console.log('returning new rooms...');
-        var availableRooms = [];
-        var rooms = io.sockets.adapter.rooms;
-        for (let k of rooms.keys()) {
-            if(k.startsWith('chess'))
-                availableRooms.push(k);
-        }
-        console.log(availableRooms);
-        socket.emit('rooms', availableRooms);
+        io.emit('rooms', availableRooms(data));
     });
 });
 
-/*
-    <% rooms.forEach( room => { %>
-        <div class="list_item">
-            <p> <%= room %></p>
-        </div>
-    <% }); %>
-    */
+function availableRooms(game) {
+    var availableRoomsTab = [];
+    var rooms = io.sockets.adapter.rooms;
+    for (let k of rooms.keys()) {
+        if(k.startsWith(game))
+            availableRoomsTab.push(k);
+    }
+    return availableRoomsTab;
+}
