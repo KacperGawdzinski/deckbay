@@ -46,15 +46,17 @@ window.addEventListener('load', function() {
 
     socket.on('rooms', function(data) {             //create room list
         console.log('received room list');
+        console.log(data);
         while (rooms.firstChild) {                  //remove every kid - change for only necesarry ones
             rooms.removeChild(rooms.firstChild);
         }
         data.forEach(element => {
             var content = document.createElement('div');
-            let room_name = element.substr(element.indexOf('-')+1, element.length);
+            let room_name = element[0].substr(element[0].indexOf('-')+1, element[0].length);
             content.innerHTML += '<a href="/' + game_type + '-list/' + room_name + 
                                 '"><div style="background-color:'+ getRandomColor() +
-                              ' " class="list_item"> <p>'+ room_name +'</p> </div></a>';
+                              ' " class="list_item"> <p>'+ room_name + element[1] +'</p>' +
+                               '</div></a>';
             rooms.appendChild(content);
         });
     });

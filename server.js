@@ -74,8 +74,10 @@ function availableRooms(game) {
     var availableRoomsTab = [];
     var rooms = io.sockets.adapter.rooms;
     for (let k of rooms.keys()) {
-        if(k.startsWith(game))
-            availableRoomsTab.push(k);
+        if(k.startsWith(game)) {
+            let inf = [k, rooms.get(k).size];
+            availableRoomsTab.push(inf);
+        }
     }
     return availableRoomsTab;
 }
