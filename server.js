@@ -10,6 +10,7 @@ var server = http.createServer(app);
 var io = socket(server);
 
 var i = 1;
+var socketRoom = {};
 app.use(express.urlencoded({
     extended: true
   }))
@@ -23,14 +24,14 @@ app.get('/', function(req, res) {
 });
 
 app.get('/chess-list', function(req, res) {
-    res.render('chess_list.ejs');
+    res.render('room_list.ejs', { game_type: 'CHESS' });
 });
 
 app.get('/chess-list/:id', function(req, res){
     res.render('chess-game', { id: req.params.id });
 });
 
-app.post('/validate-room', function(req, res) {
+app.post('/validate-room', function(req, res) {     //TODO: fix false response
     let ar = availableRooms(req.body.game_type)
     if(ar.includes(req.body.room))
         res.send('false');
@@ -50,13 +51,22 @@ io.on('connection', function(socket) {
     });
 
     socket.on('join-new-room', function (data) {
-        console.log(data.game + '-' + data.room);
         socket.join(data.game + '-' + data.room);
         socket.broadcast.emit('rooms', availableRooms(data.game));
     });
 
+    socket.on('disconnecting', () => {  //or just socket.leave and then broadcast - seems better practise
+        for(let el of socket.rooms) {
+            if(el.startsWith('chess') || el.startsWith('checkers') || el.startsWith('domino')) {
+                socketRoom[socket.id] = el.substr(0, el.indexOf('-'));
+                break;
+            }
+        }
+    });
+
     socket.on('disconnect', function () {
-        console.log('client disconnected');
+        if(socketRoom[socket.id])
+            socket.broadcast.emit('rooms', availableRooms(socketRoom[socket.id]));
     });
 });
 

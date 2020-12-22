@@ -51,8 +51,10 @@ window.addEventListener('load', function() {
         }
         data.forEach(element => {
             var content = document.createElement('div');
-            content.innerHTML += '<a href="/chess-list/chess-game"><div style="background-color:'+ getRandomColor() +
-                              ' " class="list_item"> <p>'+ element +'</p> </div></a>';
+            let room_name = element.substr(element.indexOf('-')+1, element.length);
+            content.innerHTML += '<a href="/' + game_type + '-list/' + room_name + 
+                                '"><div style="background-color:'+ getRandomColor() +
+                              ' " class="list_item"> <p>'+ room_name +'</p> </div></a>';
             rooms.appendChild(content);
         });
     });
