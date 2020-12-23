@@ -64,11 +64,23 @@ window.addEventListener('load', function() {
         data.forEach(element => {
             var content = document.createElement('div');
             let room_name = element[0].substr(element[0].indexOf('-')+1, element[0].length);
-            content.innerHTML += '<a style="text-decoration: none;" href="/' + game_type + '-list/' + room_name + 
-                                 '"><div style=background-color:'+ Colors.random() +
-                                 ' class="list_item"> <p>'+ room_name +'</p>' + 
-                                 insert_lock_img(element[2]) +
-                                 insert_user_img(element[1], max_players.get(game_type)) + '</div></a>';
+            let lock = insert_lock_img(element[2]);
+            if(lock != '') {
+                let color = Colors.random()
+                content.innerHTML +='<div style=background-color:'+ color +
+                                    ' class="list_item"> <p>'+ room_name +'</p>' + lock +
+                                    insert_user_img(element[1], max_players.get(game_type)) + '</div>' +
+                                    '<div style="background-color:'+ color + '; display:none" class="list_item">'+
+                                    '<input style="display: inline; width: 50%; max-width: 400px; margin-left:10%; height:30px" type="password" placeholder="Password">' +                       
+                                    '<input style="display: inline; width: 30%; margin-right:10%; height:30px; margin-bottom:0; padding:0" type="submit" value="Join"></div>';
+                content.addEventListener("click", expandChildren, false);
+            }
+            else {
+                content.innerHTML += '<a style="text-decoration: none;" href="/' + game_type + '-list/' + room_name + 
+                                    '"><div style=background-color:'+ Colors.random() +
+                                    ' class="list_item"> <p>'+ room_name +'</p>' + lock +
+                                    insert_user_img(element[1], max_players.get(game_type)) + '</div></a>';
+            }
             rooms.appendChild(content);
         });
     });
@@ -98,4 +110,16 @@ function insert_lock_img(check) {
     if(check)
         return '<img class="lock_img" src="/public/images/lock.png">';
     return '';
+}
+
+function expandChildren(event) {
+    var targetElement = event.target || event.srcElement;
+    if(targetElement.tagName != 'DIV')
+        targetElement = targetElement.parentElement;
+    targetElement = targetElement.nextSibling;
+
+    if (targetElement.style.display === "none")
+        targetElement.style.display = "inline-block";
+    else
+        targetElement.style.display = "none";
 }

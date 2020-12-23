@@ -66,7 +66,7 @@ io.on('connection', function(socket) {
 
     socket.on('load_rooms', function(data) {
         console.log('returning room list...');
-        io.emit('rooms', availableRooms(data));
+        socket.emit('rooms', availableRooms(data));
     });
 
     socket.on('join-new-room', function (data) {
