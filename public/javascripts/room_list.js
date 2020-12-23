@@ -1,16 +1,22 @@
 const add_btn = document.getElementById("add_btn");
-const rooms =  document.getElementById("rooms");
+const rooms = document.getElementById("rooms");
 const new_room_form = document.getElementById("new_room_form");
-const room_name_label = document.getElementById("room_name");
+const room_name_label = document.getElementById("room_name_label");
+const room_name_input = document.getElementById("room_name_input");
+const room_passwd = document.getElementById("room_password");
 const new_room_div = document.getElementsByClassName("new_room_div")[0];
 const list = document.getElementsByClassName("list_header")[0];
 var game_type = document.getElementById("game_type").innerHTML;
 let add_room_div_display = false;
+const max_players = new Map([
+    ['chess', 2],
+    ['checkers', 2],
+    ['domino', 2],
+]);
 
 window.addEventListener('load', function() {
     var socket = io();
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
-    console.log(game_type);
     socket.emit('load_rooms', game_type);
 
     add_btn.onclick = ( () => {                         //open new room form
@@ -25,19 +31,24 @@ window.addEventListener('load', function() {
         add_room_div_display = !add_room_div_display;
     });
 
+    room_name_input.addEventListener('input', function () {
+        room_name_label.innerHTML = 'Room name';
+        room_name_label.style.color = 'white';
+    })
+
     new_room_form.addEventListener('submit', ( event => {               //validate new room name
         event.preventDefault();
-        var input = document.getElementById("room_name");
         $.ajax({
             method: "POST",
             url: '/validate-room',
             data: { game: game_type, 
-                    room: input.value },
+                    room: room_name_input.value,
+                    password: room_passwd.value},                             //encode in future
             success: function(msg) {
                 if(msg === 'true')
-                    window.location.href = '/' + game_type + '-list/' + input.value;
+                    window.location.href = '/' + game_type + '-list/' + room_name_input.value;   //maybe change to window.replace
                 else {
-                    room_name_label.value = msg;
+                    room_name_label.innerHTML = msg;
                     room_name_label.style.color = 'red';
                 }
             }
@@ -46,15 +57,18 @@ window.addEventListener('load', function() {
 
     socket.on('rooms', function(data) {             //create room list
         console.log('received room list');
-        while (rooms.firstChild) {                  //remove every kid - change for only necesarry ones
+        console.log(data);
+        while (rooms.firstChild) {
             rooms.removeChild(rooms.firstChild);
         }
         data.forEach(element => {
             var content = document.createElement('div');
-            let room_name = element.substr(element.indexOf('-')+1, element.length);
-            content.innerHTML += '<a href="/' + game_type + '-list/' + room_name + 
-                                '"><div style="background-color:'+ getRandomColor() +
-                              ' " class="list_item"> <p>'+ room_name +'</p> </div></a>';
+            let room_name = element[0].substr(element[0].indexOf('-')+1, element[0].length);
+            content.innerHTML += '<a style="text-decoration: none;" href="/' + game_type + '-list/' + room_name + 
+                                 '"><div style=background-color:'+ Colors.random() +
+                                 ' class="list_item"> <p>'+ room_name +'</p>' + 
+                                 insert_lock_img(element[2]) +
+                                 insert_user_img(element[1], max_players.get(game_type)) + '</div></a>';
             rooms.appendChild(content);
         });
     });
@@ -67,4 +81,21 @@ function getRandomColor() {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+function insert_user_img(count, max) {
+    var res = "";
+    for(let i = 1; i <= max; i++) {
+        if(i <= count)
+            res += '<img class="user_img" src="/public/images/user.png">';
+        else
+            res += '<img class="user_img" src="/public/images/inactive-user.png">';
+    }
+    return res;
+}
+
+function insert_lock_img(check) {
+    if(check)
+        return '<img class="lock_img" src="/public/images/lock.png">';
+    return '';
 }

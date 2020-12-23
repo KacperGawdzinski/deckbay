@@ -17,6 +17,7 @@ html {
 .content {
     background-color: #36393E;
     margin-bottom: 12px;
+    width: 100%;
 }
 
 .header {
