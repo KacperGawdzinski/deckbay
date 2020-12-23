@@ -3,12 +3,16 @@
     src: url(SN.ttf);
 }
 
-.room_list {
+.container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     width: 100%;
+}
+
+.list {
+    width: 60%;
     margin-top: 70px;
 }
 
@@ -18,7 +22,6 @@
     justify-content: center;
     align-items: center;
     background-color: #3E3E3E;
-    width: 60%;
     height: 50px;
     font-family: SN;
     font-size: calc(12px + 1.5vw);
@@ -38,6 +41,17 @@
     color: white;
 }
 
+.new_room_div {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: #3E3E3E;
+    height: 100%;
+    font-family: SN;
+    font-size: 24px;
+    color: white;
+}
+
 .list_item {
     position: relative;
     display: flex;
@@ -50,29 +64,14 @@
 
 .list_item p {
     position: absolute;
+    text-decoration: none;
     left: 10px;
-    font-size: calc(18px + 0.4vw);
+    font-size: calc(16px + 0.5vw);
     text-shadow: rgb(0, 0, 0) 2px 0px 0px, rgb(0, 0, 0) 1.75517px 0.958851px 0px, rgb(0, 0, 0) 1.0806px 1.68294px 0px, rgb(0, 0, 0) 0.141474px 1.99499px 0px, rgb(0, 0, 0) -0.832294px 1.81859px 0px, rgb(0, 0, 0) -1.60229px 1.19694px 0px, rgb(0, 0, 0) -1.97998px 0.28224px 0px, rgb(0, 0, 0) -1.87291px -0.701566px 0px, rgb(0, 0, 0) -1.30729px -1.5136px 0px, rgb(0, 0, 0) -0.421592px -1.95506px 0px, rgb(0, 0, 0) 0.567324px -1.91785px 0px, rgb(0, 0, 0) 1.41734px -1.41108px 0px, rgb(0, 0, 0) 1.92034px -0.558831px 0px;
 }
 
-.new_room_div {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background-color: #3E3E3E;
-    width: 60%;
-    height: 100%;
-    font-family: SN;
-    font-size: 24px;
-    color: white;
-}
-
-.room_list_div {
-    width: 60%;
-}
-
 .user_img {
-    padding:10px; 
+    padding: 10px; 
     max-width: 80%;
     max-height: 80%;
 }
@@ -85,36 +84,45 @@
 }
 
 @media only screen and (max-width: 1140px) {
-    
+    .list {
+        width: 80%;
+    }
 }
 
-@media only screen and (max-width: 500px) {
-    .new_room_div {
+@media only screen and (max-width: 800px) {
+    .list {
         width: 100%;
-    }
-    .list_header {
-        width: 100%;
-    }
-    .room_list {
         margin-top: 0;
     }
-    .room_list_div {
-        width: 100%;
-    }
+}
 
+@media only screen and (max-width: 650px) {
     .lock_img {
         position: relative;
+        max-width: 80%; 
+        max-height: 80%;
+        right: 5px;
     }
 
     .user_img {
-        padding:0;
+        padding: 0;
+        max-width: 80%; 
+        max-height: 80%;
     }
 
     .list_item {
-        width: 100%;
         justify-content: flex-end;
     }
-    .list_item p {
-        text-decoration: none;
+}
+
+@media only screen and (max-width: 400px) {
+    .lock_img {
+        max-width: 50%; 
+        max-height: 50%;
+    }
+
+    .user_img {
+        max-width: 50%; 
+        max-height: 50%;
     }
 }
