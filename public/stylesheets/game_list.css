@@ -24,7 +24,7 @@
     background-color: #3E3E3E;
     height: 50px;
     font-family: SN;
-    font-size: calc(12px + 1.5vw);
+    font-size: calc(12px + 1vw);
     color: white;
 }
 
@@ -45,11 +45,15 @@
     display: none;
     justify-content: center;
     align-items: center;
+    flex-flow: column;
     background-color: #3E3E3E;
     height: 100%;
     font-family: SN;
-    font-size: 24px;
+    font-size: calc(16px + 0.5vw);
     color: white;
+    transition-property: all;
+	transition-duration: .5s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 }
 
 .list_item {
