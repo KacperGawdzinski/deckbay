@@ -24,5 +24,6 @@ input[type=submit]:hover {
 }
 
 .new_room_form {
-    width: 80%;
+    width: 70%;
+    margin-left: 15%;
 }
