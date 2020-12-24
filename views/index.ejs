@@ -1,3 +1,7 @@
+<% if( (typeof error_message  == 'undefined') ) { var error_message = '' } %>
+<% if( (typeof user_logged == 'undefined') ) { var user_logged = false } %>
+<% if( (typeof user_login == 'undefined') ) { var user_login = '' } %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +12,7 @@
     <title>Deckbay</title>
 </head>
 
-<%- include('components/header.ejs'); %>
+<%- include('components/header.ejs', { err_message : `${error_message}`, user_log : `${user_logged}` , login : `${user_login}` }); %>
 
 <body class="content">
 

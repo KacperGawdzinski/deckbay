@@ -4,10 +4,14 @@ const socket = require('socket.io');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const { loggingInfo } = require('./auth-logic');
+const e = require('express');
 
 var app = express();
 var server = http.createServer(app);
 var io = socket(server);
+
+let loggingControl = new loggingInfo();
 
 var socketRoom = new Map();
 var RoomPasswd = new Map(); //encode it
@@ -23,6 +27,37 @@ app.set('view engine', 'ejs');
 app.get('/', function(req, res) {
     res.render('index.ejs');
 });
+
+app.post('/', (req, res) => {
+    let password = req.body.passwd,
+        login = req.body.login,
+        mail = req.body.email;
+
+    if (mail === undefined){ //it means that we submit login form
+        if( !loggingControl.userLoginLookup(login) ){
+            console.log('CHUJEK');
+            res.render('index.ejs', { error_message : "User with such login doesn't exist" });
+        }
+        else if( !loggingControl.userValidateByLogin(login, password) ){
+            console.log(loggingControl.userGetPasswordByLogin(login));
+            console.log(password);
+            res.render('index.ejs', { error_message : "Password is incorrect" });
+        }
+        else{
+            console.log("AS");
+            res.render('index.ejs', { user_logged : true, user_login : login});
+        }
+    }
+    else{ //register form
+        if( loggingControl.userLookup(login, mail) ){
+            res.render('index.ejs', { error_message : 'This mail/login is already taken!' });
+        }
+        else{
+            loggingControl.userInsert(login, mail, password);
+            res.render('index.ejs', { user_logged : true, user_login : login });
+        }
+    }
+})
 
 app.get('/chess-list', function(req, res) {
     res.render('room_list.ejs', { game_type: 'CHESS' });

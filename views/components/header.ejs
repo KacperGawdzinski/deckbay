@@ -13,9 +13,13 @@
 
 <header class="header">
     <a href="https://deckbay.herokuapp.com/"> <img src="/public/images/logo.png"></a>
-    <button class="header_button" style="right: 0;" id="register_button">Sign up</button>
-    <button class="header_button" style="right: 120px;"" id="login_button">Sign in</button>
-    <span class="menu" onclick="openNav()">&#9776;</span>
+    <% if(user_log === 'true') { %>
+      <span class="user_info">Hello, <%= login %></span>
+    <% } else { %>
+      <button class="header_button" style="right: 0;" id="register_button">Sign up</button>
+      <button class="header_button" style="right: 120px;"" id="login_button">Sign in</button>
+      <span class="menu" onclick="openNav()">&#9776;</span>
+    <% } %>
 </header>
 
 <div id="login_modal" class="modal">
@@ -28,7 +32,7 @@
 
     </div>
     <div class="modal-body">
-      <form name="login_form" autocomplete="off">
+      <form name="login_form" method="POST" autocomplete="off">
 
           <label>Login</label>
           <input type="text" name="login" placeholder="Your login...">
@@ -53,7 +57,7 @@
 
       </div>
       <div class="modal-body">
-        <form name="login_form" autocomplete="off">
+        <form name="login_form" method="POST" autocomplete="off">
 
             <label>Email</label>
             <input type="email" name="email" placeholder="Your email...">
@@ -62,7 +66,7 @@
             <input type="text" name="login" placeholder="Your login...">
 
             <label>Password</label>
-            <input type="password" name="passwd" placeholder="Your password...">
+            <input type="password" name="password" placeholder="Your password...">
 
             <input id="register_send" type="submit" value="Submit">
 
