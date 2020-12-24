@@ -44,7 +44,6 @@ app.post('/', (req, res) => {
             res.render('index.ejs', { error_message : "Password is incorrect" });
         }
         else{
-            console.log("AS");
             res.render('index.ejs', { user_logged : true, user_login : login});
         }
     }
