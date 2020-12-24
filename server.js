@@ -9,8 +9,9 @@ var app = express();
 var server = http.createServer(app);
 var io = socket(server);
 
-var socketRoom = new Map();
-var RoomPasswd = new Map(); //encode it
+var socketRoom = new Map(); //socket.id -> room name
+var socketGame = new Map(); //socket.id -> game type
+var roomPasswd = new Map(); //full room name -> password    encode it
 
 app.use(express.urlencoded({
     extended: true
@@ -29,7 +30,7 @@ app.get('/chess-list', function(req, res) {
 });
 
 app.get('/chess-list/:id', function(req, res){
-    res.render('chess-game', { id: req.params.id });
+    res.render('chess-game', { room_name: req.query.room_name, game_type: req.query.game_type });
 });
 
 app.post('/validate-room', function(req, res) {
@@ -53,7 +54,8 @@ app.post('/validate-room', function(req, res) {
     }
 
     if(req.body.password != "")
-        RoomPasswd.set(req.body.game + '-' + req.body.room, req.body.password);
+        roomPasswd.set(req.body.game + '-' + req.body.room, req.body.password);
+
     res.send('true');
 });
 
@@ -71,23 +73,25 @@ io.on('connection', function(socket) {
 
     socket.on('join-new-room', function (data) {
         socket.join(data.game + '-' + data.room);
+        socketGame.set(socket.id, data.game)
+        socketRoom.set(socket.id, data.room)
         socket.broadcast.emit('rooms', availableRooms(data.game));
     });
 
-    socket.on('disconnecting', () => {  //or just socket.leave and then broadcast - seems better practise
-        for(let el of socket.rooms) {
-            if(el.startsWith('chess') || el.startsWith('checkers') || el.startsWith('domino')) {
-                socketRoom.set(socket.id, el.substr(0, el.indexOf('-')));
-                break;
+    socket.on('disconnecting', () => {  //remove data from maps
+        if(socketGame.get(socket.id)) {
+            var full_room_name = socketGame.get(socket.id) + '-' + socketRoom.get(socket.id);
+            if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
+                roomPasswd.delete(full_room_name);
             }
+            socketRoom.delete(socket.id);
         }
     });
 
-    socket.on('disconnect', function () {   //remove from roompaswd if room is being deleted
-        if(socketRoom.get(socket.id)) {
-            socket.broadcast.emit('rooms', availableRooms(socketRoom.get(socket.id)));
-            socketRoom.delete(socket.id);   
-        }
+    socket.on('disconnect', function () {   //emit new room list and clear last map
+        socket.broadcast.emit('rooms', availableRooms(socketGame.get(socket.id)));
+        socketGame.delete(socket.id);
+        console.log('client disconnected');
     });
 });
 
@@ -97,7 +101,7 @@ function availableRooms(game) {
     for (let k of rooms.keys()) {
         if(k.startsWith(game)) {
             let inf;
-            if(RoomPasswd.get(k))
+            if(roomPasswd.get(k))
                 inf = [k, rooms.get(k).size, 1];
             else
                 inf = [k, rooms.get(k).size];

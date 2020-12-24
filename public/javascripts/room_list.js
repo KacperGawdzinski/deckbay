@@ -17,7 +17,7 @@ const max_players = new Map([
 window.addEventListener('load', function() {
     var socket = io();
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
-    socket.emit('load_rooms', game_type);
+    socket.emit('load_rooms', game_type );
 
     add_btn.onclick = ( () => {                         //open new room form
         if(add_room_div_display) {
@@ -46,7 +46,8 @@ window.addEventListener('load', function() {
                     password: room_passwd.value},                             //encode in future
             success: function(msg) {
                 if(msg === 'true')
-                    window.location.href = '/' + game_type + '-list/' + room_name_input.value;   //maybe change to window.replace
+                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
+                        'game_type': game_type, 'room_name': room_name_input.value }, 'GET');
                 else {
                     room_name_label.innerHTML = msg;
                     room_name_label.style.color = 'red';
