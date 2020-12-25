@@ -13,13 +13,16 @@
 
 <header class="header">
     <a href="https://deckbay.herokuapp.com/"> <img src="/public/images/logo.png"></a>
-    <% if(user_log === 'true') { %>
-      <span class="user_info">Hello, <%= login %></span>
-    <% } else { %>
-      <button class="header_button" style="right: 0;" id="register_button">Sign up</button>
-      <button class="header_button" style="right: 120px;"" id="login_button">Sign in</button>
-      <span class="menu" onclick="openNav()">&#9776;</span>
-    <% } %>
+
+    <button class="header_button" style="right: 0;" id="register_button">
+      <%= user_login !== '' ? user_login : 'Sign up' %>
+    </button>
+
+    <button class="header_button" style="right: 120px;"" id="login_button">
+      <%= user_login !== '' ? 'logout' : 'Sign in' %>
+    </button>
+    
+    <span class="menu" onclick="openNav()">&#9776;</span>
 </header>
 
 <div id="login_modal" class="modal">
@@ -32,7 +35,7 @@
 
     </div>
     <div class="modal-body">
-      <form name="login_form" method="POST" autocomplete="off">
+      <form action="/login" name="login_form" method="POST" autocomplete="off">
 
           <label>Login</label>
           <input type="text" name="login" placeholder="Your login...">
@@ -41,6 +44,8 @@
           <input type="password" name="passwd" placeholder="Your password...">
 
           <input id="login_send" type="submit" value="Submit">
+
+          <input type="hidden" id="login_reqUrl" name="reqUrl" value=""></textarea>
 
         </form>
     </div>
@@ -57,7 +62,7 @@
 
       </div>
       <div class="modal-body">
-        <form name="login_form" method="POST" autocomplete="off">
+        <form action="/register" name="register_form" method="POST" autocomplete="off">
 
             <label>Email</label>
             <input type="email" name="email" placeholder="Your email...">
@@ -70,7 +75,12 @@
 
             <input id="register_send" type="submit" value="Submit">
 
+            <input type="hidden" id="register_reqUrl" name="reqUrl" value=""></textarea>
+
           </form>
       </div>
+        <form action='/logout' id="logout" method="POST">
+        <input type="hidden" id="logout_reqUrl" name="reqUrl" value=""></textarea>
+      </form>
     </div>
 </div>

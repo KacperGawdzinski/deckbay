@@ -7,6 +7,11 @@
   display: none;
 }
 
+.user_info{
+  font-size: 35px;
+  color: green;
+}
+
 .overlay {
     height: 0%;
     width: 100%;
