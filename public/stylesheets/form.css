@@ -2,10 +2,10 @@ input[type=text], input[type=password], input[type=email], select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
-    display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    display: block;
 }
   
 input[type=submit] {
@@ -16,9 +16,14 @@ input[type=submit] {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
   
 input[type=submit]:hover {
     background-color: #5F5C5C;
+}
+
+.new_room_form {
+    width: 70%;
+    margin-left: 15%;
 }

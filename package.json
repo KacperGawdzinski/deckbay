@@ -27,6 +27,7 @@
     "http": "0.0.1-security",
     "mongoose": "^5.11.8",
     "nodemailer": "^6.4.17",
+    "jquery": "^3.5.1",
     "socket.io": "^3.0.4"
   }
 }

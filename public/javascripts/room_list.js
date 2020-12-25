@@ -4,10 +4,8 @@ const new_room_form = document.getElementById("new_room_form");
 const room_name_label = document.getElementById("room_name_label");
 const room_name_input = document.getElementById("room_name_input");
 const room_passwd = document.getElementById("room_password");
-const new_room_div = document.getElementsByClassName("new_room_div")[0];
 const list = document.getElementsByClassName("list_header")[0];
 var game_type = document.getElementById("game_type").innerHTML;
-let add_room_div_display = false;
 const max_players = new Map([
     ['chess', 2],
     ['checkers', 2],
@@ -17,15 +15,15 @@ const max_players = new Map([
 window.addEventListener('load', function() {
     var socket = io();
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
-    socket.emit('load_rooms', game_type);
+    socket.emit('load_rooms', game_type );
 
-    add_btn.onclick = ( () => {                         //open new room form
-        if(add_room_div_display) {
-            new_room_div.style.display = 'none';
+    add_btn.onclick = ( () => {    //open new room form
+        if($(".new_room_div").css('display') != 'none') {
+            $(".new_room_div").slideUp(300)
             add_btn.innerHTML = "+";
         }
         else {
-            new_room_div.style.display = 'flex';
+            $(".new_room_div").slideDown(300)
             add_btn.innerHTML = "−";
         }
         add_room_div_display = !add_room_div_display;
@@ -46,7 +44,8 @@ window.addEventListener('load', function() {
                     password: room_passwd.value},                             //encode in future
             success: function(msg) {
                 if(msg === 'true')
-                    window.location.href = '/' + game_type + '-list/' + room_name_input.value;   //maybe change to window.replace
+                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
+                        'game_type': game_type, 'room_name': room_name_input.value }, 'GET');
                 else {
                     room_name_label.innerHTML = msg;
                     room_name_label.style.color = 'red';
@@ -70,7 +69,7 @@ window.addEventListener('load', function() {
                 content.innerHTML +='<div style=background-color:'+ color +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
                                     insert_user_img(element[1], max_players.get(game_type)) + '</div>' +
-                                    '<div style="background-color:'+ color + '; display:none" class="list_item">'+
+                                    '<div id="'+ room_name +'" style="background-color:'+ color + '; display:none" class="list_item">'+
                                     '<input style="display: inline; width: 50%; max-width: 400px; margin-left:10%; height:30px" type="password" placeholder="Password">' +                       
                                     '<input style="display: inline; width: 30%; margin-right:10%; height:30px; margin-bottom:0; padding:0" type="submit" value="Join"></div>';
                 content.addEventListener("click", expandChildren, false);
@@ -116,10 +115,10 @@ function expandChildren(event) {
     var targetElement = event.target || event.srcElement;
     if(targetElement.tagName != 'DIV')
         targetElement = targetElement.parentElement;
-    targetElement = targetElement.nextSibling;
+    targetElement = targetElement.nextSibling.id;
 
-    if (targetElement.style.display === "none")
-        targetElement.style.display = "inline-block";
+    if ($('#'+targetElement).css('display') != "none")
+        $('#'+targetElement).slideUp(250);
     else
-        targetElement.style.display = "none";
+        $('#'+targetElement).slideDown(250);
 }
