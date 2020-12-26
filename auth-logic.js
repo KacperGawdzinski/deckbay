@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 class loggingInfo{
 
-    transporter = nodemailer.createTransport({
+    transporter = nodemailer.createTransport({       //HIDE
         service : 'gmail',
         auth : {
             user : 'deckbay.notifications@gmail.com',

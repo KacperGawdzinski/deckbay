@@ -21,7 +21,7 @@ var roomPasswd = new Map(); //full room name -> hashed password
 app.use(express.urlencoded({
     extended: true
 }));
-app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103'));
+app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103'));   //HIDE
 app.use('/public', express.static('public'));
 
 app.set('views', './views');
@@ -77,14 +77,18 @@ app.get('/chess-list', authorize, (req, res) => {
 )});
     
 app.get('/chess-list/:id', function(req, res){
-    res.render('chess-game', { room_name: req.query.room_name, game_type: req.query.game_type });
+    console.log(req.query.game_type + '-' + req.params.id);
+    if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)
+        return res.status(403).send("You don't have permission to join this room!");
+    res.cookie('room', "", {maxAge: -1});
+    res.render('chess-game', { room_name: req.params.id, game_type: req.query.game_type });
 });
 
 app.post('/validate-room', (req, res) => {
     let ar = availableRooms(req.body.game)
-    let room = req.body.game + '-' + req.body.room;
+    let fullRoomName = req.body.game + '-' + req.body.room;
     for (let i = 0; i < ar.length; i++) {
-        if (ar[i][0] === room) {
+        if (ar[i][0] === fullRoomName) {
             res.send('Room already exists!');
             return;
         }
@@ -103,22 +107,23 @@ app.post('/validate-room', (req, res) => {
     if(req.body.password != "") {
         bcrypt.genSalt(saltRounds, function(err, salt) {
             bcrypt.hash(req.body.password, salt, function(err, hash) {
-                roomPasswd.set(req.body.game + '-' + req.body.room, hash);
+                roomPasswd.set(fullRoomName, hash);
             });
         });
     }
-    res.send('true');
+
+    res.cookie('room', fullRoomName, {signed: true})
+    res.send(true);
 });
 
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), function(err, result) {
         if (result) {
-            console.log("It matches!")
-      }
-      // if passwords do not match
-      else {
-            console.log("Invalid password!");
-      }
+            res.cookie('room', req.body.fullRoomName, {signed: true})
+            res.send(true);
+        }
+        else
+            res.send("Invalid password!");
     });
 });
 

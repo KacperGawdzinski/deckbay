@@ -26,7 +26,6 @@ window.addEventListener('load', function() {
             $(".new_room_div").slideDown(300)
             add_btn.innerHTML = "−";
         }
-        add_room_div_display = !add_room_div_display;
     });
 
     room_name_input.addEventListener('input', function () {
@@ -43,9 +42,9 @@ window.addEventListener('load', function() {
                     room: room_name_input.value,
                     password: room_passwd.value},
             success: function(msg) {
-                if(msg === 'true')
+                if(msg === true)
                     $.redirect('/' + game_type + '-list/' + room_name_input.value, {
-                        'game_type': game_type, 'room_name': room_name_input.value }, 'GET');
+                        'game_type': game_type}, 'GET');
                 else {
                     room_name_label.innerHTML = msg;
                     room_name_label.style.color = 'red';
@@ -89,26 +88,24 @@ window.addEventListener('load', function() {
     $(document).on('submit', '.formPwdValidator', function(e) {
         e.preventDefault();
         var targetElement = e.target || e.srcElement;
-
+        let roomFullName = targetElement.childNodes[2].value
         $.ajax({
             method: "POST",
             url: '/validate-room-password',
-            data: { fullRoomName: targetElement.childNodes[2].value,
+            data: { fullRoomName: roomFullName,
                     password: targetElement.firstChild.value },                      
             success: function(msg) {
-                if(msg === 'true')
-                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
-                        'game_type': game_type, 'room_name': room_name_input.value }, 'GET');
+                if(msg === true)
+                    $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
+                        'game_type': game_type, 'room_name': targetElement.firstChild.value }, 'GET');
                 else {
-                    room_name_label.innerHTML = msg;
-                    room_name_label.style.color = 'red';
+                    targetElement.firstChild.value = ""
+                    targetElement.firstChild.placeholder = msg
                 }
             }
         })
     });
 });
-
-
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
