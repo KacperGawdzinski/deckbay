@@ -17,7 +17,7 @@ window.addEventListener('load', function() {
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
     socket.emit('load_rooms', game_type );
 
-    add_btn.onclick = ( () => {    //open new room form
+    add_btn.addEventListener('click', () => {    //open new room form
         if($(".new_room_div").css('display') != 'none') {
             $(".new_room_div").slideUp(300)
             add_btn.innerHTML = "+";
@@ -41,7 +41,7 @@ window.addEventListener('load', function() {
             url: '/validate-room',
             data: { game: game_type, 
                     room: room_name_input.value,
-                    password: room_passwd.value},                             //encode in future
+                    password: room_passwd.value},
             success: function(msg) {
                 if(msg === 'true')
                     $.redirect('/' + game_type + '-list/' + room_name_input.value, {
@@ -70,8 +70,10 @@ window.addEventListener('load', function() {
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
                                     insert_user_img(element[1], max_players.get(game_type)) + '</div>' +
                                     '<div id="'+ room_name +'" style="background-color:'+ color + '; display:none" class="list_item">'+
-                                    '<input style="display: inline; width: 50%; max-width: 400px; margin-left:10%; height:30px" type="password" placeholder="Password">' +                       
-                                    '<input style="display: inline; width: 30%; margin-right:10%; height:30px; margin-bottom:0; padding:0" type="submit" value="Join"></div>';
+                                    '<form class="formPwdValidator" method="POST" style="width:100%;">'+
+                                    '<input name="password" style="display: inline; width: 50%; max-width: 400px; margin-left:10%; height:30px" type="password" placeholder="Password">' +                       
+                                    '<input style="display: inline; width: 30%; margin-right:10%; height:30px; margin-bottom:0; padding:0" type="submit" value="Join">'+
+                                    '<input type="hidden" name="room" value="' + element[0] + '" /></form></div>';
                 content.addEventListener("click", expandChildren, false);
             }
             else {
@@ -83,7 +85,30 @@ window.addEventListener('load', function() {
             rooms.appendChild(content);
         });
     });
+
+    $(document).on('submit', '.formPwdValidator', function(e) {
+        e.preventDefault();
+        var targetElement = e.target || e.srcElement;
+
+        $.ajax({
+            method: "POST",
+            url: '/validate-room-password',
+            data: { fullRoomName: targetElement.childNodes[2].value,
+                    password: targetElement.firstChild.value },                      
+            success: function(msg) {
+                if(msg === 'true')
+                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
+                        'game_type': game_type, 'room_name': room_name_input.value }, 'GET');
+                else {
+                    room_name_label.innerHTML = msg;
+                    room_name_label.style.color = 'red';
+                }
+            }
+        })
+    });
 });
+
+
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
@@ -111,12 +136,16 @@ function insert_lock_img(check) {
     return '';
 }
 
-function expandChildren(event) {
+function expandChildren(event) {        //needs cleanup
     var targetElement = event.target || event.srcElement;
+    if(targetElement.tagName == 'INPUT')
+        return
     if(targetElement.tagName != 'DIV')
         targetElement = targetElement.parentElement;
-    targetElement = targetElement.nextSibling.id;
-
+    if(targetElement.firstChild.tagName != 'FORM')
+        targetElement = targetElement.nextSibling;
+    targetElement = targetElement.id
+        console.log(targetElement.tagName);
     if ($('#'+targetElement).css('display') != "none")
         $('#'+targetElement).slideUp(250);
     else

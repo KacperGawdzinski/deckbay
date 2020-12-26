@@ -4,7 +4,9 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const bcrypt = require ('bcrypt');
 const { loggingInfo, authorize } = require('./auth-logic');
+const saltRounds = 10;
 
 var app = express();
 var server = http.createServer(app);
@@ -14,7 +16,7 @@ let loggingControl = new loggingInfo();
 
 var socketRoom = new Map(); //socket.id -> room name
 var socketGame = new Map(); //socket.id -> game type
-var roomPasswd = new Map(); //full room name -> password    encode it
+var roomPasswd = new Map(); //full room name -> hashed password
 
 app.use(express.urlencoded({
     extended: true
@@ -98,10 +100,26 @@ app.post('/validate-room', (req, res) => {
         return;
     }
 
-    if(req.body.password != "")
-        roomPasswd.set(req.body.game + '-' + req.body.room, req.body.password);
-
+    if(req.body.password != "") {
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            bcrypt.hash(req.body.password, salt, function(err, hash) {
+                roomPasswd.set(req.body.game + '-' + req.body.room, hash);
+            });
+        });
+    }
     res.send('true');
+});
+
+app.post('/validate-room-password', (req, res) => {
+    bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), function(err, result) {
+        if (result) {
+            console.log("It matches!")
+      }
+      // if passwords do not match
+      else {
+            console.log("Invalid password!");
+      }
+    });
 });
 
 server.listen(process.env.PORT || 3000, () => {
@@ -123,7 +141,7 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('rooms', availableRooms(data.game));
     });
 
-    socket.on('disconnecting', () => {  //remove data from maps
+    socket.on('disconnecting', () => {  //remove data from maps and leave rooms
         if(socketGame.get(socket.id)) {
             var full_room_name = socketGame.get(socket.id) + '-' + socketRoom.get(socket.id);
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
@@ -147,9 +165,9 @@ function availableRooms(game) {
         if (k.startsWith(game)) {
             let inf;
             if(roomPasswd.get(k))
-                inf = [k, rooms.get(k).size, 1];
+                inf = [k, rooms.get(k).size, 1]; //change to object 
             else
-                inf = [k, rooms.get(k).size];
+                inf = [k, rooms.get(k).size,];
             availableRoomsTab.push(inf);
         }
     }
