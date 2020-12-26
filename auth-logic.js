@@ -16,11 +16,11 @@ class loggingInfo{
 
     userInsert(login, mail, password){
         if(!this.userLookup(login, mail))
-            fs.appendFileSync('./loginDB.txt', `${login};${mail};${password}\n`);
+            fs.appendFileSync('./DB/loginDB.txt', `${login};${mail};${password}\n`);
     }
 
     userGetPasswordByMail(mail){
-        let lines = fs.readFileSync('./loginDB.txt', 'utf-8',  err => { } ).split('\n'),
+        let lines = fs.readFileSync('./DB/loginDB.txt', 'utf-8',  err => { } ).split('\n'),
             pass;
         
         lines.forEach(line => {
@@ -30,7 +30,7 @@ class loggingInfo{
     }
 
     userGetPasswordByLogin(login){
-        let lines = fs.readFileSync('./loginDB.txt', 'utf-8',  err => { } ).split('\n'),
+        let lines = fs.readFileSync('./DB/loginDB.txt', 'utf-8',  err => { } ).split('\n'),
             pass;
         
         lines.forEach(line => {
@@ -62,13 +62,13 @@ class loggingInfo{
     insertMailToVerify(login, mail, password){ //it sends an email too!
         let ID = crypto.randomBytes(30).toString('hex');
         if( !this.mailDBlookup(login, mail) ){
-            fs.appendFileSync('./mailsDB.txt', `${login};${mail};${ID};${password}\n`);
+            fs.appendFileSync('./DB/mailsDB.txt', `${login};${mail};${ID};${password}\n`);
 
             var mailOptions = {
                 from: 'deckbay.notifications@gmail.com',
                 to: `${mail}`,
                 subject: `Verification link for account ${login}!`,
-                html: `<a href="http://localhost:3000/verify/${ID}>Clik for verification!`
+                html: `<a href="http://localhost:3000/verify/${ID}>Clik for verification!</a>`
               };
 
             this.transporter.sendMail(mailOptions, function(error, info){
@@ -84,8 +84,8 @@ class loggingInfo{
     }
 
     checkID(ID){
-        let lines = fs.readFileSync('./mailsDB.txt', 'utf-8',  err => { } ).split('\n'),
-            newFile = fs.writeFileSync('./mailsDB.txt', '', (err, data) => { }),
+        let lines = fs.readFileSync('./DB/mailsDB.txt', 'utf-8',  err => { } ).split('\n'),
+            newFile = fs.writeFileSync('./DB/mailsDB.txt', '', (err, data) => { }),
             found = false;
 
         for(let i = 0; i < lines.length; i++){
@@ -94,7 +94,7 @@ class loggingInfo{
                 this.userInsert(pom[0], pom[1], pom[3]);
                 found = pom[0];
             } else {
-                fs.appendFileSync('./mailsDB.txt', pom.join(';'));
+                fs.appendFileSync('./DB/mailsDB.txt', pom.join(';'));
             }
         }
 
@@ -102,7 +102,7 @@ class loggingInfo{
     }
 
     mailDBlookup(login, mail){
-        let lines = fs.readFileSync('./mailsDB.txt', 'utf-8',  err => { } ).split('\n'),
+        let lines = fs.readFileSync('./DB/mailsDB.txt', 'utf-8',  err => { } ).split('\n'),
             pass = false;
 
         lines.forEach(line => {

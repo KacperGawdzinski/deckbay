@@ -76,7 +76,7 @@ app.get('/chess-list', authorize, (req, res) => {
     res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
 )});
     
-app.get('/chess-list/:id', function(req, res){
+app.get('/chess-list/:id', authorize, (req, res) => {
     console.log(req.query.game_type + '-' + req.params.id);
     if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)
         return res.status(403).send("You don't have permission to join this room!");
@@ -105,8 +105,8 @@ app.post('/validate-room', (req, res) => {
     }
 
     if(req.body.password != "") {
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-            bcrypt.hash(req.body.password, salt, function(err, hash) {
+        bcrypt.genSalt(saltRounds, (err, salt) => {
+            bcrypt.hash(req.body.password, salt, (err, salt) => {
                 roomPasswd.set(fullRoomName, hash);
             });
         });
@@ -117,7 +117,7 @@ app.post('/validate-room', (req, res) => {
 });
 
 app.post('/validate-room-password', (req, res) => {
-    bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), function(err, result) {
+    bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {
         if (result) {
             res.cookie('room', req.body.fullRoomName, {signed: true})
             res.send(true);
@@ -131,15 +131,15 @@ server.listen(process.env.PORT || 3000, () => {
     console.log('Server turned on');
 });
 
-io.on('connection', function (socket) {
+io.on('connection', socket => {
     console.log('client connected');
 
-    socket.on('load_rooms', function (data) {
+    socket.on('load_rooms', data => {
         console.log('returning room list...');
         socket.emit('rooms', availableRooms(data));
     });
 
-    socket.on('join-new-room', function (data) {
+    socket.on('join-new-room', data => {
         socket.join(data.game + '-' + data.room);
         socketGame.set(socket.id, data.game)
         socketRoom.set(socket.id, data.room)
@@ -156,7 +156,7 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('disconnect', function () {   //emit new room list and clear last map
+    socket.on('disconnect', () => {   //emit new room list and clear last map
         socket.broadcast.emit('rooms', availableRooms(socketGame.get(socket.id)));
         socketGame.delete(socket.id);
         console.log('client disconnected');
