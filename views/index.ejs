@@ -3,32 +3,32 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
-    <link href= "/public/stylesheets/frontpage.css" rel="stylesheet" type="text/css" />
-    <title>Deckbay</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
+        <link href= "/public/stylesheets/frontpage.css" rel="stylesheet" type="text/css" />
+        <title>Deckbay</title>
+    </head>
 
-<%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` }); %>
+    <%- include('components/header.ejs', { error_message : `${error_message}`, user_login : `${user_login}` }); %>
 
-<body class="content">
+    <body class="content">
 
-    <div class="game_list">
-        <%- include('components/game_box_miniature', {game_type: 'CHESS',
-            game_icon: 'chess_icon.png'}); %>
-        <%- include('components/game_box_miniature', {game_type: 'CHECKERS',
-            game_icon: 'checkers_icon.png'}); %>
-        <%- include('components/game_box_miniature', {game_type: 'DOMINO',
-            game_icon: 'domino_icon.png'}); %>
-    </div>
+        <div class="game_list">
+            <%- include('components/game_box_miniature', {game_type: 'CHESS',
+                game_icon: 'chess_icon.png'}); %>
+            <%- include('components/game_box_miniature', {game_type: 'CHECKERS',
+                game_icon: 'checkers_icon.png'}); %>
+            <%- include('components/game_box_miniature', {game_type: 'DOMINO',
+                game_icon: 'domino_icon.png'}); %>
+        </div>
 
-</body>
-<footer>
-    2020-2021 | Deckbay by GBS
-</footer>
+    </body>
+    <footer>
+        2020-2021 | Deckbay by GBS
+    </footer>
 
-<script src="public/javascripts/modal_handler.js"></script>
-<script src="public/javascripts/mobile_header.js"></script>
+    <script src="public/javascripts/modal_handler.js"></script>
+    <script src="public/javascripts/mobile_header.js"></script>
 </html>

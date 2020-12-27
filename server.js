@@ -6,7 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const { loggingInfo, authorize } = require('./auth-logic');
-const saltRounds = 10;
+
+const saltRounds = 12;
 
 var app = express();
 var server = http.createServer(app);
@@ -53,7 +54,7 @@ app.post('/register', (req, res) => {
     if (loggingControl.userLookup(login, mail) || loggingControl.insertMailToVerify(login, mail, password) === false) {
         res.render( 'index', { error_message: 'This mail/login is already taken!' } );
     } else {
-        res.render( 'index' );
+        res.redirect( req.body.reqUrl );
     }
 });
 
@@ -84,6 +85,10 @@ app.get('/chess-list/:id', authorize, (req, res) => {
     res.render('chess-game', { room_name: req.params.id, game_type: req.query.game_type });
 });
 
+app.get('/chess-test', (req, res) => {
+    res.render('game_chess_page');
+})
+
 app.post('/validate-room', (req, res) => {
     let ar = availableRooms(req.body.game)
     let fullRoomName = req.body.game + '-' + req.body.room;
@@ -106,13 +111,13 @@ app.post('/validate-room', (req, res) => {
 
     if(req.body.password != "") {
         bcrypt.genSalt(saltRounds, (err, salt) => {
-            bcrypt.hash(req.body.password, salt, (err, salt) => {
+            bcrypt.hash(req.body.password, salt, (err, hash) => {
                 roomPasswd.set(fullRoomName, hash);
             });
         });
     }
 
-    res.cookie('room', fullRoomName, {signed: true})
+    res.cookie('room', fullRoomName, { signed: true })
     res.send(true);
 });
 
@@ -121,9 +126,9 @@ app.post('/validate-room-password', (req, res) => {
         if (result) {
             res.cookie('room', req.body.fullRoomName, {signed: true})
             res.send(true);
-        }
-        else
+        } else {
             res.send("Invalid password!");
+        }
     });
 });
 

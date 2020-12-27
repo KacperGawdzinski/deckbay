@@ -1,0 +1,69 @@
+<% if( (typeof error_message  == 'undefined') ) { var error_message = '' } %>
+<% if( (typeof user_login  == 'undefined') ) { var user_login = '' } %>
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Deckbay</title>
+        <meta charset='UTF-8'>
+        <link href= '/public/stylesheets/page.css' rel='stylesheet' type='text/css' />
+        <link href= '/public/stylesheets/chess-stylesheets/chess.css' rel='stylesheet' type='text/css' />
+    </head>
+
+    <body class='content'>
+
+        <%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` }); %>
+
+        <div class='chess-container'>
+
+            <div id='chess-board-div' class='chess-board-div  chess-container-item'>
+                <table id='chess-board' class='chess-board'>
+                    <tbody id='chess-board-tbody'>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div id='chess-chat-div' class='chess-chat-div chess-container-item'>
+
+                <div class='wrapper'>
+                    <div id='messages' class='messages'> 
+                    
+                    </div>
+                    <div class='message-sender-container'>
+                        
+                        <form class='message-sender' id='message-sender'>
+                            <div class='text-container'>
+                                <input  type='text' id='message' autocomplete='off' required 
+                                placeholder='Type your message (but be nice!)' />
+                            </div>
+                            <button id='message-submit' class='message-submit'>Send</button>
+                        </form>
+    
+                    </div>
+                </div>
+
+            </div>
+
+            <div id='chess-info-div' class='chess-info-div chess-container-item''>
+
+                <div id='players-info' class='players-info'> </div>
+                <div id='moves' class='moves'> </div>
+                <div id='game-buttons-div' class='game-buttons-div'>
+                    <button id='restart' class='game-button'>↺</button>
+                    <button id='surrender' class='game-button'>⚐</button>
+                    <button id='draw' class='game-button'>½</button>
+                </div>
+                
+            </div>
+                
+            </div>
+
+        </div>
+
+        <footer>
+            2020-2021 | Deckbay by GBS
+        </footer>
+    </body>
+    <script src='/public/javascripts/chess/chess-game.js'></script>
+</html>
