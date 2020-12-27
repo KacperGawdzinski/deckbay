@@ -75,6 +75,10 @@ app.get('/verify/:id', (req, res) => {
 app.get('/chess-list', authorize, (req, res) => {
     res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
 )});
+
+app.get('/checkers', authorize, (req, res) => {
+    res.render('checkers.ejs', { game_type: 'CHESS', user_login : req.login }
+)});
     
 app.get('/chess-list/:id', authorize, (req, res) => {
     console.log(req.query.game_type + '-' + req.params.id);
