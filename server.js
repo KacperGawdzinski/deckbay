@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const { loggingInfo, authorize } = require('./auth-logic');
 
-const saltRounds = 12;
+const saltRounds = 10;
 
 var app = express();
 var server = http.createServer(app);
@@ -79,7 +79,7 @@ app.get('/chess-list', authorize, (req, res) => {
     
 app.get('/chess-list/:id', authorize, (req, res) => {
     console.log(req.query.game_type + '-' + req.params.id);
-    if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)
+    if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)    //change to redirect
         return res.status(403).send("You don't have permission to join this room!");
     res.cookie('room', "", {maxAge: -1});
     res.render('chess-game', { room_name: req.params.id, game_type: req.query.game_type });
@@ -139,16 +139,22 @@ server.listen(process.env.PORT || 3000, () => {
 io.on('connection', socket => {
     console.log('client connected');
 
+    socket.on('join-room-list', data => {
+        console.log('joining game-' + data);
+        socket.join('game-' + data)
+    })
+
     socket.on('load_rooms', data => {
         console.log('returning room list...');
-        socket.emit('rooms', availableRooms(data));
+        console.log(data);
+        io.to('game-' + data).emit('rooms', availableRooms(data));
     });
 
     socket.on('join-new-room', data => {
         socket.join(data.game + '-' + data.room);
         socketGame.set(socket.id, data.game)
         socketRoom.set(socket.id, data.room)
-        socket.broadcast.emit('rooms', availableRooms(data.game));
+        io.to('game-' + data.game).emit('rooms', availableRooms(data.game));
     });
 
     socket.on('disconnecting', () => {  //remove data from maps and leave rooms
@@ -162,7 +168,7 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {   //emit new room list and clear last map
-        socket.broadcast.emit('rooms', availableRooms(socketGame.get(socket.id)));
+        io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
         socketGame.delete(socket.id);
         console.log('client disconnected');
     });

@@ -90,6 +90,7 @@
     border-radius:5px;
     border:1px solid #D0D0D0;
     width: 40%;
+    max-width: 180px;
 }
 
 .ck-button:hover {
