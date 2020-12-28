@@ -30,7 +30,7 @@ class Checkers{
     }
 
     convertxy(x,y){
-        if (this.checkIfWhite(x,y)) {
+        if (this.checkIfWhite(x,y)|| y>7 || x>7 || y<0 || x<0) {
             return false
         } else {
             return Math.floor(x/2)+y*4;
@@ -145,7 +145,7 @@ class Checkers{
 
     convertId(id){
         var x, y;
-        if(id%2==0){
+        if(Math.floor(id/4)%2==0){
             x=(id%4)*2+1;
             y=(Math.floor(id/4));
         }else{
@@ -236,20 +236,22 @@ class Checkers{
     }
 
     inMoves(id){
+        let x=false;
         this.moves.forEach(element => {
-            if (elemnet==id) {
-                return true;
+            if (element==id) {
+                x=true;
             }
         });
-        return false;
+        return x;
     }
     inHaveToMove(id){
+        let x=false;
         this.haveToMove.forEach(element => {
             if (elemnet==id) {
-                return true;
+                x=true;
             }
         });
-        return false;
+        return x;
     }
     checkIfCan(){
         this.boarad.forEach(element => {
@@ -297,29 +299,29 @@ class Checkers{
                         this.beat(x+i,y-i,xz,xy);
                     }
                     }else{
-                        this.beat(x,y,xz,xy);
+                        this.beat(x,y,xz,xz);
                     }
+                    this.boarad[this.convertxy(xz,yz)]=this.boarad[this.checed];
+                    this.boarad[this.checed]=0;
+                    this.checed=null;
+                    this.moves=[];
             }
         } 
     }
 
     checkQueens(){
             if (own%2==1) {
-                for (let i = 0; i < this.boarad.length; i++) {
+                for (let i = 27; i < this.boarad.length; i++) {
                     const element = this.boarad[i];
-                    if (i>27) {
-                        if (elemnet==1) {
-                            this.boarad[i]+= 2;
-                        }
+                    if (element==1) {
+                        this.boarad[i]+= 2;
                     }
                 }
             }else{
-                for (let i = 0; i < this.boarad.length; i++) {
+                for (let i = 4; i > -1 ; i--) {
                     const element = this.boarad[i];
-                    if (i<4) {
-                        if (elemnet==2) {
-                            this.boarad[i]+= 2;
-                        }
+                    if (element==2) {
+                        this.boarad[i]+= 2;
                     }
                 }
             }
