@@ -29,7 +29,6 @@ app.get('/chess-list', function(req, res) {
 });
 
 app.get('/chess-list/:id', function(req, res){
-    res.render('chess-game', { id: req.params.id });
 });
 
 app.post('/validate-room', function(req, res) {

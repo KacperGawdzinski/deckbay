@@ -1,0 +1,32 @@
+<div class="new_room_div">
+    <form id="new_room_form" class="new_room_form" autocomplete="off">
+
+        <label id="room_name_label">Room name</label>
+        <input type="text" id="room_name_input" placeholder="Your room name...">
+
+        <label>Password</label>
+        <input type="password" id="room_password" placeholder="(optional)">
+
+        <% if(game === 'CHESS') { %>
+        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+            <div class="ck-button">
+                <label>
+                    <input type="checkbox" value="1"><span>Black</span>
+                </label>
+            </div>
+            <div class="ck-button">
+                <label>
+                    <input type="checkbox" value="1"><span>White</span>
+                </label>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-around; margin-top: 10px; margin-bottom: 10px;">
+            <input type="number" placeholder="Game length" min="1" max="30" step="1">
+            <input type="number" placeholder="Move bonus" min="1" max="30" step="1">
+        </div>
+        <%} %>
+
+        <input id="new_room_submit" type="submit" value="Create new room!">
+
+    </form>
+</div>

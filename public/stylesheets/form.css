@@ -7,8 +7,7 @@ input[type=text], input[type=password], input[type=email], select {
     border-radius: 4px;
     box-sizing: border-box;
   }
-  
-  input[type=submit] {
+    display: block;
     width: 100%;
     background-color: #131413;
     color: white;
@@ -21,4 +20,6 @@ input[type=text], input[type=password], input[type=email], select {
   
   input[type=submit]:hover {
     background-color: #5F5C5C;
-  }
+}
+
+.new_room_form {

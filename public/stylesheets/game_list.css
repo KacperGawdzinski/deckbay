@@ -83,6 +83,35 @@
     max-height: 80%;
 }
 
+.ck-button {
+    display: inline-block;
+    background-color:black;
+    border-radius:5px;
+    border:1px solid #D0D0D0;
+    width: 40%;
+}
+
+.ck-button:hover {
+    background:red;
+}   
+
+.ck-button label span {
+    text-align:center;
+    padding:3px 0px;
+    font-size: 18px;
+    display:block;
+}
+
+.ck-button label input {
+    position:absolute;
+    top:-20px;
+}
+
+.ck-button input:checked + span {
+    background-color:#911;
+    color:#fff;
+}
+
 @media only screen and (max-width: 1140px) {
     .list {
         width: 80%;
