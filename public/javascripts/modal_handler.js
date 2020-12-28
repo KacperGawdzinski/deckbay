@@ -11,11 +11,23 @@ const rsubmit = document.getElementById('register_send');
 const lsubmit = document.getElementById('login_send');
 
 lbtn.addEventListener('click', () => { 
-    lmodal.style.display = "block"; 
+    if( lbtn.innerHTML.trim() === 'Sign in' ){
+        lmodal.style.display = "block"; 
+    }
+    else{
+        document.getElementById('logout_reqUrl').value = window.location.href;
+        document.getElementById('logout').submit();
+    }
 });
 
 rbtn.addEventListener('click', () => { 
-    rmodal.style.display = "block"; 
+    if( rbtn.innerHTML.trim() === 'Sign up' ){
+        rmodal.style.display = "block"; 
+    }
+    else{
+        document.getElementById('logout_reqUrl').value = window.location.href;
+        document.getElementById('logout').submit();
+    }
 });
 
 lexit.addEventListener('click', () => { 
@@ -24,19 +36,21 @@ lexit.addEventListener('click', () => {
 
 rexit.addEventListener('click', () => { 
     rmodal.style.display = "none"; 
-}); 
+});
+
+rsubmit.addEventListener('click', () => {
+    document.getElementById('register_reqUrl').value = window.location.href;
+    document.getElementById('register_form').submit();
+});
+
+lsubmit.addEventListener('click', () => {
+    document.getElementById('login_reqUrl').value = window.location.href;
+    document.getElementById('login_form').submit();
+});
 
 window.addEventListener('click', function(event) {
     if (event.target == lmodal)
         lmodal.style.display = "none";
     else if(event.target == rmodal)
         rmodal.style.display = "none";
-});
-
-rsubmit.addEventListener('click', () => {
-
-});
-
-lsubmit.addEventListener('click', () => {
-
 });
