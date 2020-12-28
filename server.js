@@ -29,6 +29,11 @@ app.get('/chess-list', function(req, res) {
 });
 
 app.get('/chess-list/:id', function(req, res){
+    //console.log(req.query.game_type + '-' + req.params.id);
+    if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)
+        return res.status(403).send("You don't have permission to join this room!");
+    res.cookie('room', "", {maxAge: -1});
+    res.render('chess-game', { room_name: req.params.id, game_type: req.query.game_type });
 });
 
 app.post('/validate-room', function(req, res) {
