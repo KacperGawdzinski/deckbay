@@ -15,7 +15,9 @@ const max_players = new Map([
 window.addEventListener('load', function() {
     var socket = io();
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
-    socket.emit('load_rooms', game_type );
+
+    socket.emit('join-room-list', game_type);
+    socket.emit('load_rooms', game_type);
 
     add_btn.addEventListener('click', () => {    //open new room form
         if($(".new_room_div").css('display') != 'none') {
@@ -76,10 +78,10 @@ window.addEventListener('load', function() {
                 content.addEventListener("click", expandChildren, false);
             }
             else {
-                content.innerHTML += '<a style="text-decoration: none;" href="/' + game_type + '-list/' + room_name + 
-                                    '"><div style=background-color:'+ Colors.random() +
+                content.innerHTML += '<div style=background-color:'+ Colors.random() +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
-                                    insert_user_img(element[1], max_players.get(game_type)) + '</div></a>';
+                                    insert_user_img(element[1], max_players.get(game_type)) + '</div>';
+                content.addEventListener("click", getUnlockedRoom, false);       
             }
             rooms.appendChild(content);
         });
@@ -147,4 +149,22 @@ function expandChildren(event) {        //needs cleanup
         $('#'+targetElement).slideUp(250);
     else
         $('#'+targetElement).slideDown(250);
+}
+
+function getUnlockedRoom() {
+    $.ajax({
+        method: "POST",
+        url: '/validate-room-password',
+        data: { fullRoomName: roomFullName,
+                password: targetElement.firstChild.value },                      
+        success: function(msg) {
+            if(msg === true)
+                $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
+                    'game_type': game_type, 'room_name': targetElement.firstChild.value }, 'GET');
+            else {
+                targetElement.firstChild.value = ""
+                targetElement.firstChild.placeholder = msg
+            }
+        }
+    })   
 }
