@@ -6,11 +6,14 @@ window.addEventListener('load', function() {
             url: '/validate-room',
             data: { game: game_type, 
                     room: room_name_input.value,
-                    password: room_passwd.value},
+                    password: room_passwd.value,
+                    side: 'black',
+                    length: 30,
+                    bonus: 10 },
             success: function(msg) {
                 if(msg === true)
                     $.redirect('/' + game_type + '-list/' + room_name_input.value, {
-                        'game_type': game_type}, 'GET');
+                        'game_type': game_type}, 'POST');
                 else {
                     room_name_label.innerHTML = msg;
                     room_name_label.style.color = 'red';
