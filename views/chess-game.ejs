@@ -13,6 +13,7 @@
 
     <%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` }); %>
     <label id="room_name"><%= room_name %></label>
+    <label id="bla"><%= room_name %></label>
     
 </body>
 <footer>
@@ -21,6 +22,8 @@
 
 <script>
     var game_type = <%- JSON.stringify(game_type) %>;
+    var x = document.getElementById('bla')
+    x.innerHTML = game_type
 </script>
 <script src="/public/javascripts/game_room.js"></script>
 <script src="/socket.io/socket.io.js"></script>

@@ -5,6 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
+const faker = require('faker');
 const { loggingInfo, authorize } = require('./auth-logic');
 
 const saltRounds = 10;
@@ -18,6 +19,8 @@ let loggingControl = new loggingInfo();
 var socketRoom = new Map(); //socket.id -> room name
 var socketGame = new Map(); //socket.id -> game type
 var roomPasswd = new Map(); //full room name -> hashed password
+var roomPlayers = {} //room name -> players allowed to play
+var roomOptions = new Map(); //room name -> options !tochange
 
 app.use(express.urlencoded({
     extended: true
@@ -73,16 +76,19 @@ app.get('/verify/:id', (req, res) => {
     res.redirect('/');
 })
 
-app.get('/chess-list', authorize, (req, res) => {
+app.get('/chess-list', authorize, (req, res) => {   //set random nick
+    if(!req.signedCookies.login)
+        res.cookie("login",  faker.name.findName(), { signed: true });
     res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
 )});
-    
-app.get('/chess-list/:id', authorize, (req, res) => {
-    console.log(req.query.game_type + '-' + req.params.id);
-    if(!req.signedCookies.room || req.signedCookies.room != req.query.game_type + '-' + req.params.id)    //change to redirect
-        return res.status(403).send("You don't have permission to join this room!");
-    res.cookie('room', "", {maxAge: -1});
-    res.render('chess-game', { room_name: req.params.id, game_type: req.query.game_type });
+
+app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
+    let full_room_name = req.body.game_type + "-" + req.params.id;
+    let players = roomPlayers[full_room_name]
+    players.push(req.signedCookies.login)
+    roomPlayers[full_room_name] = players
+    console.log(roomPlayers);
+    res.render('chess-game', { room_name: req.params.id, game_type: req.body.game_type });
 });
 
 app.get('/chess-test', (req, res) => {
@@ -117,14 +123,19 @@ app.post('/validate-room', (req, res) => {
         });
     }
 
-    res.cookie('room', fullRoomName, { signed: true })
+    roomPlayers[fullRoomName] = []
+    roomOptions.set(fullRoomName, {
+        side: req.body.side,
+        length: req.body.length,
+        bonus: req.body.bonus
+    })
     res.send(true);
 });
 
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {
         if (result) {
-            res.cookie('room', req.body.fullRoomName, {signed: true})
+            //res.cookie('room', req.body.fullRoomName, {signed: true})
             res.send(true);
         } else {
             res.send("Invalid password!");

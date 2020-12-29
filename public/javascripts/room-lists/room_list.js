@@ -35,26 +35,6 @@ window.addEventListener('load', function() {
         room_name_label.style.color = 'white';
     })
 
-    new_room_form.addEventListener('submit', ( event => {               //validate new room name
-        event.preventDefault();
-        $.ajax({
-            method: "POST",
-            url: '/validate-room',
-            data: { game: game_type, 
-                    room: room_name_input.value,
-                    password: room_passwd.value},
-            success: function(msg) {
-                if(msg === true)
-                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
-                        'game_type': game_type}, 'GET');
-                else {
-                    room_name_label.innerHTML = msg;
-                    room_name_label.style.color = 'red';
-                }
-            }
-        })
-    }))
-
     socket.on('rooms', function(data) {             //create room list
         console.log('received room list');
         console.log(data);
@@ -81,7 +61,7 @@ window.addEventListener('load', function() {
                 content.innerHTML += '<div style=background-color:'+ Colors.random() +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
                                     insert_user_img(element[1], max_players.get(game_type)) + '</div>';
-                content.addEventListener("click", getUnlockedRoom, false);       
+                //content.addEventListener("click", getUnlockedRoom, false);       
             }
             rooms.appendChild(content);
         });
@@ -152,7 +132,7 @@ function expandChildren(event) {        //needs cleanup
 }
 
 function getUnlockedRoom() {
-    $.ajax({
+    /*$.ajax({
         method: "POST",
         url: '/validate-room-password',
         data: { fullRoomName: roomFullName,
@@ -166,5 +146,5 @@ function getUnlockedRoom() {
                 targetElement.firstChild.placeholder = msg
             }
         }
-    })   
+    })*/   
 }
