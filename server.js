@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const { loggingInfo, authorize } = require('./auth-logic');
+const Checkers  = require('./public/javascripts/checkers');
+const { data } = require('jquery');
 const saltRounds = 10;
 
 var app = express();
@@ -165,6 +167,20 @@ io.on('connection', socket => {
         socketGame.delete(socket.id);
         console.log('client disconnected');
     });
+
+    socket.on('move-check', tab => {   //checking if move is allowed
+        var check = new Checkers(tab[2]);
+        //check.updateBoard(board);   loading board saved on server
+        check.checed=tab[0];
+        var move1 = check.convertId(check.checed);
+        check.checkMoves(move1[0],move1[1]);
+        if(check.inMoves(tab[1])){
+            socket.to(tab[3]).emit('move', tab);
+            var move2 = check.convertId(tab[1]);
+            check.makeMove(move2[0],move2[1]);
+            board=check.boarad;
+        }
+    })
 });
 
 function availableRooms(game) {
@@ -182,3 +198,4 @@ function availableRooms(game) {
     }
     return availableRoomsTab;
 }
+
