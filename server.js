@@ -16,11 +16,11 @@ var io = socket(server);
 
 let loggingControl = new loggingInfo();
 
-var socketRoom = new Map(); //socket.id -> room name
-var socketGame = new Map(); //socket.id -> game type
-var roomPasswd = new Map(); //full room name -> hashed password
-var roomPlayers = {} //room name -> players allowed to play
-var roomOptions = new Map(); //room name -> options !tochange
+var socketRoom = new Map();  //socket.id -> room name
+var socketGame = new Map();  //socket.id -> game type
+var roomPasswd = new Map();  //full room name -> hashed password
+var roomOptions = new Map(); //full room name -> options
+var roomPlayers = {}         //full room name -> players allowed to play
 
 app.use(express.urlencoded({
     extended: true
@@ -83,11 +83,20 @@ app.get('/chess-list', authorize, (req, res) => {   //set random nick
 )});
 
 app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
-    let full_room_name = req.body.game_type + "-" + req.params.id;
-    let players = roomPlayers[full_room_name]
-    players.push(req.signedCookies.login)
-    roomPlayers[full_room_name] = players
-    console.log(roomPlayers);
+    if(!req.body.game_type) {
+        res.status(403);
+        res.send("You don't have permission to enter this room!");
+        return;
+    }
+    let fullRoomName = req.body.game_type + "-" + req.params.id
+    if(roomPasswd[fullRoomName]) {
+        let temp = roomPlayers[fullRoomName]
+        if(!temp.includes(req.signedCookies.login)) {
+            res.status(403);
+            res.send("You don't have permission to enter this room!");
+            return;
+        }
+    }
     res.render('chess-game', { room_name: req.params.id, game_type: req.body.game_type });
 });
 
@@ -115,7 +124,7 @@ app.post('/validate-room', (req, res) => {
         return;
     }
 
-    if(req.body.password != "") {
+    if(req.body.password) {
         bcrypt.genSalt(saltRounds, (err, salt) => {
             bcrypt.hash(req.body.password, salt, (err, hash) => {
                 roomPasswd.set(fullRoomName, hash);
@@ -123,7 +132,8 @@ app.post('/validate-room', (req, res) => {
         });
     }
 
-    roomPlayers[fullRoomName] = []
+    if(req.body.password)
+        roomPlayers[fullRoomName] = []
     roomOptions.set(fullRoomName, {
         side: req.body.side,
         length: req.body.length,
@@ -135,7 +145,11 @@ app.post('/validate-room', (req, res) => {
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {
         if (result) {
-            //res.cookie('room', req.body.fullRoomName, {signed: true})
+            if(!roomPlayers[req.body.fullRoomName].includes(req.signedCookies.login)) {
+                let temp = roomPlayers[req.body.fullRoomName]
+                temp.push(req.signedCookies.login)
+                roomPlayers[req.body.fullRoomName] = temp
+            }
             res.send(true);
         } else {
             res.send("Invalid password!");
@@ -172,6 +186,8 @@ io.on('connection', socket => {
         if(socketGame.get(socket.id)) {
             var full_room_name = socketGame.get(socket.id) + '-' + socketRoom.get(socket.id);
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
+                delete roomPlayers[full_room_name]; //todo: let user come back to game within idk 30s
+                roomOptions.delete(full_room_name);
                 roomPasswd.delete(full_room_name);
             }
             socketRoom.delete(socket.id);
@@ -181,6 +197,7 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {   //emit new room list and clear last map
         io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
         socketGame.delete(socket.id);
+
         console.log('client disconnected');
     });
 });
