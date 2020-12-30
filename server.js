@@ -198,4 +198,3 @@ function availableRooms(game) {
     }
     return availableRoomsTab;
 }
-
