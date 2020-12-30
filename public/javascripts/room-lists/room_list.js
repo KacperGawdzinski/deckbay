@@ -61,7 +61,7 @@ window.addEventListener('load', function() {
                 content.innerHTML += '<div style=background-color:'+ Colors.random() +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
                                     insert_user_img(element[1], max_players.get(game_type)) + '</div>';
-                //content.addEventListener("click", getUnlockedRoom, false);       
+                content.addEventListener("click", function() { getUnlockedRoom(game_type, room_name) }, false);       
             }
             rooms.appendChild(content);
         });
@@ -77,9 +77,10 @@ window.addEventListener('load', function() {
             data: { fullRoomName: roomFullName,
                     password: targetElement.firstChild.value },                      
             success: function(msg) {
+                console.log('xd');
                 if(msg === true)
                     $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
-                        'game_type': game_type, 'room_name': targetElement.firstChild.value }, 'GET');
+                        'game_type': game_type }, 'POST');
                 else {
                     targetElement.firstChild.value = ""
                     targetElement.firstChild.placeholder = msg
@@ -131,20 +132,7 @@ function expandChildren(event) {        //needs cleanup
         $('#'+targetElement).slideDown(250);
 }
 
-function getUnlockedRoom() {
-    /*$.ajax({
-        method: "POST",
-        url: '/validate-room-password',
-        data: { fullRoomName: roomFullName,
-                password: targetElement.firstChild.value },                      
-        success: function(msg) {
-            if(msg === true)
-                $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
-                    'game_type': game_type, 'room_name': targetElement.firstChild.value }, 'GET');
-            else {
-                targetElement.firstChild.value = ""
-                targetElement.firstChild.placeholder = msg
-            }
-        }
-    })*/   
+function getUnlockedRoom(game_type, room_name) {
+    $.redirect('/' + game_type + '-list/' + room_name, {
+        'game_type': game_type}, 'POST');
 }
