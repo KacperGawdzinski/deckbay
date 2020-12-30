@@ -2,10 +2,15 @@ class Checkers{
 
     constructor(own){
         this.boarad=[1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2];
-        this.own=own;
-        this.enemy=(own+1)%2;
+        if (own==1) {
+            this.own=1;
+            this.enemy=2;
+        } else {
+            this.own=2;
+            this.enemy=1;
+        }
         this.checed=null;
-        this.turn=!own;
+        this.turn=own%2;
         this.moves=[];
         this.haveToMove=[];
         this.deleting=[];
@@ -157,7 +162,7 @@ class Checkers{
 
     checkMoves(x,y){
         if (this.own==1) {
-            if (this.boarad[this.convertxy(x,y)]!=2+(this.own%2)) {
+            if (this.boarad[this.convertxy(x,y)]!=2+(this.own)) {
                 if (this.boarad[this.convertxy(x+1,y+1)]==0) {
                     this.moves.push(this.convertxy(x+1,y+1));
                 }
@@ -183,7 +188,7 @@ class Checkers{
                 }
             }
         }else{
-            if (this.boarad[this.convertxy(x,y)]!=2+(this.own%2)) {
+            if (this.boarad[this.convertxy(x,y)]!=2+(this.own)) {
                 if (this.boarad[this.convertxy(x+1,y-1)]==0) {
                     this.moves.push(this.convertxy(x+1,y-1));
                 }
@@ -269,7 +274,7 @@ class Checkers{
         var y = temp[1];
         if (this.checed!=null) {
             if (this.inMoves(this.convertxy(xz,yz))) {
-                if (this.boarad[this.checed]==this.own%2+2) {
+                if (this.boarad[this.checed]==this.own+2) {
                     let i=1;
                     while (this.boarad[this.convertxy(x-i,y+i)]==0) {
                         i++;
@@ -310,7 +315,7 @@ class Checkers{
     }
 
     checkQueens(){
-            if (own%2==1) {
+            if (own==1) {
                 for (let i = 27; i < this.boarad.length; i++) {
                     const element = this.boarad[i];
                     if (element==1) {
@@ -330,4 +335,16 @@ class Checkers{
     updateBoard(board){
         this.boarad=board;
     }
+
+    updateOwn(own){
+        if (own==1) {
+            this.own=1;
+            this.enemy=2;
+        } else {
+            this.own=2;
+            this.enemy=1;
+        }
+    }
 }
+
+module.exports = Checkers;
