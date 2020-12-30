@@ -104,7 +104,7 @@ app.get('/chess-test', (req, res) => {
     res.render('game_chess_page');
 })
 
-app.post('/validate-room', (req, res) => {
+app.post('/validate-room', (req, res) => {              //maybe some default parameters?
     let ar = availableRooms(req.body.game)
     let fullRoomName = req.body.game + '-' + req.body.room;
     for (let i = 0; i < ar.length; i++) {
@@ -115,13 +115,31 @@ app.post('/validate-room', (req, res) => {
     }
 
     if (req.body.room.length > 15) {
-        res.send('Room name is too long!');
-        return;
+        res.send('Room name is too long!'); return;
     }
 
     if (req.body.room === "") {
-        res.send('Insert room name!');
-        return;
+        res.send('Insert room name!'); return;
+    }
+
+    if(!req.body.side) {
+        res.send('Choose side!'); return
+    }
+
+    if(!req.body.length) {
+        res.send('Choose game length!'); return
+    }
+
+    if(req.body.length > 30 || req.body.length < 1) {
+        res.send('Game length should be between 1-30min!'); return
+    }
+
+    if(!req.body.bonus) {
+        res.send('Choose bonus time length!'); return
+    }
+
+    if(req.body.bonus > 30 || req.body.bonus < 1) {
+        res.send('Bonus time should be between 1-30s!'); return
     }
 
     if(req.body.password) {
@@ -136,8 +154,8 @@ app.post('/validate-room', (req, res) => {
         roomPlayers[fullRoomName] = []
     roomOptions.set(fullRoomName, {
         side: req.body.side,
-        length: req.body.length,
-        bonus: req.body.bonus
+        length: Math.floor(req.body.length),
+        bonus: Math.floor(req.body.bonus)
     })
     res.send(true);
 });
@@ -182,11 +200,11 @@ io.on('connection', socket => {
         io.to('game-' + data.game).emit('rooms', availableRooms(data.game));
     });
 
-    socket.on('disconnecting', () => {  //remove data from maps and leave rooms
+    socket.on('disconnecting', () => {
         if(socketGame.get(socket.id)) {
             var full_room_name = socketGame.get(socket.id) + '-' + socketRoom.get(socket.id);
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
-                delete roomPlayers[full_room_name]; //todo: let user come back to game within idk 30s
+                delete roomPlayers[full_room_name];
                 roomOptions.delete(full_room_name);
                 roomPasswd.delete(full_room_name);
             }
@@ -194,7 +212,7 @@ io.on('connection', socket => {
         }
     });
 
-    socket.on('disconnect', () => {   //emit new room list and clear last map
+    socket.on('disconnect', () => {
         io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
         socketGame.delete(socket.id);
 
