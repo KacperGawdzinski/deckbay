@@ -1,15 +1,19 @@
 window.addEventListener('load', function() {
-    new_room_form.addEventListener('submit', ( event => {               //validate new room name
+    new_room_form.addEventListener('submit', ( event => {
         event.preventDefault();
-        $.ajax({
+        let side
+        if($("#black").is(':checked'))      side = 'black'
+        else if($("#white").is(':checked')) side = 'white'
+
+        $.ajax({    //add validation on client site
             method: "POST",
             url: '/validate-room',
             data: { game: game_type, 
                     room: room_name_input.value,
                     password: room_passwd.value,
-                    side: 'black',
-                    length: 30,
-                    bonus: 10 },
+                    side: side,
+                    length: $('#glength').val(),
+                    bonus: $('#blength').val() },
             success: function(msg) {
                 if(msg === true)
                     $.redirect('/' + game_type + '-list/' + room_name_input.value, {
@@ -21,4 +25,13 @@ window.addEventListener('load', function() {
             }
         })
     }))
+
+    $('#black').on('change', function() {
+        $('#white').prop( "checked", false );
+    })
+
+    $('#white').on('change', function() {
+        $('#black').prop( "checked", false );
+    })
+
 })
