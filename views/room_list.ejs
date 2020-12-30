@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
     <link href= "/public/stylesheets/game_list.css" rel="stylesheet" type="text/css" />
-    <title><%= game_type %></title>
+    <title><%= game_type.toUpperCase() %></title>
 </head>
 
 <%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` }); %>
@@ -36,7 +36,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/public/javascripts/colors.js"></script>
 <script src="/public/javascripts/room-lists/room_list.js"></script>
-<script src="/public/javascripts/room-lists/chess_rl.js"></script>
+<script src=<%= '/public/javascripts/room-lists/' + game_type + '_rl.js' %>></script>
 <script src="/public/javascripts/modal_handler.js"></script>
 <script src="/public/javascripts/mobile_header.js"></script>
 </html>
