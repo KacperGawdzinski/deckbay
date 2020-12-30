@@ -7,7 +7,17 @@ input[type=text], input[type=password], input[type=email], select {
     box-sizing: border-box;
     display: block;
 }
-  
+
+input[type=number] {
+    display: inline-block;
+    height: 25px;
+    text-align: center; 
+    width: 40%;
+    border-radius:5px;
+    border:1px solid #D0D0D0;
+    max-width: 180px;
+}
+
 input[type=submit] {
     width: 100%;
     background-color: #131413;
@@ -24,6 +34,10 @@ input[type=submit]:hover {
 }
 
 .new_room_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
     width: 70%;
     margin-left: 15%;
 }

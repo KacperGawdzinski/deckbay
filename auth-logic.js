@@ -68,7 +68,7 @@ class loggingInfo{
                 from: 'deckbay.notifications@gmail.com',
                 to: `${mail}`,
                 subject: `Verification link for account ${login}!`,
-                html: `<a href="http://localhost:3000/verify/${ID}>Clik for verification!</a>`
+                html: `<a href="http://localhost:3000/verify/${ID}">Clik for verification!</a>`
               };
 
             this.transporter.sendMail(mailOptions, function(error, info){

@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
     <link href= "/public/stylesheets/game_list.css" rel="stylesheet" type="text/css" />
-
     <title><%= game_type %></title>
 </head>
 
@@ -22,19 +21,7 @@
                 <button id="add_btn" class="add_btn">+</button>
                 <p id="game_type"><%= game_type %> ROOM LIST</p>
             </div>
-            <div class="new_room_div">
-                <form id="new_room_form" class="new_room_form" autocomplete="off">
-        
-                    <label id="room_name_label">Room name</label>
-                    <input type="text" id="room_name_input" placeholder="Your room name...">
-        
-                    <label>Password</label>
-                    <input type="password" id="room_password" placeholder="(optional)">
-        
-                    <input id="new_room_submit" type="submit" value="Create new room!">
-        
-                </form>
-            </div>
+            <%- include('components/new_room.ejs', {game: `${game_type}`}) %>
             <div id="rooms"></div>
         </div>
     </div>
@@ -46,9 +33,10 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/public/javascripts/jquery.redirect.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="/public/javascripts/colors.js"></script>
-<script src="/public/javascripts/room_list.js"></script>
+<script src="/public/javascripts/room-lists/room_list.js"></script>
+<script src="/public/javascripts/room-lists/chess_rl.js"></script>
 <script src="/public/javascripts/modal_handler.js"></script>
 <script src="/public/javascripts/mobile_header.js"></script>
-<script src="/socket.io/socket.io.js"></script>
 </html>

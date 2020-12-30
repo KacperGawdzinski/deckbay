@@ -15,7 +15,9 @@ const max_players = new Map([
 window.addEventListener('load', function() {
     var socket = io();
     game_type = game_type.substr(0, game_type.indexOf(' ')).toLowerCase(); 
-    socket.emit('load_rooms', game_type );
+
+    socket.emit('join-room-list', game_type);
+    socket.emit('load_rooms', game_type);
 
     add_btn.addEventListener('click', () => {    //open new room form
         if($(".new_room_div").css('display') != 'none') {
@@ -32,26 +34,6 @@ window.addEventListener('load', function() {
         room_name_label.innerHTML = 'Room name';
         room_name_label.style.color = 'white';
     })
-
-    new_room_form.addEventListener('submit', ( event => {               //validate new room name
-        event.preventDefault();
-        $.ajax({
-            method: "POST",
-            url: '/validate-room',
-            data: { game: game_type, 
-                    room: room_name_input.value,
-                    password: room_passwd.value},
-            success: function(msg) {
-                if(msg === true)
-                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
-                        'game_type': game_type}, 'GET');
-                else {
-                    room_name_label.innerHTML = msg;
-                    room_name_label.style.color = 'red';
-                }
-            }
-        })
-    }))
 
     socket.on('rooms', function(data) {             //create room list
         console.log('received room list');
@@ -76,10 +58,10 @@ window.addEventListener('load', function() {
                 content.addEventListener("click", expandChildren, false);
             }
             else {
-                content.innerHTML += '<a style="text-decoration: none;" href="/' + game_type + '-list/' + room_name + 
-                                    '"><div style=background-color:'+ Colors.random() +
+                content.innerHTML += '<div style=background-color:'+ Colors.random() +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
-                                    insert_user_img(element[1], max_players.get(game_type)) + '</div></a>';
+                                    insert_user_img(element[1], max_players.get(game_type)) + '</div>';
+                content.addEventListener("click", function() { getUnlockedRoom(game_type, room_name) }, false);       
             }
             rooms.appendChild(content);
         });
@@ -95,9 +77,10 @@ window.addEventListener('load', function() {
             data: { fullRoomName: roomFullName,
                     password: targetElement.firstChild.value },                      
             success: function(msg) {
+                console.log('xd');
                 if(msg === true)
                     $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
-                        'game_type': game_type, 'room_name': targetElement.firstChild.value }, 'GET');
+                        'game_type': game_type }, 'POST');
                 else {
                     targetElement.firstChild.value = ""
                     targetElement.firstChild.placeholder = msg
@@ -147,4 +130,9 @@ function expandChildren(event) {        //needs cleanup
         $('#'+targetElement).slideUp(250);
     else
         $('#'+targetElement).slideDown(250);
+}
+
+function getUnlockedRoom(game_type, room_name) {
+    $.redirect('/' + game_type + '-list/' + room_name, {
+        'game_type': game_type}, 'POST');
 }
