@@ -140,7 +140,7 @@ app.get('/checkers-test', authorize, (req, res) => {
     res.render('checkers.ejs')
 });
 
-app.post('/validate-room', (req, res) => {              //maybe some default parameters?
+app.post('/validate-room', (req, res) => {              //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)
     let fullRoomName = req.body.game + '-' + req.body.room;
     for (let i = 0; i < ar.length; i++) {
