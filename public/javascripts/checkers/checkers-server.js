@@ -162,7 +162,7 @@ class Checkers{
 
     checkMoves(x,y){
         if (this.own==1) {
-            if (this.boarad[this.convertxy(x,y)]!=2+(this.own)) {
+            if (this.boarad[this.convertxy(x,y)] != 2+(this.own)) {
                 if (this.boarad[this.convertxy(x+1,y+1)]==0) {
                     this.moves.push(this.convertxy(x+1,y+1));
                 }
@@ -315,7 +315,7 @@ class Checkers{
     }
 
     checkQueens(){
-            if (own==1) {
+            if (this.own==1) {
                 for (let i = 27; i < this.boarad.length; i++) {
                     const element = this.boarad[i];
                     if (element==1) {
