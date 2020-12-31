@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('http');   //TODO: tolowercase in links & roomPasswd authorization fix
 const socket = require('socket.io');
 const express = require('express');
 const session = require('express-session');
@@ -87,13 +87,13 @@ app.get('/chess-list', authorize, (req, res) => {   //set random nick
 
 
 app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
-    if(!req.body.game_type) {
+    if(req.body.game_type != 'chess') {
         res.status(403);
         res.send("You don't have permission to enter this room!");
         return;
     }
     let fullRoomName = req.body.game_type + "-" + req.params.id
-    if(roomPasswd[fullRoomName]) {
+    if(roomPasswd.get(fullRoomName)) {
         let temp = roomPlayers[fullRoomName]
         if(!temp.includes(req.signedCookies.login)) {
             res.status(403);
@@ -140,11 +140,11 @@ app.get('/checkers-test', authorize, (req, res) => {
     res.render('checkers.ejs')
 });
 
-app.post('/validate-room', (req, res) => {              //maybe some default parameters? + change for other games
+app.post('/validate-room', async function(req, res) {              //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)
-    let fullRoomName = req.body.game + '-' + req.body.room;
+    let fullRoomName = (req.body.game + '-' + req.body.room).toLowerCase();
     for (let i = 0; i < ar.length; i++) {
-        if (ar[i][0] === fullRoomName) {
+        if (ar[i][fullRoomName] === fullRoomName) {
             res.send('Room already exists!');
             return;
         }
@@ -179,13 +179,10 @@ app.post('/validate-room', (req, res) => {              //maybe some default par
     }
 
     if(req.body.password) {
-        bcrypt.genSalt(saltRounds, (err, salt) => {
-            bcrypt.hash(req.body.password, salt, (err, hash) => {
-                roomPasswd.set(fullRoomName, hash);
-            });
-        });
+        const hashed = await bcrypt.hash(req.body.password, saltRounds);
+        roomPasswd.set(fullRoomName, hashed)
     }
-
+    
     if(req.body.password)
         roomPlayers[fullRoomName] = []
     roomOptions.set(fullRoomName, {
@@ -320,11 +317,15 @@ function availableRooms(game) {
     var rooms = io.sockets.adapter.rooms;
     for (let k of rooms.keys()) {
         if (k.startsWith(game)) {
-            let inf;
+            let inf = {
+                fullRoomName: k,
+                playerCount: rooms.get(k).size,
+                options: roomOptions.get(k)
+            }
             if(roomPasswd.get(k))
-                inf = [k, rooms.get(k).size, 1]; //change to object 
+                inf['password'] = true;
             else
-                inf = [k, rooms.get(k).size,];
+                inf['password'] = false;
             availableRoomsTab.push(inf);
         }
     }
