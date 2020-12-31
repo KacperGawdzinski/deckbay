@@ -28,21 +28,25 @@ window.addEventListener('load', (event) => {
     }
   });
 
-  socket.on('move', tab => {
+  socket.on('move', temp => {
     console.log("ssss");
     var trueOwn = check.own;
-    check.updateOwn(tab[2]);
-    var x = check.convertId(tab[1])[0];
-    var y = check.convertId(tab[1])[1];
-    settingPawan(tab.rows[y].cells[x], tab[1]);
-    check.makeMove(x,y);
-    check.updateOwn(trueOwn);
-    settingFields();
+    check.updateOwn(temp[2]);
+    var x = check.convertId(temp[1])[0];
+    var y = check.convertId(temp[1])[1];
+    console.log(x+" "+y+ " "+ temp[1]+" "+ check.checed+" "+ check.moves);
+    settingPawan(tab.rows[y].cells[x], check.checed);
     let moves = check.convertId(check.checed);
     settingEmpty(tab.rows[moves[1]].cells[moves[0]]);
+    settingFields();
     deleting();
+    check.makeMove(x,y);
+    console.log(check.moves);
+    check.updateOwn(trueOwn);
+    console.log(check.deleting);
     queens();
-    if (check.own==tab[2]) {
+    check.checed=null;
+    if (check.own==temp[2]) {
       check.turn=0;
     }else{
       check.turn=1;
@@ -94,17 +98,17 @@ window.addEventListener('load', (event) => {
     });
 
     function queens() {
-      checkQueens();
-      if (own%2==1) {
-        for (let i = 27; i < this.boarad.length; i++) {
-            if (this.boarad[i]==3) {
+      check.checkQueens();
+      if (check.own%2==1) {
+        for (let i = 27; i < check.boarad.length; i++) {
+            if (check.boarad[i]==3) {
               let temp=check.convertId(i);
               settingPawan(tab.rows[temp[1]].cells[temp[0]], i);
             }
         }
       }else{
         for (let i = 4; i > -1 ; i--) {
-            if (this.boarad[i]==4) {
+            if (check.boarad[i]==4) {
               let temp=check.convertId(i);
               settingPawan(tab.rows[temp[1]].cells[temp[0]], i);
             }

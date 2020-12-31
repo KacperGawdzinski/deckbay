@@ -259,16 +259,16 @@ io.on('connection', socket => {
     });
 
     socket.on('check-move', tab => {   //checking if move is allowed
-        console.log("ssss");
-        if (tab[2] == roomTurn[socketRoom.get(socket.id)]) {
+        if (tab[2] == roomTurn[("checkers-"+socketRoom.get(socket.id))]) {
             var check = new Checkers(tab[2]);
             var id = socket.id;
-            check.updateBoard(roomBoard[socketRoom.get(id)]);   
+            check.updateBoard(roomBoard["checkers-" + socketRoom.get(id)]);   
             check.checed=tab[0];
             var move1 = check.convertId(check.checed);
             check.checkMoves(move1[0],move1[1]);
+            console.log(check.inMoves(tab[1]));
             if(check.inMoves(tab[1])){
-                socket.to("checkers-" + socketRoom.get(id)).emit('move', tab);
+                io.to("checkers-" + socketRoom.get(id)).emit('move', tab);
                 var move2 = check.convertId(tab[1]);
                 check.makeMove(move2[0],move2[1]);
                 roomBoard[socketRoom.get(id)]=check.boarad;

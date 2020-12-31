@@ -315,7 +315,7 @@ class Checkers{
     }
 
     checkQueens(){
-            if (own==1) {
+            if (this.own==1) {
                 for (let i = 27; i < this.boarad.length; i++) {
                     const element = this.boarad[i];
                     if (element==1) {
