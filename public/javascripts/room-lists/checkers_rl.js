@@ -2,9 +2,9 @@ window.addEventListener('load', function() {
     new_room_form.addEventListener('submit', ( event => {
         event.preventDefault();
         let side
-        if($("#black").is(':checked'))      side = 'black'
-        else if($("#white").is(':checked')) side = 'white'
-
+        if($("#black").is(':checked'))      side = 2
+        else if($("#white").is(':checked')) side = 1
+        console.log(side);
         $.ajax({    //add validation on client site
             method: "POST",
             url: '/validate-room',
@@ -12,6 +12,8 @@ window.addEventListener('load', function() {
                     room: room_name_input.value,
                     password: room_passwd.value,
                     side: side,
+                    white: null,
+                    black: null,
                     length: $('#glength').val(),
                     bonus: $('#blength').val() },
             success: function(msg) {
