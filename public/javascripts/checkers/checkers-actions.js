@@ -1,18 +1,32 @@
 window.addEventListener('load', (event) => {
-  const socket = io('http://localhost:3000/checkers'); // change to serwer url
+  const socket = io(); // change to serwer url
   var tab = document.getElementById("table");
-  var check= new Checkers(1);
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      var c= check.convertxy(i,j);
-      if (1==check.boarad[c]) {
-        tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
-      }
-      if (2==check.boarad[c]) {
-        tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+  var options = false;
+  socket.emit('join-new-room', { game: "checkers", room: room_name} );
+  socket.emit("ask-options-checkers");
+  var check;
+  socket.on("send-options-checkers", temp => {
+    console.log("ssssssssssss");
+    if (temp.length == 2) {
+      check = new Checkers(temp[0]);
+      check.updateBoard(temp[1]);
+    }else{
+      check = new Checkers(temp[0]);
+    }
+    if(!options){
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+          var c= check.convertxy(i,j);
+          if (1==check.boarad[c]) {
+            tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
+          }
+          if (2==check.boarad[c]) {
+            tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+          }
+        }
       }
     }
-  }
+  });
 
   socket.on('move', tab => {
     console.log("ssss");
@@ -58,7 +72,7 @@ window.addEventListener('load', (event) => {
             let pos=check.convertxy(x,y);
             if (check.inMoves(pos)) {
               let tab=[check.checed,pos,check.own];
-              socket.emit("check-move",tab)
+              socket.emit("check-move",tab);
             }
           }
         }else{
