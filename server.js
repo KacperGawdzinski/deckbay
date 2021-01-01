@@ -16,11 +16,13 @@ var io = socket(server);
 
 let loggingControl = new loggingInfo();
 
-var socketRoom = new Map();  //socket.id -> room name
-var socketGame = new Map();  //socket.id -> game type
-var roomPasswd = new Map();  //full room name -> hashed password
-var roomOptions = new Map(); //full room name -> options
-var roomPlayers = {}         //full room name -> players allowed to play
+var socketLogin = new Map();    //socket.id -> login
+var loginRoom = new Map();      //player login -> full room name
+var roomPasswd = new Map();     //full room name -> hashed password
+var roomOptions = new Map();    //full room name -> options
+var roomPlayers = {}            //full room name -> [players allowed to play (logins)]
+var roomBoard = {};             //full room name -> gameboard
+var roomTurn = new Map();       //full room name -> turn
 
 app.use(express.urlencoded({
     extended: true
@@ -76,6 +78,12 @@ app.get('/verify/:id', (req, res) => {
     res.redirect('/');
 })
 
+app.post('/set-socket-id', (req, res) => {
+    socketLogin.set(req.body.socketid, req.signedCookies.login)
+    console.log(loginRoom.get(req.signedCookies.login));
+    res.send(loginRoom.get(req.signedCookies.login));
+})
+
 app.get('/chess-list', authorize, (req, res) => {   //set random nick
     if(!req.signedCookies.login)
         res.cookie("login",  faker.name.findName(), { signed: true });
@@ -83,6 +91,32 @@ app.get('/chess-list', authorize, (req, res) => {   //set random nick
 )});
 
 app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
+    if(req.body.game_type != 'chess') {
+        res.status(403);
+        res.send("You don't have permission to enter this room!");
+        return;
+    }
+    let fullRoomName = req.body.game_type + "-" + req.params.id
+    if(roomPasswd.get(fullRoomName)) {
+        let temp = roomPlayers[fullRoomName]
+        if(!temp.includes(req.signedCookies.login)) {
+            res.status(403);
+            res.send("You don't have permission to enter this room!");
+            return;
+        }
+    }
+    loginRoom.set(req.signedCookies.login, fullRoomName);
+    res.render('chess-game', { room_name: req.params.id, game_type: req.body.game_type });
+});
+
+app.get('/checkers-list', authorize, (req, res) => {   //set random nick
+    if(!req.signedCookies.login)
+        res.cookie("login",  faker.name.findName(), { signed: true });
+    res.render('room_list.ejs', { game_type: 'CHECKERS', user_login : req.login }
+)});
+
+
+app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
     if(!req.body.game_type) {
         res.status(403);
         res.send("You don't have permission to enter this room!");
@@ -143,15 +177,11 @@ app.post('/validate-room', (req, res) => {              //maybe some default par
     }
 
     if(req.body.password) {
-        bcrypt.genSalt(saltRounds, (err, salt) => {
-            bcrypt.hash(req.body.password, salt, (err, hash) => {
-                roomPasswd.set(fullRoomName, hash);
-            });
-        });
+        const hashed = await bcrypt.hash(req.body.password, saltRounds);
+        roomPasswd.set(fullRoomName, hashed)
+        roomPlayers[fullRoomName] = [req.signedCookies.login]
     }
 
-    if(req.body.password)
-        roomPlayers[fullRoomName] = []
     roomOptions.set(fullRoomName, {
         side: req.body.side,
         length: Math.floor(req.body.length),
@@ -194,28 +224,24 @@ io.on('connection', socket => {
     });
 
     socket.on('join-new-room', data => {
-        socket.join(data.game + '-' + data.room);
-        socketGame.set(socket.id, data.game)
-        socketRoom.set(socket.id, data.room)
+        socket.join(data.game + "-" + data.room);
         io.to('game-' + data.game).emit('rooms', availableRooms(data.game));
     });
 
     socket.on('disconnecting', () => {
-        if(socketGame.get(socket.id)) {
-            var full_room_name = socketGame.get(socket.id) + '-' + socketRoom.get(socket.id);
+        if(socketLogin.get(socket.id)) {
+            var full_room_name = socketLogin.get(socket.id)
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
+                socket.leave(loginRoom.get(socketLogin.get(socket.id)));
+                roomPlayers[full_room_name].forEach(element => {
+                    loginRoom.delete(element)
+                });
                 delete roomPlayers[full_room_name];
                 roomOptions.delete(full_room_name);
                 roomPasswd.delete(full_room_name);
             }
-            socketRoom.delete(socket.id);
         }
-    });
-
-    socket.on('disconnect', () => {
         io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
-        socketGame.delete(socket.id);
-
         console.log('client disconnected');
     });
 });
