@@ -1,4 +1,4 @@
-const http = require('http');   //TODO: tolowercase in links & roomPasswd authorization fix
+const http = require('http');
 const socket = require('socket.io');
 const express = require('express');
 const session = require('express-session');
@@ -21,7 +21,7 @@ var socketLogin = new Map();    //socket.id -> login
 var loginRoom = new Map();      //player login -> full room name
 var roomPasswd = new Map();     //full room name -> hashed password
 var roomOptions = new Map();    //full room name -> options
-var roomPlayers = {}            //full room name -> [players allowed to play (logins)]
+var roomPlayers = {}            //full room name -> [players allowed to play (logins)]  //merge maps into one
 var roomBoard = {};             //full room name -> gameboard
 var roomTurn = new Map();       //full room name -> turn
 
@@ -241,7 +241,8 @@ io.on('connection', socket => {
 
     socket.on('disconnecting', () => {
         if(socketLogin.get(socket.id)) {
-            var full_room_name = socketLogin.get(socket.id)
+            let full_room_name = loginRoom.get(socketLogin.get(socket.id))
+            let game = full_room_name.substr(0, full_room_name.indexOf('-'))
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
                 socket.leave(loginRoom.get(socketLogin.get(socket.id)));
                 roomPlayers[full_room_name].forEach(element => {
@@ -251,8 +252,9 @@ io.on('connection', socket => {
                 roomOptions.delete(full_room_name);
                 roomPasswd.delete(full_room_name);
             }
+            socketLogin.delete(socket.id)
+            io.to('game-' + game).emit('rooms', availableRooms(game));
         }
-        io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
         console.log('client disconnected');
     });
 
