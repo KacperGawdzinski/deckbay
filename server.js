@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('http');   //TODO: tolowercase in links & roomPasswd authorization fix
 const socket = require('socket.io');
 const express = require('express');
 const session = require('express-session');
@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const faker = require('faker');
+const Checkers  = require('./public/javascripts/checkers/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
 
 const saltRounds = 10;
@@ -90,6 +91,7 @@ app.get('/chess-list', authorize, (req, res) => {   //set random nick
     res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
 )});
 
+
 app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
     if(req.body.game_type != 'chess') {
         res.status(403);
@@ -131,18 +133,25 @@ app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have
             return;
         }
     }
-    res.render('chess-game', { room_name: req.params.id, game_type: req.body.game_type });
+    var check = new Checkers(1);
+    roomBoard[fullRoomName] = check.boarad;
+    roomTurn[fullRoomName] = 1;
+    res.render('checkers.ejs', { room_name: req.params.id });
 });
 
 app.get('/chess-test', (req, res) => {
     res.render('game_chess_page');
 })
 
-app.post('/validate-room', (req, res) => {              //maybe some default parameters?
+app.get('/checkers-test', authorize, (req, res) => {
+    res.render('checkers.ejs')
+});
+
+app.post('/validate-room', async function(req, res) {              //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)
-    let fullRoomName = req.body.game + '-' + req.body.room;
+    let fullRoomName = (req.body.game + '-' + req.body.room).toLowerCase();
     for (let i = 0; i < ar.length; i++) {
-        if (ar[i][0] === fullRoomName) {
+        if (ar[i][fullRoomName] === fullRoomName) {
             res.send('Room already exists!');
             return;
         }
@@ -184,6 +193,8 @@ app.post('/validate-room', (req, res) => {              //maybe some default par
 
     roomOptions.set(fullRoomName, {
         side: req.body.side,
+        white: req.body.white,
+        black: req.body.black,
         length: Math.floor(req.body.length),
         bonus: Math.floor(req.body.bonus)
     })
@@ -244,6 +255,62 @@ io.on('connection', socket => {
         io.to('game-' + socketGame.get(socket.id)).emit('rooms', availableRooms(socketGame.get(socket.id)));
         console.log('client disconnected');
     });
+
+    socket.on('check-move', tab => {   //checking if move is allowed
+        console.log("ssss");
+        if (tab[2] == roomTurn[socketRoom.get(socket.id)]) {
+            var check = new Checkers(tab[2]);
+            var id = socket.id;
+            check.updateBoard(roomBoard[socketRoom.get(id)]);   
+            check.checed=tab[0];
+            var move1 = check.convertId(check.checed);
+            check.checkMoves(move1[0],move1[1]);
+            if(check.inMoves(tab[1])){
+                socket.to("checkers-" + socketRoom.get(id)).emit('move', tab);
+                var move2 = check.convertId(tab[1]);
+                check.makeMove(move2[0],move2[1]);
+                roomBoard[socketRoom.get(id)]=check.boarad;
+            }
+            if (roomTurn[socketRoom.get(socket.id)] == 1) {
+                roomTurn[socketRoom.get(socket.id)] = 2;
+            }else{
+                roomTurn[socketRoom.get(socket.id)] = 1;
+            }
+        }
+    });
+
+    socket.on('ask-options-checkers', () =>{
+        var opt = roomOptions.get("checkers-" + socketRoom.get(socket.id));
+        if (opt["white"] === '' && opt["black"] === '') {
+            if (opt["side"] == 1) {
+                opt["white"] = socket.id;
+                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1]);
+            } else {
+                opt["black"] = socket.id;
+                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2]);
+            }
+        }else{
+            if (opt["white"] == '') {
+                opt["white"] = socket.id;
+                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1]);
+            } else {
+                if (opt["black"] == '') {
+                    opt["black"] = socket.id;
+                    io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2]);
+                } else {
+                    if (roomOptions.get("checkers-" + socketRoom.get(socket.id))["white"] == socket.id) {
+                        io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                    } else {
+                        if (roomOptions.get("checkers-" + socketRoom.get(socket.id))["black"] == socket.id) {
+                            io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                        } else {
+                            io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[-1,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                        }
+                    }
+                }
+            }
+        }
+    })
 });
 
 function availableRooms(game) {
@@ -251,11 +318,15 @@ function availableRooms(game) {
     var rooms = io.sockets.adapter.rooms;
     for (let k of rooms.keys()) {
         if (k.startsWith(game)) {
-            let inf;
+            let inf = {
+                fullRoomName: k,
+                playerCount: rooms.get(k).size,
+                options: roomOptions.get(k)
+            }
             if(roomPasswd.get(k))
-                inf = [k, rooms.get(k).size, 1]; //change to object 
+                inf['password'] = true;
             else
-                inf = [k, rooms.get(k).size,];
+                inf['password'] = false;
             availableRoomsTab.push(inf);
         }
     }
