@@ -1,0 +1,50 @@
+<% if( (typeof error_message  == 'undefined') ) { var error_message = '' } %>
+<% if( (typeof user_login  == 'undefined') ) { var user_login = '' } %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
+    <link href= "/public/stylesheets/frontpage.css" rel="stylesheet" type="text/css" />
+    <link href= "/public/stylesheets/checkers.css" rel="stylesheet" type="text/css" />
+    <title>Deckbay</title>
+</head>
+
+<%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` });%>
+<body class="content">
+
+    <div>
+        <table class="table" id="table">
+            <% for(var i=0; i<8; i++){ %>
+                <tr>
+                    <% for(var j=0; j<8; j++){ %>
+                        <% if((i%2==1&&j%2==1) || (i%2==0&&j%2==0)) {%>
+                            <th class="field2">
+                            </th>
+                        <% }else{ %>
+                            <th class="field1">
+                            </th>
+                        <% } %>
+                    <% } %>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+
+    
+
+</body>
+<footer>
+    2020-2021 | Deckbay by GBS
+</footer>
+<script>
+    var room_name ="ssss";
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/javascripts/modal_handler.js"></script>
+<script src="/public/javascripts/mobile_header.js"></script>
+<script src="/public/javascripts/checkers/checkers-client.js"></script>
+<script src="/public/javascripts/checkers/checkers-actions.js"></script>
+</html>
