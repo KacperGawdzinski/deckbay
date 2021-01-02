@@ -83,6 +83,7 @@ app.post('/set-socket-id', (req, res) => {
     socketLogin.set(req.body.socketid, req.signedCookies.login)
     console.log(loginRoom.get(req.signedCookies.login));
     res.send(loginRoom.get(req.signedCookies.login));
+    console.log(req.body.socketid+" "+req.signedCookies.login);
 })
 
 app.get('/chess-list', authorize, (req, res) => {   //set random nick
@@ -117,15 +118,14 @@ app.get('/checkers-list', authorize, (req, res) => {   //set random nick
     res.render('room_list.ejs', { game_type: 'CHECKERS', user_login : req.login }
 )});
 
-
 app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
-    if(!req.body.game_type) {
+    if(req.body.game_type != 'checkers') {
         res.status(403);
         res.send("You don't have permission to enter this room!");
         return;
     }
     let fullRoomName = req.body.game_type + "-" + req.params.id
-    if(roomPasswd[fullRoomName]) {
+    if(roomPasswd.get(fullRoomName)) {
         let temp = roomPlayers[fullRoomName]
         if(!temp.includes(req.signedCookies.login)) {
             res.status(403);
@@ -133,10 +133,15 @@ app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have
             return;
         }
     }
-    var check = new Checkers(1);
-    roomBoard[fullRoomName] = check.boarad;
-    roomTurn[fullRoomName] = 1;
-    res.render('checkers.ejs', { room_name: req.params.id });
+    loginRoom.set(req.signedCookies.login, fullRoomName);
+    if (roomBoard.hasOwnProperty(fullRoomName)) {
+        
+    }else{
+        var check = new Checkers(1);
+        roomBoard[fullRoomName] = check.boarad;
+        roomTurn.set(fullRoomName,1);
+    }
+    res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type });
 });
 
 app.get('/chess-test', (req, res) => {
@@ -195,6 +200,8 @@ app.post('/validate-room', async function(req, res) {              //maybe some 
         side: req.body.side,
         white: req.body.white,
         black: req.body.black,
+        readyWhite: req.body.readyWhite,
+        readyBlack: req.body.readyBlack,
         length: Math.floor(req.body.length),
         bonus: Math.floor(req.body.bonus)
     })
@@ -259,56 +266,88 @@ io.on('connection', socket => {
     });
 
     socket.on('check-move', tab => {   //checking if move is allowed
-        if (tab[2] == roomTurn[("checkers-"+socketRoom.get(socket.id))]) {
+        if (tab[2] == roomTurn.get(loginRoom.get(socketLogin.get(socket.id)))) {
             var check = new Checkers(tab[2]);
-            var id = socket.id;
-            check.updateBoard(roomBoard["checkers-" + socketRoom.get(id)]);   
+            check.updateBoard(roomBoard[loginRoom.get(socketLogin.get(socket.id))]);   
             check.checed=tab[0];
             var move1 = check.convertId(check.checed);
             check.checkMoves(move1[0],move1[1]);
-            console.log(check.moves);
             if(check.inMoves(tab[1])){
-                io.to("checkers-" + socketRoom.get(id)).emit('move', tab);
+                io.to(loginRoom.get(socketLogin.get(socket.id))).emit('move', tab);
                 var move2 = check.convertId(tab[1]);
                 check.makeMove(move2[0],move2[1]);
                 check.checkQueens();
-                roomBoard["checkers-" +socketRoom.get(id)]=check.boarad;
-                if (roomTurn["checkers-"+socketRoom.get(socket.id)] == 1) {
-                    roomTurn["checkers-"+socketRoom.get(socket.id)] = 0;
-                }else{
-                    roomTurn["checkers-"+socketRoom.get(socket.id)] = 1;
-                }
                 check.deletingBeated();
+                roomBoard[loginRoom.get(socketLogin.get(socket.id))]=[...check.boarad];
+                if (roomTurn.get(loginRoom.get(socketLogin.get(socket.id))) == 1) {
+                    roomTurn.set(loginRoom.get(socketLogin.get(socket.id)),0);
+                }else{
+                    roomTurn.set(loginRoom.get(socketLogin.get(socket.id)),1);
+                }
+                console.log(roomBoard);
             }
         }
     });
 
+    socket.on('ready', () => {
+        var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
+        if (opt["white"]==socketLogin.get(socket.id)) {
+            if (opt['readyWhite']==true) {
+                opt['readyWhite']=false;
+            }else{
+                opt['readyWhite']=true;
+            }
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-ready",1);
+        }
+        if (opt["black"]==socketLogin.get(socket.id)) {
+            if (opt['readyBlack']==true) {
+                opt['readyBlack']=false;
+            }else{
+                opt['readyBlack']=true;
+            }
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-ready",0);
+        }
+        if (opt['readyBlack'] == true && opt['readyWhite'] == true) {
+            console.log("1");
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-ready",1);
+        }
+    });
+
+    socket.on('ready-check', () => {
+        var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
+        if (opt['readyBlack'] == true && opt['readyWhite'] == true) {
+            console.log("2");
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-ready",roomTurn.get(loginRoom.get(socketLogin.get(socket.id))));
+        }
+    });
+
     socket.on('ask-options-checkers', () =>{
-        var opt = roomOptions.get("checkers-" + socketRoom.get(socket.id));
+        var roomId = loginRoom.get(socketLogin.get(socket.id));
+        var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
         if (opt["white"] === '' && opt["black"] === '') {
             if (opt["side"] == 1) {
-                opt["white"] = socket.id;
-                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1]);
+                opt["white"] = socketLogin.get(socket.id);
+                io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[1,1]);
             } else {
-                opt["black"] = socket.id;
-                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2]);
+                opt["black"] = socketLogin.get(socket.id);
+                io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[2,1]);
             }
         }else{
             if (opt["white"] == '') {
-                opt["white"] = socket.id;
-                io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1]);
+                opt["white"] = socketLogin.get(socket.id);
+                io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[1,1]);
             } else {
                 if (opt["black"] == '') {
-                    opt["black"] = socket.id;
-                    io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2]);
+                    opt["black"] = socketLogin.get(socket.id);
+                    io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[2,1]);
                 } else {
-                    if (roomOptions.get("checkers-" + socketRoom.get(socket.id))["white"] == socket.id) {
-                        io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[1,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                    if (roomOptions.get(loginRoom.get(socketLogin.get(socket.id)))["white"] == socketLogin.get(socket.id)) {
+                        io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[1,roomTurn.get(roomId),roomBoard[loginRoom.get(socketLogin.get(socket.id))]]);
                     } else {
-                        if (roomOptions.get("checkers-" + socketRoom.get(socket.id))["black"] == socket.id) {
-                            io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[2,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                        if (roomOptions.get(loginRoom.get(socketLogin.get(socket.id)))["black"] == socketLogin.get(socket.id)) {
+                            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[2,roomTurn.get(roomId),roomBoard[loginRoom.get(socketLogin.get(socket.id))]]);
                         } else {
-                            io.to("checkers-" + socketRoom.get(socket.id)).emit("send-options-checkers",[-1,roomBoard["checkers-" + socketRoom.get(socket.id)]]);
+                            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("send-options-checkers",[-1,roomTurn.get(roomId),roomBoard[loginRoom.get(socketLogin.get(socket.id))]]);
                         }
                     }
                 }

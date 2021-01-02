@@ -14,6 +14,8 @@ window.addEventListener('load', function() {
                     side: side,
                     white: null,
                     black: null,
+                    readyWhite: false,
+                    readyBlack: false,
                     length: $('#glength').val(),
                     bonus: $('#blength').val() },
             success: function(msg) {

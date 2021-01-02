@@ -158,6 +158,7 @@ class Checkers{
     }
 
     checkMoves(x,y){
+        var haveTo=false;
         if (this.own==1) {
             if (this.boarad[this.convertxy(x,y)]==(this.own)) {
                 if (this.boarad[this.convertxy(x+1,y+1)]==0) {
@@ -169,12 +170,14 @@ class Checkers{
                 if (this.boarad[this.convertxy(x+2,y+2)]==0 && (this.boarad[this.convertxy(x+1,y+1)]==2 || this.boarad[this.convertxy(x+1,y+1)]==4)) {
                     this.moves.push(this.convertxy(x+2,y+2));
                     this.checkBeating(x+2,y+2,-1);
+                    haveTo=true;
                 }
                 if (this.boarad[this.convertxy(x-2,y+2)]==0 && (this.boarad[this.convertxy(x-1,y+1)]==2 || this.boarad[this.convertxy(x-1,y+1)]==4)) {
                     this.moves.push(this.convertxy(x-2,y+2));
                     this.checkBeating(x-2,y+2,-1);
+                    haveTo=true;
                 }
-            }else{                
+            }else{
                 if (this.boarad[this.convertxy(x,y)]==(this.own)+2){
                     let i=1;
                     while (this.boarad[this.convertxy(x-i,y+i)]==0) {
@@ -185,6 +188,7 @@ class Checkers{
                     this.boarad[this.convertxy(x-i-1,y+i+1)]==0) {
                         this.moves.push(this.convertxy(x-i-1,y+i+1));
                         this.checkBeating(x-i-1,y+i+1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y+i)]==0) {
@@ -195,6 +199,7 @@ class Checkers{
                     this.boarad[this.convertxy(x+i+1,y+i+1)]==0) {
                         this.moves.push(this.convertxy(x+i+1,y+i+1));
                         this.checkBeating(x+i+1,y+i+1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x-i,y-i)]==0) {
@@ -205,6 +210,7 @@ class Checkers{
                     this.boarad[this.convertxy(x-i-1,y-i-1)]==0) {
                         this.moves.push(this.convertxy(x-i-1,y-i-1));
                         this.checkBeating(x-i-1,y-i-1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y-i)]==0) {
@@ -215,6 +221,7 @@ class Checkers{
                     this.boarad[this.convertxy(x+i+1,y-i-1)]==0) {
                         this.moves.push(this.convertxy(x+i+1,y-i-1));
                         this.checkBeating(x+i+1,y-i-1,-1);
+                        haveTo=true;
                     }
                 }
             }
@@ -229,10 +236,12 @@ class Checkers{
                 if (this.boarad[this.convertxy(x+2,y-2)]==0 && (this.boarad[this.convertxy(x+1,y-1)]==1 || this.boarad[this.convertxy(x+1,y-1)]==3)) {
                     this.moves.push(this.convertxy(x+2,y-2));
                     this.checkBeating(x+2,y-2,-1);
+                    haveTo=true;
                 }
                 if (this.boarad[this.convertxy(x-2,y-2)]==0 && (this.boarad[this.convertxy(x-1,y-1)]==1 || this.boarad[this.convertxy(x-1,y-1)]==3)) {
                     this.moves.push(this.convertxy(x-2,y-2));
                     this.checkBeating(x-2,y-2,-1);
+                    haveTo=true;
                 }
             }else{
                 if (this.boarad[this.convertxy(x,y)]==4+(this.own)) {
@@ -245,6 +254,7 @@ class Checkers{
                     this.boarad[this.convertxy(x-i-1,y+i+1)]==0) {
                         this.moves.push(this.convertxy(x-i-1,y+i+1));
                         this.checkBeating(x-i-1,y+i+1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y+i)]==0) {
@@ -255,6 +265,7 @@ class Checkers{
                     this.boarad[this.convertxy(x+i+1,y+i+1)]==0) {
                         this.moves.push(this.convertxy(x+i+1,y+i+1));
                         this.checkBeating(x+i+1,y+i+1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x-i,y-i)]==0) {
@@ -265,6 +276,7 @@ class Checkers{
                     this.boarad[this.convertxy(x-i-1,y-i-1)]==0) {
                         this.moves.push(this.convertxy(x-i-1,y-i-1));
                         this.checkBeating(x-i-1,y-i-1,-1);
+                        haveTo=true;
                     }
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y-i)]==0) {
@@ -275,10 +287,12 @@ class Checkers{
                     this.boarad[this.convertxy(x+i+1,y-i-1)]==0) {
                         this.moves.push(this.convertxy(x+i+1,y-i-1));
                         this.checkBeating(x+i+1,y-i-1,-1);
+                        haveTo=true;
                     }
                 }
             }
         }
+        return haveTo;
     }
 
     inMoves(id){
@@ -300,12 +314,17 @@ class Checkers{
         return x;
     }
     checkIfCan(){
+        this.haveToMove=[];
+        var i=0;
         this.boarad.forEach(element => {
-            this.haveToMove=[];
-            var temp = this.convertId(elemnet);
-            if (this.checkBeating(temp[0],temp[1])) {
-                this.haveToMove.push(element);
+            var temp = this.convertId(i);
+            if (element != 0 && element%2 == this.own) {
+                if (this.checkMoves(temp[0],temp[1]) == true) {
+                    this.haveToMove.push(i);
+                }
+                this.moves=[]; 
             }
+            i++;
         });
     }
 
@@ -360,19 +379,18 @@ class Checkers{
     }
 
     checkQueens(){
-                for (let i = 27; i < this.boarad.length; i++) {
-                    const element = this.boarad[i];
-                    if (element==1) {
-                        this.boarad[i]+= 2;
-                    }
-                }
-                for (let i = 4; i > -1 ; i--) {
-                    const element = this.boarad[i];
-                    if (element==2) {
-                        this.boarad[i]+= 2;
-                    }
-                }
-            
+        for (let i = 27; i < this.boarad.length; i++) {
+            const element = this.boarad[i];
+            if (element==1) {
+                this.boarad[i]+= 2;
+            }
+        }
+        for (let i = 4; i > -1 ; i--) {
+            const element = this.boarad[i];
+            if (element==2) {
+                this.boarad[i]+= 2;
+            }
+        }   
     }
 
     updateBoard(board){
@@ -393,7 +411,9 @@ class Checkers{
         this.deleting.forEach(element => {
             this.boarad[element]=0;
         });
+
     }
 }
+
 
 module.exports = Checkers;
