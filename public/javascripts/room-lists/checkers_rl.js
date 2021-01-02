@@ -18,7 +18,7 @@ window.addEventListener('load', function() {
                     bonus: $('#blength').val() },
             success: function(msg) {
                 if(msg === true)
-                    $.redirect('/' + game_type + '-list/' + room_name_input.value, {
+                    $.redirect('/' + game_type + '-list/' + room_name_input.value.toLowerCase(), {
                         'game_type': game_type}, 'POST');
                 else {
                     room_name_label.innerHTML = msg;
