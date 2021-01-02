@@ -19,7 +19,7 @@ window.addEventListener('load', function() {
     socket.emit('join-room-list', game_type);
     socket.emit('load_rooms', game_type);
 
-    add_btn.addEventListener('click', () => {    //open new room form
+    add_btn.addEventListener('click', () => {       //open new room form
         if($(".new_room_div").css('display') != 'none') {
             $(".new_room_div").slideUp(300)
             add_btn.innerHTML = "+";
@@ -41,33 +41,33 @@ window.addEventListener('load', function() {
         while (rooms.firstChild) {
             rooms.removeChild(rooms.firstChild);
         }
-        data.forEach(element => {
+        data.forEach(el => {
             var content = document.createElement('div');
-            let room_name = element[0].substr(element[0].indexOf('-')+1, element[0].length);
-            let lock = insert_lock_img(element[2]);
+            let room_name = el['fullRoomName'].substr(el['fullRoomName'].indexOf('-')+1, el['fullRoomName'].length);
+            let lock = insert_lock_img(el['password']);
             if(lock != '') {
                 let color = Colors.random()
-                content.innerHTML +='<div style=background-color:'+ color +
-                                    ' class="list_item"> <p>'+ room_name +'</p>' + lock +
-                                    insert_user_img(element[1], max_players.get(game_type)) + '</div>' +
+                content.innerHTML +='<div style=background-color:'+ color + 
+                                    ' class="list_item"> <p class="room_name">'+ room_name +'</p>' + '<p class="time">' + el['options']['length'] + '┃' + el['options']['bonus'] + '</p>' + lock  +
+                                    insert_user_img(el['playerCount'], max_players.get(game_type)) + '</div>' +
                                     '<div id="'+ room_name +'" style="background-color:'+ color + '; display:none" class="list_item">'+
                                     '<form class="formPwdValidator" method="POST" style="width:100%;">'+
                                     '<input name="password" style="display: inline; width: 50%; max-width: 400px; margin-left:10%; height:30px" type="password" placeholder="Password">' +                       
                                     '<input style="display: inline; width: 30%; margin-right:10%; height:30px; margin-bottom:0; padding:0" type="submit" value="Join">'+
-                                    '<input type="hidden" name="room" value="' + element[0] + '" /></form></div>';
+                                    '<input type="hidden" name="room" value="' + el['fullRoomName'] + '" /></form></div>';
                 content.addEventListener("click", expandChildren, false);
             }
             else {
                 content.innerHTML += '<div style=background-color:'+ Colors.random() +
                                     ' class="list_item"> <p>'+ room_name +'</p>' + lock +
-                                    insert_user_img(element[1], max_players.get(game_type)) + '</div>';
+                                    insert_user_img(el['playerCount'], max_players.get(game_type)) + '</div>';
                 content.addEventListener("click", function() { getUnlockedRoom(game_type, room_name) }, false);       
             }
             rooms.appendChild(content);
         });
     });
 
-    $(document).on('submit', '.formPwdValidator', function(e) {
+    $(document).on('submit', '.formPwdValidator', function(e) {     //submit password to join locked room
         e.preventDefault();
         var targetElement = e.target || e.srcElement;
         let roomFullName = targetElement.childNodes[2].value
@@ -77,7 +77,6 @@ window.addEventListener('load', function() {
             data: { fullRoomName: roomFullName,
                     password: targetElement.firstChild.value },                      
             success: function(msg) {
-                console.log('xd');
                 if(msg === true)
                     $.redirect('/' + game_type + '-list/' + roomFullName.substring(roomFullName.indexOf("-") + 1), {
                         'game_type': game_type }, 'POST');
@@ -116,16 +115,14 @@ function insert_lock_img(check) {
     return '';
 }
 
-function expandChildren(event) {        //needs cleanup
+function expandChildren(event) {
     var targetElement = event.target || event.srcElement;
-    if(targetElement.tagName == 'INPUT')
-        return
-    if(targetElement.tagName != 'DIV')
-        targetElement = targetElement.parentElement;
-    if(targetElement.firstChild.tagName != 'FORM')
-        targetElement = targetElement.nextSibling;
+    if(targetElement.tagName == 'INPUT')            return;
+    if(targetElement.tagName != 'DIV')              targetElement = targetElement.parentElement;
+    if(targetElement.firstChild.tagName != 'FORM')  targetElement = targetElement.nextSibling;
+
     targetElement = targetElement.id
-        console.log(targetElement.tagName);
+
     if ($('#'+targetElement).css('display') != "none")
         $('#'+targetElement).slideUp(250);
     else
