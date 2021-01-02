@@ -1,19 +1,34 @@
 window.addEventListener('load', (event) => {
-  const socket = io(); // change to serwer url
+  var socket = io();
+  socket.on('connect', () => {
+      $.ajax({
+          type: "POST",
+          url: "/set-socket-id",
+          data: {socketid: socket.id},
+          success: function(data) {
+              let room_name = data.substr(data.indexOf('-')+1, data.length);
+              let game_type = data.substr(0, data.indexOf('-'))
+              socket.emit('join-new-room', { game: game_type, room: room_name });
+          }
+      })
+   });
   var tab = document.getElementById("table");
   var head = document.getElementById("head");
+  var button = document.getElementById("ready_self");
+  var label = document.getElementById("ready_oponent");
   var options = false;
   socket.emit('join-new-room', { game: "checkers", room: room_name} );
   socket.emit("ask-options-checkers");
   var check;
   socket.on("send-options-checkers", temp => {
-    if(!options){    
-      if (temp.length == 2) {
+    if(!options){
+      if (temp.length == 3) {
         check = new Checkers(temp[0]);
-        check.updateBoard(temp[1]);
+        check.updateBoard(temp[2]);
       }else{
         check = new Checkers(temp[0]);
       }
+      socket.emit('ready-check');
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
           var c= check.convertxy(i,j);
@@ -26,6 +41,27 @@ window.addEventListener('load', (event) => {
         }
       }
       options=true;
+    }
+  });
+
+  socket.on("players-ready", (turn) => {
+    if (check.own == turn) {
+      check.turn=1;
+    }else{
+      check.turn=0;
+    }
+    label.style.display="none";
+    button.style.display='none';
+  });
+
+  socket.on("change-ready", (player) => {
+    if (check.own != player) {
+      if (label.className == 'notReady') {
+        label.className='Ready';
+      }else{
+        if (label.className == 'Ready')
+        label.className='notReady';
+      }
     }
   });
 
@@ -74,10 +110,20 @@ window.addEventListener('load', (event) => {
     }
   });
 
+  button.addEventListener('click', () => {
+    if (button.className == 'notReady') {
+      socket.emit("ready");
+      button.className='Ready';
+    }else{
+      button.className='notReady';
+      socket.emit("ready");
+    }
+  });
+
     tab.addEventListener('click', (event) => {
       var x= Math.floor(event.clientX/tab.rows[0].cells[0].clientWidth);
       var y = Math.floor((event.clientY-head.clientHeight)/tab.rows[0].cells[0].clientHeight);
-      if (check.turn==1) {
+      if (check.turn==1 && check.own>=0) {
         if (check.checed!=null) {
           if (check.checed==check.convertxy(x,y)) {
             var c= check.convertxy(x,y);
@@ -107,13 +153,14 @@ window.addEventListener('load', (event) => {
             }
           }
         }else{
+          check.checkIfCan();
+          console.log(check.haveToMove);
           if (check.haveToMove.length!=0 && !check.inHaveToMove(check.convertxy(x,y))) {
           } else {
             if (check.boarad[check.convertxy(x,y)]%2==check.own) {
               check.checed=check.convertxy(x,y);
               tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
               check.checkMoves(x,y);
-              console.log(check.moves);
               check.moves.forEach(element => {
                 var move = check.convertId(element);
                 tab.rows[move[1]].cells[move[0]].className="movefield";
