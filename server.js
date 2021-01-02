@@ -266,17 +266,19 @@ io.on('connection', socket => {
             check.checed=tab[0];
             var move1 = check.convertId(check.checed);
             check.checkMoves(move1[0],move1[1]);
-            console.log(check.inMoves(tab[1]));
+            console.log(check.moves);
             if(check.inMoves(tab[1])){
                 io.to("checkers-" + socketRoom.get(id)).emit('move', tab);
                 var move2 = check.convertId(tab[1]);
                 check.makeMove(move2[0],move2[1]);
-                roomBoard[socketRoom.get(id)]=check.boarad;
-            }
-            if (roomTurn[socketRoom.get(socket.id)] == 1) {
-                roomTurn[socketRoom.get(socket.id)] = 2;
-            }else{
-                roomTurn[socketRoom.get(socket.id)] = 1;
+                check.checkQueens();
+                roomBoard["checkers-" +socketRoom.get(id)]=check.boarad;
+                if (roomTurn["checkers-"+socketRoom.get(socket.id)] == 1) {
+                    roomTurn["checkers-"+socketRoom.get(socket.id)] = 0;
+                }else{
+                    roomTurn["checkers-"+socketRoom.get(socket.id)] = 1;
+                }
+                check.deletingBeated();
             }
         }
     });
