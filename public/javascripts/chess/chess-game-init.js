@@ -56,21 +56,9 @@ function setPossibilities(){
     });
 };
 
-function movePiece(sRow, sCol, eRow, eCol){
-    setPiece( eRow, eCol, getPiece(sRow, sCol) );
-    setPiece( eRow, eCol, '' );
-};
-
 function movePieceView(sRow, sCol, eRow, eCol){
     let movedPiece = getPiece(sRow, sCol);
 
-    if( movedPiece === '♚' ){
-        if( pieceColor(sRow, sCol) === blackPiece ){
-            blackKing.row = eRow; blackKing.col = eCol;
-        } else {
-            whiteKing.row = eRow; whiteKing.col = eCol;
-        }
-    }
     setViewColor( eRow, eCol, pieceColor(sRow, sCol) );
     setPieceObj( eRow, eCol, getPieceObj(sRow, sCol) ); 
     setPieceView( eRow, eCol, movedPiece );
@@ -114,36 +102,6 @@ function movePossible(row, column){
         return checked;
     } );
 };
-
-function chuj(row, column){
-    let guesses = [];
-    if( getPiece(row, column) === '♜' ) guesses = movesPossibleRook(row, column);
-    if( getPiece(row, column) === '♞' ) guesses = movesPossibleKnight(row, column);
-    if( getPiece(row, column) === '♝' ) guesses = movesPossibleBishop(row, column);
-    if( getPiece(row, column) === '♚' ) guesses = movesPossibleKing(row, column);
-    if( getPiece(row, column) === '♛' ) guesses = movesPossibleQueen(row, column);
-    return guesses;
-}
-
-function pieceCheck(row, column){
-    return getPiece(row, column) === '♟' ? pawnCheck(row, column) : chuj(row, column);
-};
-
-function pawnCheck(row, column){
-    let possibilities = [];
-    let direction = pieceColor(row, column) === whitePiece ? -1 : 1;
-
-    if( column !== 1 )
-        if( getPiece(row + direction, column - 1) !== '' ||
-            pieceColor(row + direction, column - 1) !== pieceColor(row, column) ) 
-                possibilities.push((row + direction ) * 9 + column - 1);
-
-    if( column !== 8 )
-        if( getPiece(row + direction, column + 1) !== '' ||
-            pieceColor(row + direction, column + 1) !== pieceColor(row, column) ) 
-                possibilities.push((row + direction ) * 9 + column + 1);
-    return possibilities;
-}
 
 function moveRec(sRow, sCol, hRow, hCol){
     if( !(hRow >= 1 && hRow <= 8 && hCol >= 1 && hCol <= 8) ) return false;
@@ -241,6 +199,36 @@ function movesPossibleKing(row, column){
 
 function movesPossibleQueen(row, column){
     return movesPossibleRook(row, column).concat( movesPossibleBishop(row, column) );
+};
+
+function checkHelper(row, column){
+    let guesses = [];
+    if( getPiece(row, column) === '♜' ) guesses = movesPossibleRook(row, column);
+    if( getPiece(row, column) === '♞' ) guesses = movesPossibleKnight(row, column);
+    if( getPiece(row, column) === '♝' ) guesses = movesPossibleBishop(row, column);
+    if( getPiece(row, column) === '♚' ) guesses = movesPossibleKing(row, column);
+    if( getPiece(row, column) === '♛' ) guesses = movesPossibleQueen(row, column);
+    return guesses;
+}
+
+function pawnCheck(row, column){
+    let possibilities = [];
+    let direction = pieceColor(row, column) === whitePiece ? -1 : 1;
+
+    if( column !== 1 )
+        if( getPiece(row + direction, column - 1) !== '' ||
+            pieceColor(row + direction, column - 1) !== pieceColor(row, column) ) 
+                possibilities.push((row + direction ) * 9 + column - 1);
+
+    if( column !== 8 )
+        if( getPiece(row + direction, column + 1) !== '' ||
+            pieceColor(row + direction, column + 1) !== pieceColor(row, column) ) 
+                possibilities.push((row + direction ) * 9 + column + 1);
+    return possibilities;
+}
+
+function pieceCheck(row, column){
+    return getPiece(row, column) === '♟' ? pawnCheck(row, column) : checkHelper(row, column);
 };
 
 function getChecking(){
