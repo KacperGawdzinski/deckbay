@@ -6,9 +6,14 @@ window.addEventListener('load', (event) => {
           url: "/set-socket-id",
           data: {socketid: socket.id},
           success: function(data) {
+            if (data=='') {
+              window.location.href ='/';
+            }else{
               let room_name = data.substr(data.indexOf('-')+1, data.length);
               let game_type = data.substr(0, data.indexOf('-'))
               socket.emit('join-new-room', { game: game_type, room: room_name });
+              socket.emit("ask-options-checkers");
+            }
           }
       })
    });
@@ -17,10 +22,9 @@ window.addEventListener('load', (event) => {
   var button = document.getElementById("ready_self");
   var label = document.getElementById("ready_oponent");
   var options = false;
-  socket.emit('join-new-room', { game: "checkers", room: room_name} );
-  socket.emit("ask-options-checkers");
   var check;
   socket.on("send-options-checkers", temp => {
+    console.log("gunwo");
     if(!options){
       if (temp.length == 3) {
         check = new Checkers(temp[0]);
