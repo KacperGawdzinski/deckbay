@@ -52,11 +52,20 @@ class Checkers{
         if (this.checkIfWhite(x,y)) {
             return false;
         } else {
-            if (this.boarad[this.convertxy(x,y)]%2==worb) {
-                return true;
+            if (worb == 1) {
+                if (this.boarad[this.convertxy(x,y)]==1 || this.boarad[this.convertxy(x,y)]==3) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                if (this.boarad[this.convertxy(x,y)]==2 || this.boarad[this.convertxy(x,y)]==4) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+
         }
     }
 
