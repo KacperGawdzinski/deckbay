@@ -21,8 +21,86 @@ window.addEventListener('load', (event) => {
   var head = document.getElementById("head");
   var button = document.getElementById("ready_self");
   var label = document.getElementById("ready_oponent");
+  var labeld = document.getElementById("draw_oponent");
+  var surr = document.getElementById("surrender");
+  var draw = document.getElementById("draw");
+  var undo = document.getElementById("undo");
+  var ending = document.getElementById("endofgame");
+  var spanend = document.getElementById("endofgamespan");
   var options = false;
   var check;
+
+   surr.addEventListener("click", () =>{
+    check.turn==-1;
+    socket.emit("surrender-checkers");
+   })
+
+   socket.on("surrender", () =>{
+      check.turn=-1;
+      spanend.innerHTML=spanend.innerHTML+"<br> Surennder"
+      ending.style.visibility="visible";
+   })
+
+   draw.addEventListener("click", () =>{
+      draw.className="Ready";
+      socket.emit("draw-checkers");
+  })
+
+  socket.on("players-draw", (draw) => {
+    if (draw == 1) {
+      check.turn=-1;
+      spanend.innerHTML=spanend.innerHTML+"<br> Draw"
+      ending.style.visibility="visible";
+    }
+    labeld.style.display="none";
+    button.style.display='none';
+  });
+
+  socket.on("change-draw", (player) => {
+    if (check.own != player) {
+      if (labeld.className == 'notReady') {
+        labeld.className='Ready';
+      }else{
+        if (labeld.className == 'Ready')
+        labeld.className='notReady';
+      }
+    }
+  });
+
+  undo.addEventListener("click", () => {
+     if (check.turn == 0) {
+       socket.emit("undo-checkers");
+     }
+  })
+  socket.on("undo-server", (boar) => {
+    check.boarad=boar;
+    if (check.turn == 1) {
+      check.turn = 0;
+    }else{
+      check.turn = 1;
+    }
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        var c= check.convertxy(i,j);
+        if (1==check.boarad[c]) {
+          tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
+        }
+        if (2==check.boarad[c]) {
+          tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+        }
+        if(3==check.boarad[c]){
+          tab.rows[j].cells[i].innerHTML='<span class="whiteQ"></span>';
+        }
+        if(4==check.boarad[c]){
+          tab.rows[j].cells[i].innerHTML='<span class="blackQ"></span>';
+        }
+        if (0==check.boarad[c]) {
+          tab.rows[j].cells[i].innerHTML='';
+        }
+      }
+    }
+  });
+
   socket.on("send-options-checkers", temp => {
     console.log("gunwo");
     if(!options){
@@ -153,7 +231,7 @@ window.addEventListener('load', (event) => {
             let pos=check.convertxy(x,y);
             if (check.inMoves(pos)) {
               let tab=[check.checed,pos,check.own];
-              socket.emit("check-move",tab);
+              socket.emit("check-move-checkers",tab);
             }
           }
         }else{
@@ -161,14 +239,26 @@ window.addEventListener('load', (event) => {
           console.log(check.haveToMove);
           if (check.haveToMove.length!=0 && !check.inHaveToMove(check.convertxy(x,y))) {
           } else {
-            if (check.boarad[check.convertxy(x,y)]%2==check.own) {
-              check.checed=check.convertxy(x,y);
-              tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
-              check.checkMoves(x,y);
-              check.moves.forEach(element => {
-                var move = check.convertId(element);
-                tab.rows[move[1]].cells[move[0]].className="movefield";
-              });
+            if (check.haveToMove.length > 0) {
+              if (check.boarad[check.convertxy(x,y)]%2==check.own) {
+                check.checed=check.convertxy(x,y);
+                tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
+                check.checkBeating(x,y,-1);
+                check.moves.forEach(element => {
+                  var move = check.convertId(element);
+                  tab.rows[move[1]].cells[move[0]].className="movefield";
+                });
+              }
+            } else {
+              if (check.boarad[check.convertxy(x,y)]%2==check.own) {
+                check.checed=check.convertxy(x,y);
+                tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
+                check.checkMoves(x,y);
+                check.moves.forEach(element => {
+                  var move = check.convertId(element);
+                  tab.rows[move[1]].cells[move[0]].className="movefield";
+                });
+              }
             }
           }
         }

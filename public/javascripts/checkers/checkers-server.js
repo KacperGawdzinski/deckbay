@@ -2,15 +2,21 @@ class Checkers{
 
     constructor(own){
         this.boarad=[1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2];
-        if (own==1) {
-            this.own=1;
-            this.enemy=0;
-        } else {
-            this.own=0;
-            this.enemy=1;
+        if (own>=0) {
+            if (own==1) {
+                this.own=1;
+                this.enemy=0;
+            } else {
+                this.own=0;
+                this.enemy=1;
+            }
+        }else{
+            this.own=-1;
+            this.own=-1;
         }
+
         this.checed=null;
-        this.turn=own%2;
+        this.turn=0;
         this.moves=[];
         this.haveToMove=[];
         this.deleting=[];
@@ -46,11 +52,20 @@ class Checkers{
         if (this.checkIfWhite(x,y)) {
             return false;
         } else {
-            if (this.boarad[this.convertxy(x,y)]%2==worb) {
-                return true;
+            if (worb == 1) {
+                if (this.boarad[this.convertxy(x,y)]==1 || this.boarad[this.convertxy(x,y)]==3) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                if (this.boarad[this.convertxy(x,y)]==2 || this.boarad[this.convertxy(x,y)]==4) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+
         }
     }
 
@@ -414,6 +429,5 @@ class Checkers{
 
     }
 }
-
 
 module.exports = Checkers;
