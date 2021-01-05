@@ -149,10 +149,6 @@ app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have
     res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type, user_login : req.login });
 });
 
-app.get('/chess-test', (req, res) => {
-    res.render('game_chess_page');
-})
-
 app.get('/checkers-test', authorize, (req, res) => {
     res.render('checkers.ejs')
 });
@@ -237,7 +233,7 @@ io.on('connection', socket => {
 
     socket.on('join-room-list', data => {
         console.log('joining game-' + data);
-        socket.join('game-' + data)
+        socket.join('game-' + data);
     })
 
     socket.on('load_rooms', data => {
@@ -247,10 +243,19 @@ io.on('connection', socket => {
     });
 
     socket.on('join-new-room', data => {
+        let login = socketLogin.get(socket.id);
+
         socket.join( data.game + "-" + data.room );
-        loginRoom.set( socketLogin.get(socket.id), data.game + "-" + data.room );
+        loginRoom.set(login , data.game + "-" + data.room );
         io.to( 'game-' + data.game ).emit( 'rooms', availableRooms(data.game) );
         console.log( io.sockets.adapter.rooms );
+
+        if(data.game == 'chess'){
+            if( !roomChesslogic.get(data.room) ){
+                roomChesslogic.set( data.room, new chessGame(login) );
+            }
+            else roomChesslogic.get( data.room ).setBlackPlayer(login);
+        };
     });
 
     socket.on('disconnecting', () => {
@@ -301,8 +306,9 @@ io.on('connection', socket => {
         let reqLogin =  socketLogin.get(socket.id);
         let reqRoom = loginRoom.get(reqLogin);
 
-        let message = roomChesslogic.get(reqRoom).moveRequest(sRow, sCol, eRow, eCol, login);
-        io.to(loginRoom.get(login)).emit('server-chess-move', message);
+        let message = roomChesslogic.get(reqRoom.split('-')[1]).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
+        console.log(message);
+        io.to(reqRoom).emit('server-chess-move', message);
     });
 
     socket.on('ready', () => {
