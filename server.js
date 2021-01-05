@@ -8,6 +8,7 @@ const bcrypt = require ('bcrypt');
 const faker = require('faker');
 const Checkers  = require('./public/javascripts/checkers/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
+const { chessGame } = require('./server-javascript/chess-game-server');
 
 const saltRounds = 10;
 
@@ -21,9 +22,11 @@ var socketLogin = new Map();    //socket.id -> login
 var loginRoom = new Map();      //player login -> full room name
 var roomPasswd = new Map();     //full room name -> hashed password
 var roomOptions = new Map();    //full room name -> options
-var roomPlayers = {}            //full room name -> [players allowed to play (logins)]  //merge maps into one
+var roomPlayers = {};           //full room name -> [players allowed to play (logins)]  //merge maps into one
 var roomBoard = {};             //full room name -> gameboard
 var roomTurn = new Map();       //full room name -> turn
+
+let roomChesslogic = new Map(); //full room name -> it's game in class representation
 
 app.use(express.urlencoded({
     extended: true
@@ -86,7 +89,6 @@ app.post('/set-socket-id', (req, res) => {
     }else{
         res.send("");
     }
-    console.log("gówno");
 })
 
 app.get('/chess-list', authorize, (req, res) => {   //set random nick
@@ -112,7 +114,7 @@ app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have th
         }
     }
     loginRoom.set(req.signedCookies.login, fullRoomName);
-    res.render('chess-game', { room_name: req.params.id, game_type: req.body.game_type });
+    res.render('game_chess_page', { room_name: req.params.id, game_type: req.body.game_type });
 });
 
 app.get('/checkers-list', authorize, (req, res) => {   //set random nick
@@ -144,7 +146,7 @@ app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have
         roomBoard[fullRoomName] = check.boarad;
         roomTurn.set(fullRoomName,1);
     }
-    res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type });
+    res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type, user_login : req.login });
 });
 
 app.get('/chess-test', (req, res) => {
@@ -245,10 +247,10 @@ io.on('connection', socket => {
     });
 
     socket.on('join-new-room', data => {
-        socket.join(data.game + "-" + data.room);
-        loginRoom.set(socketLogin.get(socket.id),data.game + "-" + data.room);
-        io.to('game-' + data.game).emit('rooms', availableRooms(data.game));
-        console.log(io.sockets.adapter.rooms);
+        socket.join( data.game + "-" + data.room );
+        loginRoom.set( socketLogin.get(socket.id), data.game + "-" + data.room );
+        io.to( 'game-' + data.game ).emit( 'rooms', availableRooms(data.game) );
+        console.log( io.sockets.adapter.rooms );
     });
 
     socket.on('disconnecting', () => {
@@ -272,7 +274,7 @@ io.on('connection', socket => {
         console.log('client disconnected');
     });
 
-    socket.on('check-move', tab => {   //checking if move is allowed
+    socket.on('check-move-checkers', tab => {   //checking if move is allowed
         if (tab[2] == roomTurn.get(loginRoom.get(socketLogin.get(socket.id)))) {
             var check = new Checkers(tab[2]);
             check.updateBoard(roomBoard[loginRoom.get(socketLogin.get(socket.id))]);   
@@ -293,6 +295,14 @@ io.on('connection', socket => {
                 }
             }
         }
+    });
+
+    socket.on('check-move-chess', (sRow, sCol, eRow, eCol) => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let message = roomChesslogic.get(reqRoom).moveRequest(sRow, sCol, eRow, eCol, login);
+        io.to(loginRoom.get(login)).emit('server-chess-move', message);
     });
 
     socket.on('ready', () => {

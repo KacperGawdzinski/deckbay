@@ -4,6 +4,8 @@ class chessGame{
 
     #chessBoard;
     #whiteTurn;
+    #whitePlayerLogin;
+    #blackPlayerLogin;
 
     #blackKing = {
         row : 1,
@@ -14,7 +16,7 @@ class chessGame{
         col: 5
     };
 
-    constructor() {
+    constructor(bpLogin, wpLogin) {
         function playerInit(whitePlayer){
             let r = whitePlayer ? 7 : 2;
             for(let c = 1; c <= 8; c++){ this.#chessBoard[r] = {piece : '♟', white : whitePlayer}; };
@@ -32,6 +34,8 @@ class chessGame{
 
         this.#chessBoard = Array(9).fill().map( () => (Array(9).fill( { piece : '', white : false } )));
         this.#chessBoard[0].fill( () => 'A');
+        this.#whitePlayerLogin = wpLogin; this.#blackPlayerLogin = bpLogin;
+
         for(let i = 1; i <= 8; i++){ this.#chessBoard[i][0] = 'A' };
 
         playerInit(true); playerInit(false);
@@ -271,14 +275,10 @@ class chessGame{
         let king = white ? whiteKing : blackKing;
         let kingIndex = king.row * 9 + king.col;
         let checked = this.#getChecking();
-        let enemyChecks = false;
         
-        checked[kingIndex].forEach( index => { 
-            if( this.#pieceColor(Math.floor(index / 9), index % 9) !== who) 
-                enemyChecks = true; 
-        } );
-    
-        return enemyChecks;
+        return checked[kingIndex].some( index => { 
+            return this.#pieceColor(Math.floor(index / 9), index % 9) !== who; 
+        });
     }
 
     //#endregion checkingLogic
@@ -341,21 +341,25 @@ class chessGame{
 
     //#region gameManagement
 
-    moveRequest(sRow, sCol, eRow, eCol){ //it returnes what changes are needed to game state/mates or checkmates eventually
+    moveRequest(sRow, sCol, eRow, eCol, playerLogin){ //it returnes what changes are needed to game state/mates or checkmates eventually
         let resMess = '';
 
-        if( this.#getPiece(sRow, sCol) !== whiteTurn ) return false;
+        let whitePlayerToMove = (this.#whitePlayerLogin == playerLogin);
+        if( this.#getPieceColor(sRow, sCol) != whitePlayerToMove || this.#whiteTurn != whitePlayerToMove) 
+            return false;
 
         if( this.#validateMove(sRow, sCol, eRow, eCol) ){
             this.#movePieceObj(sRow, sCol, eRow, eCol);
-            resMess += `${sRow};${sCol}->${eRow};${eCol}.`;
+            resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
-            if( this.#if(!whiteTurn) ) { resMess += `C${ !whiteTurn ? 'B' : 'W' }.` };
-            if( this.#checkMate(!whiteTurn) ){
-                resMess += `M${ !whiteTurn ? 'B' : 'W' }.`;
-            } else {
-                whiteTurn = !whiteTurn;
-            } 
+            if( this.#ifCheck(!whiteTurn) ) { 
+                if( this.#checkMate(!whiteTurn) ){
+                    resMess += `M${ !whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
+                } else {
+                    resMess += `C${ !whiteTurn ? 'B' : 'W' };` 
+                    whiteTurn = !whiteTurn;
+                } 
+            };
 
             return resMess;
         } else return false;
