@@ -46,7 +46,7 @@ class chessGame{
 
     //#region boardManagement
 
-    #getPieceColor(row, col){ return this.#chessBoard[row][col].white; };
+    #pieceColor(row, col){ return this.#chessBoard[row][col].white; };
 
     #getPiece(row, col){ return this.#chessBoard[row][col].piece; };
 
@@ -55,17 +55,17 @@ class chessGame{
     #setPieceObj(row, col, pieceObj){ this.#chessBoard[row][col] = pieceObj };
 
     #movePieceObj(sRow, sCol, eRow, eCol){
-        let movedPiece = getPieceObj(sRow, sCol);
+        let movedPiece = this.#getPieceObj(sRow, sCol);
         
         if( movedPiece.piece === '♚' ){
-            if( pieceColor(sRow, sCol) === blackPiece ){
+            if( this.#pieceColor(sRow, sCol) === blackPiece ){
                 blackKing.row = eRow; blackKing.col = eCol;
             } else {
                 whiteKing.row = eRow; whiteKing.col = eCol;
             }
         }
-        setPieceObj( eRow, eCol, movedPiece ); 
-        setPieceObj( sRow, sCol, {piece : '', color : ''} );
+        this.#setPieceObj( eRow, eCol, movedPiece ); 
+        this.#setPieceObj( sRow, sCol, {piece : '', color : ''} );
     }
 
     //#endregion boardManagement
@@ -74,12 +74,12 @@ class chessGame{
 
     #movesPossible(row, column){
         let guesses = [];
-        if( getPiece(row, column) === '♟' ) guesses = this.#movesPossiblePawn(row, column);
-        if( getPiece(row, column) === '♜' ) guesses = this.#movesPossibleRook(row, column);
-        if( getPiece(row, column) === '♞' ) guesses = this.#movesPossibleKnight(row, column);
-        if( getPiece(row, column) === '♝' ) guesses = this.#movesPossibleBishop(row, column);
-        if( getPiece(row, column) === '♚' ) guesses = this.#movesPossibleKing(row, column);
-        if( getPiece(row, column) === '♛' ) guesses = this.#movesPossibleQueen(row, column);
+        if( this.#getPiece(row, column) === '♟' ) guesses = this.#movesPossiblePawn(row, column);
+        if( this.#getPiece(row, column) === '♜' ) guesses = this.#movesPossibleRook(row, column);
+        if( this.#getPiece(row, column) === '♞' ) guesses = this.#movesPossibleKnight(row, column);
+        if( this.#getPiece(row, column) === '♝' ) guesses = this.#movesPossibleBishop(row, column);
+        if( this.#getPiece(row, column) === '♚' ) guesses = this.#movesPossibleKing(row, column);
+        if( this.#getPiece(row, column) === '♛' ) guesses = this.#movesPossibleQueen(row, column);
     
         return guesses.filter( index => { 
             let pRow = Math.floor(index / 9), pCol = index % 9;
@@ -242,6 +242,22 @@ class chessGame{
 
     //#region checkingLogic 
 
+    #pawnCheck(row, column){
+        let possibilities = [];
+        let direction = this.#pieceColor(row, column) === whitePiece ? -1 : 1;
+    
+        if( column !== 1 )
+            if( this.#getPiece(row + direction, column - 1) !== '' ||
+                this.#pieceColor(row + direction, column - 1) !== this.#pieceColor(row, column) ) 
+                    possibilities.push((row + direction ) * 9 + column - 1);
+    
+        if( column !== 8 )
+            if( this.#getPiece(row + direction, column + 1) !== '' ||
+                this.#pieceColor(row + direction, column + 1) !== this.#pieceColor(row, column) ) 
+                    possibilities.push((row + direction ) * 9 + column + 1);
+        return possibilities;
+    };
+
     #checkHelper(row, column){
         let guesses = [];
         if( this.#getPiece(row, column) === '♜' ) guesses = this.#movesPossibleRook(row, column);
@@ -250,7 +266,7 @@ class chessGame{
         if( this.#getPiece(row, column) === '♚' ) guesses = this.#movesPossibleKing(row, column);
         if( this.#getPiece(row, column) === '♛' ) guesses = this.#movesPossibleQueen(row, column);
         return guesses;
-    }
+    };
     
     #pieceCheck(row, column){
         return this.#getPiece(row, column) === '♟' ? this.#pawnCheck(row, column) : this.#checkHelper(row, column);
@@ -269,7 +285,7 @@ class chessGame{
         }
     
         return checked;
-    }
+    };
     
     #ifCheck(white){
         let king = white ? whiteKing : blackKing;
@@ -279,7 +295,7 @@ class chessGame{
         return checked[kingIndex].some( index => { 
             return this.#pieceColor(Math.floor(index / 9), index % 9) !== who; 
         });
-    }
+    };
 
     //#endregion checkingLogic
 
@@ -306,7 +322,7 @@ class chessGame{
         if( this.#movesPossible(king.row, king.col).length !== 0)  return false; //king can move without check, so its fine, he's secure
 
         let enemyChecks = currChecking[king.row * 9 + king.col].filter( idx => {
-            return this.#getPieceColor(Math.floor( idx / 9 ), idx % 9) === whitePlayer;
+            return this.#pieceColor(Math.floor( idx / 9 ), idx % 9) === whitePlayer;
         }); //we get pieces of opposite player who attack our king
 
         return enemyChecks.some( idx => {
@@ -326,7 +342,7 @@ class chessGame{
 
                     currChecking[index].forEach( pieceToHelp => {
                         let phRow = Math.floor( pieceToHelp / 9); let phCol = pieceToHelp % 9;
-                        if( this.#getPieceCol( phRow, phCol ) === whitePlayer &&
+                        if( this.#pieceColor( phRow, phCol ) === whitePlayer &&
                             this.#validateMove(phRow, phCol, atkRow, atkCol) ) rescued = true; //we can move and block atacking piece
                     });
                 })
@@ -345,7 +361,7 @@ class chessGame{
         let resMess = '';
 
         let whitePlayerToMove = (this.#whitePlayerLogin == playerLogin);
-        if( this.#getPieceColor(sRow, sCol) != whitePlayerToMove || this.#whiteTurn != whitePlayerToMove) 
+        if( this.#pieceColor(sRow, sCol) != whitePlayerToMove || this.#whiteTurn != whitePlayerToMove) 
             return false;
 
         if( this.#validateMove(sRow, sCol, eRow, eCol) ){
