@@ -16,29 +16,31 @@ class chessGame{
         col: 5
     };
 
-    constructor(bpLogin, wpLogin) {
-        function playerInit(whitePlayer){
-            let r = whitePlayer ? 7 : 2;
-            for(let c = 1; c <= 8; c++){ this.#chessBoard[r] = {piece : '♟', white : whitePlayer}; };
+    #playerInit(whitePlayer){
+        let r = whitePlayer ? 7 : 2;
+        for(let c = 1; c <= 8; c++){ this.#chessBoard[r][c] = { piece : '♟', white : whitePlayer }; };
 
-            r = whitePlayer ? 8 : 1;
-            this.#chessBoard[r][8] = {piece : '♜', white : whitePlayer}; 
-            this.#chessBoard[r][1] = {piece : '♜', white : whitePlayer}; 
-            this.#chessBoard[r][7] = {piece : '♞', white : whitePlayer}; 
-            this.#chessBoard[r][2] = {piece : '♞', white : whitePlayer}; 
-            this.#chessBoard[r][6] = {piece : '♝', white : whitePlayer}; 
-            this.#chessBoard[r][3] = {piece : '♝', white : whitePlayer}; 
-            this.#chessBoard[r][4] = {piece : '♚', white : whitePlayer}; 
-            this.#chessBoard[r][5] = {piece : '♛', white : whitePlayer}; 
-        }
+        r = whitePlayer ? 8 : 1;
+        this.#chessBoard[r][8] = {piece : '♜', white : whitePlayer}; 
+        this.#chessBoard[r][1] = {piece : '♜', white : whitePlayer}; 
+        this.#chessBoard[r][7] = {piece : '♞', white : whitePlayer}; 
+        this.#chessBoard[r][2] = {piece : '♞', white : whitePlayer}; 
+        this.#chessBoard[r][6] = {piece : '♝', white : whitePlayer}; 
+        this.#chessBoard[r][3] = {piece : '♝', white : whitePlayer}; 
+        this.#chessBoard[r][4] = {piece : '♚', white : whitePlayer}; 
+        this.#chessBoard[r][5] = {piece : '♛', white : whitePlayer}; 
+    }
+
+    constructor(wpLogin) {
 
         this.#chessBoard = Array(9).fill().map( () => (Array(9).fill( { piece : '', white : false } )));
-        this.#chessBoard[0].fill( () => 'A');
-        this.#whitePlayerLogin = wpLogin; this.#blackPlayerLogin = bpLogin;
+        this.#chessBoard[0].fill('A');
+
+        this.#whitePlayerLogin = wpLogin;
 
         for(let i = 1; i <= 8; i++){ this.#chessBoard[i][0] = 'A' };
 
-        playerInit(true); playerInit(false);
+        this.#playerInit(true); this.#playerInit(false);
         this.#whiteTurn = true;
     }
 
@@ -58,10 +60,10 @@ class chessGame{
         let movedPiece = this.#getPieceObj(sRow, sCol);
         
         if( movedPiece.piece === '♚' ){
-            if( this.#pieceColor(sRow, sCol) === blackPiece ){
-                blackKing.row = eRow; blackKing.col = eCol;
-            } else {
+            if( this.#pieceColor(sRow, sCol) ){
                 whiteKing.row = eRow; whiteKing.col = eCol;
+            } else {
+                blackKing.row = eRow; blackKing.col = eCol;
             }
         }
         this.#setPieceObj( eRow, eCol, movedPiece ); 
@@ -101,8 +103,8 @@ class chessGame{
     
     #movesPossiblePawn(row, column){
         let possibilities = [];
-        let direction = this.#pieceColor(row, column) === whitePiece ? -1 : 1;
-        let startPawnRow = this.#pieceColor(row, column) === whitePiece ? 7 : 2;
+        let direction = this.#pieceColor(row, column) ? -1 : 1;
+        let startPawnRow = this.#pieceColor(row, column) ? 7 : 2;
     
         if( column !== 1 )
             if( this.#getPiece(row + direction, column - 1) !== '' && 
@@ -244,7 +246,7 @@ class chessGame{
 
     #pawnCheck(row, column){
         let possibilities = [];
-        let direction = this.#pieceColor(row, column) === whitePiece ? -1 : 1;
+        let direction = this.#pieceColor(row, column) ? -1 : 1;
     
         if( column !== 1 )
             if( this.#getPiece(row + direction, column - 1) !== '' ||
@@ -288,7 +290,7 @@ class chessGame{
     };
     
     #ifCheck(white){
-        let king = white ? whiteKing : blackKing;
+        let king = white ? this.#whiteKing : this.#blackKing;
         let kingIndex = king.row * 9 + king.col;
         let checked = this.#getChecking();
         
@@ -360,30 +362,37 @@ class chessGame{
     moveRequest(sRow, sCol, eRow, eCol, playerLogin){ //it returnes what changes are needed to game state/mates or checkmates eventually
         let resMess = '';
 
-        let whitePlayerToMove = (this.#whitePlayerLogin == playerLogin);
-        if( this.#pieceColor(sRow, sCol) != whitePlayerToMove || this.#whiteTurn != whitePlayerToMove) 
-            return false;
+        //let whitePlayerToMove = (this.#whitePlayerLogin == playerLogin);
+
+        //if( this.#pieceColor(sRow, sCol) != whitePlayerToMove || this.#whiteTurn != whitePlayerToMove) 
+            //return false;
 
         if( this.#validateMove(sRow, sCol, eRow, eCol) ){
             this.#movePieceObj(sRow, sCol, eRow, eCol);
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
-            if( this.#ifCheck(!whiteTurn) ) { 
-                if( this.#checkMate(!whiteTurn) ){
-                    resMess += `M${ !whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
+            if( this.#ifCheck(!this.whiteTurn) ) { 
+                if( this.#checkMate(!this.whiteTurn) ){
+                    resMess += `M${ !this.whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
                 } else {
-                    resMess += `C${ !whiteTurn ? 'B' : 'W' };` 
-                    whiteTurn = !whiteTurn;
+                    resMess += `C${ !this.whiteTurn ? 'B' : 'W' };` 
+                    this.whiteTurn = !this.whiteTurn;
                 } 
             };
 
             return resMess;
         } else return false;
+    };
+
+    setBlackPlayer(bpLogin){
+        this.#blackPlayerLogin = bpLogin;
     }
 
     #validateMove(sRow, sCol, eRow, eCol){
         return this.#movesPossible(sRow, sCol).includes(eRow * 9 + eCol);
-    }
+    };
 
     //#endregion gameManagement
 }
+
+module.exports = { chessGame };
