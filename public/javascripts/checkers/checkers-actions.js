@@ -223,4 +223,3 @@ window.addEventListener('load', (event) => {
       });
     }
 });
-

@@ -33,6 +33,8 @@
 .chess-board td{
     width: 11%;
     height: 11%;
+    text-align: center;
+    font-size: 30px;
 }
 
 .chess-board th{

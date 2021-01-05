@@ -1,6 +1,24 @@
 var board = document.getElementById('chess-board-tbody');
 var tab = document.getElementById('chess-board');
 
+var socket = io();
+socket.on('connect', () => {
+    $.ajax({
+        type: "POST",
+        url: "/set-socket-id",
+        data: {socketid: socket.id},
+        success: function(data) {
+        if ( data === '' ) {
+            window.location.href ='/';
+        } else {
+            let room_name = data.substr(data.indexOf('-') + 1, data.length);
+            let game_type = data.substr(0, data.indexOf('-'))
+            socket.emit('join-new-room', { game: game_type, room: room_name });
+            }
+        }
+    })
+});
+
 let blackPiece = 'rgb(65, 65, 65)'; let whitePiece = 'rgb(255, 249, 249)';
 
 let clickedColumn = 5, clickedRow = 5;
@@ -18,6 +36,8 @@ let whiteKing = {
     col: 5
 };
 
+let cellMarkedChecked = 5;
+
 function getPiece(row, column){ return chessBoard[row][column].piece; };
 
 function getPieceObj(row, column) { return chessBoard[row][column]; };
@@ -32,13 +52,14 @@ function setViewColor(row, column, icolor){ board.rows[row].cells[column].style.
 
 function setViewChecked(row, column){ board.rows[row].cells[column].style.border = '3px solid red' };
 
+function setViewUnchecked(row, column){ board.rows[row].cells[column].style.border = '0px' };
+
 function pieceColor(row, column){ return chessBoard[row][column].color };
 
-function setClicked(row, column){ board.rows[row].cells[column].style.border = '3px solid red'; };
-
 function markChecking(who){
+    setViewUnchecked( Math.floor( cellMarkedChecked / 9), cellMarkedChecked % 9 );
     let king = who === whitePiece ? whiteKing : blackKing;
-    setViewChecked( king.row, king.col);
+    setViewChecked( king.row, king.col );
 };
 
 function unsetPossibilities(){ 
@@ -60,10 +81,8 @@ function movePieceView(sRow, sCol, eRow, eCol){
     let movedPiece = getPiece(sRow, sCol);
 
     setViewColor( eRow, eCol, pieceColor(sRow, sCol) );
-    setPieceObj( eRow, eCol, getPieceObj(sRow, sCol) ); 
-    setPieceView( eRow, eCol, movedPiece );
-
-    setPieceObj( sRow, sCol, {piece : '', color : ''} ); setPieceView( sRow, sCol, '' );
+    movePieceObj(sRow, sCol, eRow, eCol);
+    setPieceView( eRow, eCol, movedPiece ); setPieceView( sRow, sCol, '' );
 
     whoseTurn = whoseTurn === whitePiece ? blackPiece : whitePiece;
 };
@@ -79,7 +98,7 @@ function movePieceObj(sRow, sCol, eRow, eCol){
         }
     }
     setPieceObj( eRow, eCol, movedPiece ); 
-    setPieceObj( sRow, sCol, {piece : '', color : ''} );
+    setPieceObj( sRow, sCol, { piece : '', color : '' } );
 }
 
 function movePossible(row, column){
@@ -209,7 +228,7 @@ function checkHelper(row, column){
     if( getPiece(row, column) === '♚' ) guesses = movesPossibleKing(row, column);
     if( getPiece(row, column) === '♛' ) guesses = movesPossibleQueen(row, column);
     return guesses;
-}
+};
 
 function pawnCheck(row, column){
     let possibilities = [];
@@ -225,7 +244,7 @@ function pawnCheck(row, column){
             pieceColor(row + direction, column + 1) !== pieceColor(row, column) ) 
                 possibilities.push((row + direction ) * 9 + column + 1);
     return possibilities;
-}
+};
 
 function pieceCheck(row, column){
     return getPiece(row, column) === '♟' ? pawnCheck(row, column) : checkHelper(row, column);
@@ -244,7 +263,7 @@ function getChecking(){
     }
 
     return checked;
-}
+};
 
 function ifCheck(who){
     let king = who === whitePiece ? whiteKing : blackKing;
@@ -254,49 +273,6 @@ function ifCheck(who){
     checked[kingIndex].forEach( index => { if( pieceColor(Math.floor(index / 9), index % 9) !== who) enemyChecks = true; } );
 
     return enemyChecks;
-}
-
-function addListeners(){
-    board.addEventListener('click', (e) => {
-        let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
-
-        clickedColumn = e.target.cellIndex;
-        clickedRow = e.target.parentNode.rowIndex;
-
-        if(clickedColumn === 0 || clickedRow === 0) { //means someone clicked on 12345678 or ABCDEFGH 
-            unsetPossibilities(); return; 
-        }
-
-        if(!fieldClicked){
-
-            if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
-                unsetPossibilities(); 
-                return; 
-            }
-            //player clicked on its piece and its his turn
-            movepossibilities = movePossible( clickedRow, clickedColumn );
-            setPossibilities();
-
-            fieldClicked = true;
-
-        } else { //we've marked some piece
-            clickedColumn = e.target.cellIndex;
-            clickedRow = e.target.parentNode.rowIndex;
-            clickedIndex = clickedRow * 9 + clickedColumn;
-
-            if( movepossibilities.includes(clickedIndex) ){
-                movePieceView( firstFieldRow, firstFieldCol, clickedRow, clickedColumn );
-                
-                if( ifCheck(whoseTurn) ){
-                    let checkedKing = whoseTurn === whitePiece ? whiteKing : blackKing;
-                    setViewChecked(checkedKing.row, checkedKing.col);
-                }
-            }
-
-            fieldClicked = false;
-            unsetPossibilities();
-        }
-    });
 };
 
 function createBoardTable(){
@@ -354,7 +330,7 @@ function setPlayers(color){ //0 stands for black, 1 for white
     board.rows[row].cells[5].style.color = collored;
     board.rows[row].cells[4].innerHTML = '♛';
     board.rows[row].cells[4].style.color = collored;
-}
+};
 
 function logicSetup(){
     for(let i = 1; i <= 8; i++){
@@ -366,7 +342,7 @@ function logicSetup(){
         }
         chessBoard.push(pom);
     }
-}
+};
 
 function boarderSetup(){
     createBoardTable();
@@ -374,6 +350,58 @@ function boarderSetup(){
     setPlayers(1);
     addListeners();
     logicSetup();
-}
+};
+
+function addListeners(){
+    board.addEventListener('click', (e) => {
+
+        let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
+
+        clickedColumn = e.target.cellIndex;
+        clickedRow = e.target.parentNode.rowIndex;
+
+        if(clickedColumn === 0 || clickedRow === 0) { //someone clicked on 12345678 or ABCDEFGH 
+            unsetPossibilities(); return; 
+        }
+
+        if(!fieldClicked){
+
+            if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
+                unsetPossibilities(); 
+                return; 
+            }
+            //player clicked on its piece and its his turn
+            movepossibilities = movePossible( clickedRow, clickedColumn );
+            setPossibilities();
+
+            fieldClicked = true;
+
+        } else { //we've marked some piece
+            clickedColumn = e.target.cellIndex;
+            clickedRow = e.target.parentNode.rowIndex;
+
+            if( movepossibilities.includes( clickedRow * 9 + clickedColumn ) )
+                socket.emit( 'check-move-chess', firstFieldRow, firstFieldCol, clickedRow, clickedColumn );
+        }
+    });
+};
 
 window.addEventListener('load', boarderSetup);
+
+socket.on('server-chess-move', msg => {
+    if(msg != false){
+        let toDo = msg.split(';');
+        let move = toDo[0];
+        movePieceView(move[0], move[1], move[2], move[3]);
+
+        if( move[1] && move[1].includes('M') ){ //we have a checkmate
+            markChecking( move[1][1] == 'W' ? whitePiece : blackPiece );
+            alert(`${ move[1][1] == 'B' ? 'White' : 'Black' } player has won!`)
+        } else if ( move[1] && move[1].includes('C') ) {
+            markChecking( move[1][1] == 'W' ? whitePiece : blackPiece );
+        }
+    } 
+
+    fieldClicked = false;
+    unsetPossibilities();
+})
