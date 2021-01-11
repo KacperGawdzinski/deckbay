@@ -61,9 +61,9 @@ class chessGame{
         
         if( movedPiece.piece === '♚' ){
             if( this.#pieceColor(sRow, sCol) ){
-                whiteKing.row = eRow; whiteKing.col = eCol;
+                this.#whiteKing.row = eRow; this.#whiteKing.col = eCol;
             } else {
-                blackKing.row = eRow; blackKing.col = eCol;
+                this.#blackKing.row = eRow; this.#blackKing.col = eCol;
             }
         }
         this.#setPieceObj( eRow, eCol, movedPiece ); 
