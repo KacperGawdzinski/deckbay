@@ -8,19 +8,20 @@ socket.on('connect', () => {
         url: "/set-socket-id",
         data: {socketid: socket.id},
         success: function(data) {
-        if ( data === '' ) {
-            window.location.href ='/';
-        } else {
-            let room_name = data.substr(data.indexOf('-') + 1, data.length);
-            let game_type = data.substr(0, data.indexOf('-'))
-            socket.emit('join-new-room', { game: game_type, room: room_name });
-            }
+            if ( data === '' ) {
+                window.location.href ='/';
+            } else {
+                let room_name = data.substr(data.indexOf('-') + 1, data.length);
+                let game_type = data.substr(0, data.indexOf('-'))
+                socket.emit('join-new-room', { game: game_type, room: room_name });
+                }
         }
     })
 });
 
 let blackPiece = 'rgb(65, 65, 65)'; let whitePiece = 'rgb(255, 249, 249)';
 
+let userColor = whitePiece;
 let clickedColumn = 5, clickedRow = 5;
 let fieldClicked = false; let whoseTurn = whitePiece;
 let movepossibilities = [];
@@ -36,7 +37,10 @@ let whiteKing = {
     col: 5
 };
 
-let cellMarkedChecked = 5;
+let cellMarkedChecked = {
+    row : 0,
+    col : 0
+};
 
 function getPiece(row, column){ return chessBoard[row][column].piece; };
 
@@ -57,9 +61,9 @@ function setViewUnchecked(row, column){ board.rows[row].cells[column].style.bord
 function pieceColor(row, column){ return chessBoard[row][column].color };
 
 function markChecking(who){
-    setViewUnchecked( Math.floor( cellMarkedChecked / 9), cellMarkedChecked % 9 );
     let king = who === whitePiece ? whiteKing : blackKing;
     setViewChecked( king.row, king.col );
+    cellMarkedChecked.row = king.row; cellMarkedChecked.col = king.col;
 };
 
 function unsetPossibilities(){ 
@@ -389,19 +393,19 @@ function addListeners(){
 window.addEventListener('load', boarderSetup);
 
 socket.on('server-chess-move', msg => {
-    if(msg != false){
+    if(msg != '' && msg != false){
+        setViewUnchecked( cellMarkedChecked.row, cellMarkedChecked.col );
         let toDo = msg.split(';');
         let move = toDo[0];
         movePieceView(move[0], move[1], move[2], move[3]);
-
-        if( move[1] && move[1].includes('M') ){ //we have a checkmate
-            markChecking( move[1][1] == 'W' ? whitePiece : blackPiece );
-            alert(`${ move[1][1] == 'B' ? 'White' : 'Black' } player has won!`)
-        } else if ( move[1] && move[1].includes('C') ) {
-            markChecking( move[1][1] == 'W' ? whitePiece : blackPiece );
+        if( toDo[1] && toDo[1].includes('M') ){ //we have a checkmate
+            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
+            alert(`${ toDo[1][1] == 'B' ? 'White' : 'Black' } player has won!`)
+        } else if ( toDo[1] && toDo[1].includes('C') ) {
+            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
         }
     } 
 
     fieldClicked = false;
     unsetPossibilities();
-})
+}); 
