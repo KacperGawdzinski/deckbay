@@ -1,8 +1,27 @@
 var board = document.getElementById('chess-board-tbody');
 var tab = document.getElementById('chess-board');
 
+var socket = io();
+socket.on('connect', () => {
+    $.ajax({
+        type: "POST",
+        url: "/set-socket-id",
+        data: {socketid: socket.id},
+        success: function(data) {
+            if ( data === '' ) {
+                window.location.href ='/';
+            } else {
+                let room_name = data.substr(data.indexOf('-') + 1, data.length);
+                let game_type = data.substr(0, data.indexOf('-'))
+                socket.emit('join-new-room', { game: game_type, room: room_name });
+                }
+        }
+    })
+});
+
 let blackPiece = 'rgb(65, 65, 65)'; let whitePiece = 'rgb(255, 249, 249)';
 
+let userColor = whitePiece;
 let clickedColumn = 5, clickedRow = 5;
 let fieldClicked = false; let whoseTurn = whitePiece;
 let movepossibilities = [];
@@ -16,6 +35,11 @@ let blackKing = {
 let whiteKing = {
     row : 8, 
     col: 5
+};
+
+let cellMarkedChecked = {
+    row : 0,
+    col : 0
 };
 
 function getPiece(row, column){ return chessBoard[row][column].piece; };
@@ -32,13 +56,14 @@ function setViewColor(row, column, icolor){ board.rows[row].cells[column].style.
 
 function setViewChecked(row, column){ board.rows[row].cells[column].style.border = '3px solid red' };
 
-function pieceColor(row, column){ return chessBoard[row][column].color };
+function setViewUnchecked(row, column){ board.rows[row].cells[column].style.border = '0px' };
 
-function setClicked(row, column){ board.rows[row].cells[column].style.border = '3px solid red'; };
+function pieceColor(row, column){ return chessBoard[row][column].color };
 
 function markChecking(who){
     let king = who === whitePiece ? whiteKing : blackKing;
-    setViewChecked( king.row, king.col);
+    setViewChecked( king.row, king.col );
+    cellMarkedChecked.row = king.row; cellMarkedChecked.col = king.col;
 };
 
 function unsetPossibilities(){ 
@@ -56,26 +81,12 @@ function setPossibilities(){
     });
 };
 
-function movePiece(sRow, sCol, eRow, eCol){
-    setPiece( eRow, eCol, getPiece(sRow, sCol) );
-    setPiece( eRow, eCol, '' );
-};
-
 function movePieceView(sRow, sCol, eRow, eCol){
     let movedPiece = getPiece(sRow, sCol);
 
-    if( movedPiece === '♚' ){
-        if( pieceColor(sRow, sCol) === blackPiece ){
-            blackKing.row = eRow; blackKing.col = eCol;
-        } else {
-            whiteKing.row = eRow; whiteKing.col = eCol;
-        }
-    }
     setViewColor( eRow, eCol, pieceColor(sRow, sCol) );
-    setPieceObj( eRow, eCol, getPieceObj(sRow, sCol) ); 
-    setPieceView( eRow, eCol, movedPiece );
-
-    setPieceObj( sRow, sCol, {piece : '', color : ''} ); setPieceView( sRow, sCol, '' );
+    movePieceObj(sRow, sCol, eRow, eCol);
+    setPieceView( eRow, eCol, movedPiece ); setPieceView( sRow, sCol, '' );
 
     whoseTurn = whoseTurn === whitePiece ? blackPiece : whitePiece;
 };
@@ -91,7 +102,7 @@ function movePieceObj(sRow, sCol, eRow, eCol){
         }
     }
     setPieceObj( eRow, eCol, movedPiece ); 
-    setPieceObj( sRow, sCol, {piece : '', color : ''} );
+    setPieceObj( sRow, sCol, { piece : '', color : '' } );
 }
 
 function movePossible(row, column){
@@ -114,36 +125,6 @@ function movePossible(row, column){
         return checked;
     } );
 };
-
-function chuj(row, column){
-    let guesses = [];
-    if( getPiece(row, column) === '♜' ) guesses = movesPossibleRook(row, column);
-    if( getPiece(row, column) === '♞' ) guesses = movesPossibleKnight(row, column);
-    if( getPiece(row, column) === '♝' ) guesses = movesPossibleBishop(row, column);
-    if( getPiece(row, column) === '♚' ) guesses = movesPossibleKing(row, column);
-    if( getPiece(row, column) === '♛' ) guesses = movesPossibleQueen(row, column);
-    return guesses;
-}
-
-function pieceCheck(row, column){
-    return getPiece(row, column) === '♟' ? pawnCheck(row, column) : chuj(row, column);
-};
-
-function pawnCheck(row, column){
-    let possibilities = [];
-    let direction = pieceColor(row, column) === whitePiece ? -1 : 1;
-
-    if( column !== 1 )
-        if( getPiece(row + direction, column - 1) !== '' ||
-            pieceColor(row + direction, column - 1) !== pieceColor(row, column) ) 
-                possibilities.push((row + direction ) * 9 + column - 1);
-
-    if( column !== 8 )
-        if( getPiece(row + direction, column + 1) !== '' ||
-            pieceColor(row + direction, column + 1) !== pieceColor(row, column) ) 
-                possibilities.push((row + direction ) * 9 + column + 1);
-    return possibilities;
-}
 
 function moveRec(sRow, sCol, hRow, hCol){
     if( !(hRow >= 1 && hRow <= 8 && hCol >= 1 && hCol <= 8) ) return false;
@@ -243,6 +224,36 @@ function movesPossibleQueen(row, column){
     return movesPossibleRook(row, column).concat( movesPossibleBishop(row, column) );
 };
 
+function checkHelper(row, column){
+    let guesses = [];
+    if( getPiece(row, column) === '♜' ) guesses = movesPossibleRook(row, column);
+    if( getPiece(row, column) === '♞' ) guesses = movesPossibleKnight(row, column);
+    if( getPiece(row, column) === '♝' ) guesses = movesPossibleBishop(row, column);
+    if( getPiece(row, column) === '♚' ) guesses = movesPossibleKing(row, column);
+    if( getPiece(row, column) === '♛' ) guesses = movesPossibleQueen(row, column);
+    return guesses;
+};
+
+function pawnCheck(row, column){
+    let possibilities = [];
+    let direction = pieceColor(row, column) === whitePiece ? -1 : 1;
+
+    if( column !== 1 )
+        if( getPiece(row + direction, column - 1) !== '' ||
+            pieceColor(row + direction, column - 1) !== pieceColor(row, column) ) 
+                possibilities.push((row + direction ) * 9 + column - 1);
+
+    if( column !== 8 )
+        if( getPiece(row + direction, column + 1) !== '' ||
+            pieceColor(row + direction, column + 1) !== pieceColor(row, column) ) 
+                possibilities.push((row + direction ) * 9 + column + 1);
+    return possibilities;
+};
+
+function pieceCheck(row, column){
+    return getPiece(row, column) === '♟' ? pawnCheck(row, column) : checkHelper(row, column);
+};
+
 function getChecking(){
     let checked = Array(81).fill().map(() => Array());
 
@@ -256,7 +267,7 @@ function getChecking(){
     }
 
     return checked;
-}
+};
 
 function ifCheck(who){
     let king = who === whitePiece ? whiteKing : blackKing;
@@ -266,49 +277,6 @@ function ifCheck(who){
     checked[kingIndex].forEach( index => { if( pieceColor(Math.floor(index / 9), index % 9) !== who) enemyChecks = true; } );
 
     return enemyChecks;
-}
-
-function addListeners(){
-    board.addEventListener('click', (e) => {
-        let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
-
-        clickedColumn = e.target.cellIndex;
-        clickedRow = e.target.parentNode.rowIndex;
-
-        if(clickedColumn === 0 || clickedRow === 0) { //means someone clicked on 12345678 or ABCDEFGH 
-            unsetPossibilities(); return; 
-        }
-
-        if(!fieldClicked){
-
-            if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
-                unsetPossibilities(); 
-                return; 
-            }
-            //player clicked on its piece and its his turn
-            movepossibilities = movePossible( clickedRow, clickedColumn );
-            setPossibilities();
-
-            fieldClicked = true;
-
-        } else { //we've marked some piece
-            clickedColumn = e.target.cellIndex;
-            clickedRow = e.target.parentNode.rowIndex;
-            clickedIndex = clickedRow * 9 + clickedColumn;
-
-            if( movepossibilities.includes(clickedIndex) ){
-                movePieceView( firstFieldRow, firstFieldCol, clickedRow, clickedColumn );
-                
-                if( ifCheck(whoseTurn) ){
-                    let checkedKing = whoseTurn === whitePiece ? whiteKing : blackKing;
-                    setViewChecked(checkedKing.row, checkedKing.col);
-                }
-            }
-
-            fieldClicked = false;
-            unsetPossibilities();
-        }
-    });
 };
 
 function createBoardTable(){
@@ -366,7 +334,7 @@ function setPlayers(color){ //0 stands for black, 1 for white
     board.rows[row].cells[5].style.color = collored;
     board.rows[row].cells[4].innerHTML = '♛';
     board.rows[row].cells[4].style.color = collored;
-}
+};
 
 function logicSetup(){
     for(let i = 1; i <= 8; i++){
@@ -378,7 +346,7 @@ function logicSetup(){
         }
         chessBoard.push(pom);
     }
-}
+};
 
 function boarderSetup(){
     createBoardTable();
@@ -386,6 +354,58 @@ function boarderSetup(){
     setPlayers(1);
     addListeners();
     logicSetup();
-}
+};
+
+function addListeners(){
+    board.addEventListener('click', (e) => {
+
+        let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
+
+        clickedColumn = e.target.cellIndex;
+        clickedRow = e.target.parentNode.rowIndex;
+
+        if(clickedColumn === 0 || clickedRow === 0) { //someone clicked on 12345678 or ABCDEFGH 
+            unsetPossibilities(); return; 
+        }
+
+        if(!fieldClicked){
+
+            if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
+                unsetPossibilities(); 
+                return; 
+            }
+            //player clicked on its piece and its his turn
+            movepossibilities = movePossible( clickedRow, clickedColumn );
+            setPossibilities();
+
+            fieldClicked = true;
+
+        } else { //we've marked some piece
+            clickedColumn = e.target.cellIndex;
+            clickedRow = e.target.parentNode.rowIndex;
+
+            if( movepossibilities.includes( clickedRow * 9 + clickedColumn ) )
+                socket.emit( 'check-move-chess', firstFieldRow, firstFieldCol, clickedRow, clickedColumn );
+        }
+    });
+};
 
 window.addEventListener('load', boarderSetup);
+
+socket.on('server-chess-move', msg => {
+    if(msg != '' && msg != false){
+        setViewUnchecked( cellMarkedChecked.row, cellMarkedChecked.col );
+        let toDo = msg.split(';');
+        let move = toDo[0];
+        movePieceView(move[0], move[1], move[2], move[3]);
+        if( toDo[1] && toDo[1].includes('M') ){ //we have a checkmate
+            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
+            alert(`${ toDo[1][1] == 'B' ? 'White' : 'Black' } player has won!`)
+        } else if ( toDo[1] && toDo[1].includes('C') ) {
+            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
+        }
+    } 
+
+    fieldClicked = false;
+    unsetPossibilities();
+}); 
