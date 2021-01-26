@@ -286,17 +286,6 @@ io.on('connection', socket => {
     });
 
     socket.on('check-move-checkers', tab => {   //checking if move is allowed
-<<<<<<< HEAD
-        console.log("--------------------");
-        console.log(socket.id);
-        console.log(socketLogin.get(socket.id));
-        console.log(loginRoom.get(socketLogin.get(socket.id)));
-        console.log(roomTurn.get(loginRoom.get(socketLogin.get(socket.id))));
-        console.log(tab[2]);
-        console.log(roomTurn);
-        console.log("--------------------");
-=======
->>>>>>> 660444333f7035db330542b8948173872f22ac6b
         if (tab[2] == roomTurn.get(loginRoom.get(socketLogin.get(socket.id)))) {
             var check = new Checkers(tab[2]);
             check.updateBoard(roomBoard[loginRoom.get(socketLogin.get(socket.id))]);
@@ -320,7 +309,6 @@ io.on('connection', socket => {
         }
     });
 
-<<<<<<< HEAD
     socket.on('surrender-checkers',() =>{
         io.to(loginRoom.get(socketLogin.get(socket.id))).emit('surrender');
     })
@@ -356,17 +344,6 @@ io.on('connection', socket => {
             io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-draw",1);
         }
     })
-=======
-    socket.on('check-move-chess', (sRow, sCol, eRow, eCol) => {
-        let reqLogin =  socketLogin.get(socket.id);
-        let reqRoom = loginRoom.get(reqLogin);
-
-        let message = roomChesslogic.get(reqRoom.split('-')[1]).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
-        console.log(message);
-        io.to(reqRoom).emit('server-chess-move', message);
-        console.log("CHUJ");
-    });
->>>>>>> 660444333f7035db330542b8948173872f22ac6b
 
     socket.on('ready', () => {
         var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
