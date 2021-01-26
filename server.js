@@ -25,7 +25,6 @@ var roomOptions = new Map();    //full room name -> options
 var roomPlayers = {};           //full room name -> [players allowed to play (logins)]  //merge maps into one
 var roomBoard = {};             //full room name -> gameboard
 var roomTurn = new Map();       //full room name -> turn
-var roomLastMove = {};
 
 let roomChesslogic = new Map(); //full room name -> it's game in class representation
 
@@ -204,8 +203,6 @@ app.post('/validate-room', async function(req, res) {              //maybe some 
         black: req.body.black,
         readyWhite: req.body.readyWhite,
         readyBlack: req.body.readyBlack,
-        drawWhite: req.body.drawWhite,
-        drawBlack: req.body.drawBlack,
         length: Math.floor(req.body.length),
         bonus: Math.floor(req.body.bonus)
     })
@@ -275,9 +272,6 @@ io.on('connection', socket => {
                     roomPasswd.delete(full_room_name);
                 }
                 roomOptions.delete(full_room_name);
-                roomTurn.delete(full_room_name);
-                delete roomLastMove[full_room_name];
-                delete roomBoard[full_room_name];
             }
             socketLogin.delete(socket.id)
             io.to('game-' + game).emit('rooms', availableRooms(game));
@@ -288,8 +282,7 @@ io.on('connection', socket => {
     socket.on('check-move-checkers', tab => {   //checking if move is allowed
         if (tab[2] == roomTurn.get(loginRoom.get(socketLogin.get(socket.id)))) {
             var check = new Checkers(tab[2]);
-            check.updateBoard(roomBoard[loginRoom.get(socketLogin.get(socket.id))]);
-            roomLastMove[loginRoom.get(socketLogin.get(socket.id))]= [...check.boarad];
+            check.updateBoard(roomBoard[loginRoom.get(socketLogin.get(socket.id))]);   
             check.checed=tab[0];
             var move1 = check.convertId(check.checed);
             check.checkMoves(move1[0],move1[1]);
@@ -309,41 +302,15 @@ io.on('connection', socket => {
         }
     });
 
-    socket.on('surrender-checkers',() =>{
-        io.to(loginRoom.get(socketLogin.get(socket.id))).emit('surrender');
-    })
-    socket.on('undo-checkers',() =>{
-        roomBoard[loginRoom.get(socketLogin.get(socket.id))] = roomLastMove[loginRoom.get(socketLogin.get(socket.id))];
-        if (roomTurn.get(loginRoom.get(socketLogin.get(socket.id))) == 1) {
-            roomTurn.set(loginRoom.get(socketLogin.get(socket.id)), 0);
-        }else{
-            roomTurn.set(loginRoom.get(socketLogin.get(socket.id)), 1);
-        }
-        io.to(loginRoom.get(socketLogin.get(socket.id))).emit('undo-server',roomLastMove[loginRoom.get(socketLogin.get(socket.id))]);
-    })
+    socket.on('check-move-chess', (sRow, sCol, eRow, eCol) => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
 
-    socket.on('draw-checkers',() =>{
-        var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
-        if (opt["white"]==socketLogin.get(socket.id)) {
-            if (opt['drawWhite']==true) {
-                opt['drawWhite']=false;
-            }else{
-                opt['drawWhite']=true;
-            }
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",0);
-        }
-        if (opt["black"]==socketLogin.get(socket.id)) {
-            if (opt['drawBlack']==true) {
-                opt['drawBlack']=false;
-            }else{
-                opt['drawBlack']=true;
-            }
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",0);
-        }
-        if (opt['drawBlack'] == true && opt['drawWhite'] == true) {
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-draw",1);
-        }
-    })
+        let message = roomChesslogic.get(reqRoom.split('-')[1]).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
+        console.log(message);
+        io.to(reqRoom).emit('server-chess-move', message);
+        console.log("CHUJ");
+    });
 
     socket.on('ready', () => {
         var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
