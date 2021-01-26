@@ -309,6 +309,7 @@ io.on('connection', socket => {
         let message = roomChesslogic.get(reqRoom.split('-')[1]).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
         console.log(message);
         io.to(reqRoom).emit('server-chess-move', message);
+        console.log("CHUJ");
     });
 
     socket.on('ready', () => {

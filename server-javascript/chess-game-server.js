@@ -27,8 +27,8 @@ class chessGame{
         this.chessBoard[r][2] = {piece : '♞', white : whitePlayer}; 
         this.chessBoard[r][6] = {piece : '♝', white : whitePlayer}; 
         this.chessBoard[r][3] = {piece : '♝', white : whitePlayer}; 
-        this.chessBoard[r][4] = {piece : '♚', white : whitePlayer}; 
-        this.chessBoard[r][5] = {piece : '♛', white : whitePlayer}; 
+        this.chessBoard[r][5] = {piece : '♚', white : whitePlayer}; 
+        this.chessBoard[r][4] = {piece : '♛', white : whitePlayer}; 
     }
 
     constructor(wpLogin) {
@@ -295,7 +295,7 @@ class chessGame{
         let checked = this.getChecking();
         
         return checked[kingIndex].some( index => { 
-            return this.pieceColor(Math.floor(index / 9), index % 9) !== who; 
+            return this.pieceColor(Math.floor(index / 9), index % 9) !== white; 
         });
     };
 
@@ -318,13 +318,13 @@ class chessGame{
             return false;
         }
 
-        let king = whitePlayer ? whiteKing : blackKing;
+        let king = whitePlayer ? this.whiteKing : this.blackKing;
         let currChecking = this.getChecking();
 
         if( this.movesPossible(king.row, king.col).length !== 0)  return false; //king can move without check, so its fine, he's secure
 
         let enemyChecks = currChecking[king.row * 9 + king.col].filter( idx => {
-            return this.pieceColor(Math.floor( idx / 9 ), idx % 9) === whitePlayer;
+            return this.pieceColor(Math.floor( idx / 9 ), idx % 9) === this.whitePlayer;
         }); //we get pieces of opposite player who attack our king
 
         return enemyChecks.some( idx => {
@@ -344,7 +344,7 @@ class chessGame{
 
                     currChecking[index].forEach( pieceToHelp => {
                         let phRow = Math.floor( pieceToHelp / 9); let phCol = pieceToHelp % 9;
-                        if( this.pieceColor( phRow, phCol ) === whitePlayer &&
+                        if( this.pieceColor( phRow, phCol ) === this.whitePlayer &&
                             this.validateMove(phRow, phCol, atkRow, atkCol) ) rescued = true; //we can move and block atacking piece
                     });
                 })
@@ -362,26 +362,25 @@ class chessGame{
     moveRequest(sRow, sCol, eRow, eCol, playerLogin){ //it returnes what changes are needed to game state/mates or checkmates eventually
         let resMess = '';
 
-        //let whitePlayerToMove = (this.whitePlayerLogin == playerLogin);
-
-        //if( this.pieceColor(sRow, sCol) != whitePlayerToMove || this.whiteTurn != whitePlayerToMove) 
-            //return false;
+        let reqWhitePlayer = playerLogin == this.whitePlayerLogin ? true : false; //if whitePlayeris requesting move
+        
+        if( reqWhitePlayer != this.whiteTurn ) return ''; //it means we tried to move during another player's turn
+        if( this.pieceColor( sRow, sCol ) != this.whiteTurn ) return ''; //it means we tried to move another's player piece
 
         if( this.validateMove(sRow, sCol, eRow, eCol) ){
             this.movePieceObj(sRow, sCol, eRow, eCol);
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
             if( this.ifCheck(!this.whiteTurn) ) { 
-                if( this.checkMate(!this.whiteTurn) ){
+                if( this.checkMate(!this.whiteTurn) )
                     resMess += `M${ !this.whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
-                } else {
-                    resMess += `C${ !this.whiteTurn ? 'B' : 'W' };` 
-                    this.whiteTurn = !this.whiteTurn;
-                } 
+                else 
+                    resMess += `C${ !this.whiteTurn ? 'B' : 'W' };`;
             };
+            this.whiteTurn = !this.whiteTurn;
 
             return resMess;
-        } else return false;
+        } else return '';
     };
 
     setBlackPlayer(bpLogin){
