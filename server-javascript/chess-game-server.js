@@ -372,8 +372,11 @@ class chessGame{
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
             if( this.ifCheck(!this.whiteTurn) ) { 
+                console.log("A");
                 if( this.checkMate(!this.whiteTurn) )
+                {
                     resMess += `M${ !this.whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
+                }
                 else 
                     resMess += `C${ !this.whiteTurn ? 'B' : 'W' };`;
             };
