@@ -89,7 +89,7 @@ class chessGame{
             let endPiece = this.getPieceObj(pRow, pCol);
             this.movePieceObj(row, column, pRow, pCol);
             let checked = !this.ifCheck( this.pieceColor(pRow, pCol) );
-            this.setPieceObj(row, column, startPiece);
+            this.movePieceObj(pRow, pCol, row, column);
             this.setPieceObj(pRow, pCol, endPiece);
             return checked;
         } );
@@ -200,9 +200,11 @@ class chessGame{
     //region pathFinder
 
     shortestPath(sRow, sCol, eRow, eCol, piece){
-        if(piece === '♝') return this.shortestPathBishop(sRow, sCol, eRow, eCol);
-        if(piece === '♛') return this.shortestPathQueen(sRow, sCol, eRow, eCol);
-        if(piece === '♜') return this.shortestPathRook(sRow, sCol, eRow, eCol);
+        let pathTab;
+        if(piece === '♝') pathTab = this.shortestPathBishop(sRow, sCol, eRow, eCol);
+        if(piece === '♛') pathTab = this.shortestPathQueen(sRow, sCol, eRow, eCol);
+        if(piece === '♜') pathTab = this.shortestPathRook(sRow, sCol, eRow, eCol);
+        return pathTab;
     }
 
     shortestPathRook(sRow, sCol, eRow, eCol){
@@ -230,7 +232,7 @@ class chessGame{
 
         while(sRow !== eRow){
             path.push(sRow * 9 + sCol);
-            sRow += rowDiff; eCol += sCol;
+            sRow += rowDiff; sCol += colDiff;
         }
         return path;
     }
@@ -304,16 +306,16 @@ class chessGame{
     //region checkmateLogic
 
     checkMate(whitePlayer){ // input player is the one we check on
-        function rescuerPawn( idx ){
+        let rescuerPawn = ( idx ) => {
             let idxRow = Math.floor( idx / 9 ); 
             let idxCol = idx % 9;
-            let direction = whitePlayer ? -1 : 1;
+            let direction = whitePlayer ? 1 : -1;
 
             if( idxRow + direction <= 8 && idxRow + direction >= 1) 
-                if( this.movesPossible(idxRow + direction, idxCol).contains(idx) ) return true; 
+                if( (this.movesPossible(idxRow + direction, idxCol)).includes(idx) ) return true; 
 
             if( idxRow + 2*direction <= 8 && idxRow + 2*direction >= 1) 
-                if( this.movesPossible(idxRow + 2*direction, idxCol).contains(idx) ) return true; 
+                if( (this.movesPossible(idxRow + 2*direction, idxCol)).includes(idx) ) return true; 
             
             return false;
         }
@@ -324,28 +326,32 @@ class chessGame{
         if( this.movesPossible(king.row, king.col).length !== 0)  return false; //king can move without check, so its fine, he's secure
 
         let enemyChecks = currChecking[king.row * 9 + king.col].filter( idx => {
-            return this.pieceColor(Math.floor( idx / 9 ), idx % 9) === this.whitePlayer;
+            return this.pieceColor(Math.floor( idx / 9 ), idx % 9) !== whitePlayer;
         }); //we get pieces of opposite player who attack our king
 
-        return enemyChecks.some( idx => {
+        return enemyChecks.some( atkIdx => {
             let rescued = false; 
-            let atkRow = Math.floor( idx / 9 ); let atkCol = idx % 9;
+            let atkRow = Math.floor( atkIdx / 9 ); 
+            let atkCol = atkIdx % 9;
 
             //first of all we check if we can kill atacking piece
-            currChecking[idx].forEach( hIdX => {
-                if( this.validateMove(Math.floor(hIdx / 9), hIdx % 9, atkRow, atkCol) ) 
+            currChecking[atkIdx].forEach( (a) => {
+                let rowIdx = Math.floor( a / 9);
+                let colIdx = a % 9;
+                if( this.validateMove( rowIdx, colIdx, atkRow, atkCol ) ) 
                     rescued = true; //we can kill atacking piece
             });
-
+            console.log( this.shortestPath(king.row, king.col, atkRow, atkCol, this.getPiece(atkRow, atkCol) ) );
             //if piece is either bishop, rook or queen mayhaps we can bedim its attacking (thus cover king)
             if( !rescued && !(this.getPiece(atkRow, atkCol) === '♟' || this.getPiece(atkRow, atkCol) === '♞') ){
-                this.shortestPath(Math.floor(idx / 9), idx % 9, atkRow, atkCol).forEach( index  => {
+                this.shortestPath(king.row, king.col, atkRow, atkCol, this.getPiece(atkRow, atkCol) ).forEach( index  => {
                     if( rescuerPawn(index) ) rescued = true; //there is a pawn we can block atacking piece with, atack stopped
 
                     currChecking[index].forEach( pieceToHelp => {
-                        let phRow = Math.floor( pieceToHelp / 9); let phCol = pieceToHelp % 9;
-                        if( this.pieceColor( phRow, phCol ) === this.whitePlayer &&
-                            this.validateMove(phRow, phCol, atkRow, atkCol) ) rescued = true; //we can move and block atacking piece
+                        let phRow = Math.floor( pieceToHelp / 9); 
+                        let phCol = pieceToHelp % 9;
+                        if( this.pieceColor( phRow, phCol ) === whitePlayer &&
+                            this.validateMove( phRow, phCol, atkRow, atkCol ) ) rescued = true; //we can move and block atacking piece
                     });
                 })
             };
@@ -371,9 +377,9 @@ class chessGame{
             this.movePieceObj(sRow, sCol, eRow, eCol);
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
-            if( this.ifCheck(!this.whiteTurn) ) { 
+            if( this.ifCheck( !this.whiteTurn ) ) { 
                 console.log("A");
-                if( this.checkMate(!this.whiteTurn) )
+                if( this.checkMate( !this.whiteTurn ) )
                 {
                     resMess += `M${ !this.whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
                 }
