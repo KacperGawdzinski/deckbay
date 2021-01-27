@@ -368,7 +368,7 @@ function addListeners(){
             unsetPossibilities(); return; 
         }
 
-        if(!fieldClicked){
+        if( !fieldClicked ){
 
             if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
                 unsetPossibilities(); 
@@ -386,6 +386,11 @@ function addListeners(){
 
             if( movepossibilities.includes( clickedRow * 9 + clickedColumn ) )
                 socket.emit( 'check-move-chess', firstFieldRow, firstFieldCol, clickedRow, clickedColumn );
+            else
+            {
+                unsetPossibilities();
+                fieldClicked = false;
+            } 
         }
     });
 };
@@ -399,10 +404,10 @@ socket.on('server-chess-move', msg => {
         let move = toDo[0];
         movePieceView(move[0], move[1], move[2], move[3]);
         if( toDo[1] && toDo[1].includes('M') ){ //we have a checkmate
-            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
-            alert(`${ toDo[1][1] == 'B' ? 'White' : 'Black' } player has won!`)
+            markChecking( toDo[1][1] == 'B' ? whitePiece : blackPiece );
+            alert(`${ toDo[1][1] == 'B' ? 'Black' : 'White' } player has won!`)
         } else if ( toDo[1] && toDo[1].includes('C') ) {
-            markChecking( toDo[1][1] == 'C' ? whitePiece : blackPiece );
+            markChecking( toDo[1][1] == 'B' ? whitePiece : blackPiece );
         }
     } 
 
