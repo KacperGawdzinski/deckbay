@@ -57,8 +57,18 @@
 
 .messages{
     background-color: rgb(189, 189, 189);
-    height: 100%;
-    width: 100%;
+    height: calc(100% - 40px);
+    width: calc(100% - 40px);
+    padding: 20px;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.message-container{
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
 form{
@@ -68,8 +78,32 @@ form{
     padding-top: 10px;
 }
 
+.meta{
+    font-weight: bold;
+    color:black;
+}
+
+.msg{
+    color: rgb(65, 62, 61);
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+  
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+  
+
+::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+}
+
 input[type=text]{
-    color: red;
+    color: black;
 }
 
 .text-container{
@@ -98,6 +132,11 @@ input[type=text]{
 }
 
 .players-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     background-color: rgb(189, 189, 189);
     margin-top: 10%;
     margin-bottom: 3%;
@@ -105,10 +144,33 @@ input[type=text]{
     height: 20%;
 }
 
+.player-name{
+    font-size: large;
+}
+
 .moves{
     background-color: rgb(189, 189, 189);
-    width: 90%;
+    width: calc(90% - 20px);
     height: 50%;
+    overflow-y: auto;
+}
+
+.move{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.move-num{
+    width: 20%;
+    display: flex;
+    align-items: center;
+}
+
+.move-player{
+    width: 40%;
+    display: flex;
+    align-items: center;
 }
 
 .game-buttons-div{
@@ -126,4 +188,8 @@ input[type=text]{
     background-color: black;
     color: white;
     font-size: large; 
+}
+
+.game-button:focus{
+    outline: none;
 }

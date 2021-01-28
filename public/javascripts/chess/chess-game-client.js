@@ -396,28 +396,3 @@ function addListeners(){
 };
 
 window.addEventListener('load', boarderSetup);
-
-socket.on('server-chess-send-players-colours', msg => {  });
-
-socket.on('server-chess-move', msg => {
-    if ( msg == "P") alert('Draw!');
-    else if ( msg == "DW" || msg == "DB" )
-        alert(`${ msg == 'DB' ? 'White' : 'Black' } player surrendered :c`);
-
-    else if(msg != '' && msg != false){
-
-        setViewUnchecked( cellMarkedChecked.row, cellMarkedChecked.col );
-        let toDo = msg.split(';');
-        let move = toDo[0];
-        movePieceView(move[0], move[1], move[2], move[3]);
-
-        if( toDo[1] && toDo[1].includes('M') ){ //we have a checkmate
-            markChecking( toDo[1][1] == 'B' ? whitePiece : blackPiece );
-            alert(`${ toDo[1][1] == 'B' ? 'Black' : 'White' } player has won!`)
-        } else if ( toDo[1] && toDo[1].includes('C') ) 
-            markChecking( toDo[1][1] == 'B' ? whitePiece : blackPiece );
-    } 
-
-    fieldClicked = false;
-    unsetPossibilities();
-});

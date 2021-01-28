@@ -1,6 +1,6 @@
 class chessGame{
 
-    //region classInit
+    //#region classInit
 
     chessBoard;
     whiteTurn;
@@ -15,6 +15,9 @@ class chessGame{
         row : 8, 
         col: 5
     };
+
+    pendingDrawWhite;
+    pendingDrawBlack;
 
     playerInit(whitePlayer){
         let r = whitePlayer ? 7 : 2;
@@ -31,22 +34,29 @@ class chessGame{
         this.chessBoard[r][4] = {piece : '♛', white : whitePlayer}; 
     }
 
-    constructor(wpLogin) {
+    constructor( creatorLogin, whitePlayerWasChosen ) {
 
         this.chessBoard = Array(9).fill().map( () => (Array(9).fill( { piece : '', white : false } )));
         this.chessBoard[0].fill('A');
 
-        this.whitePlayerLogin = wpLogin;
+        if( whitePlayerWasChosen ){
+            this.whitePlayerLogin = creatorLogin;
+            this.blackPlayerLogin = '';
+        } else {
+            this.blackPlayerLogin = creatorLogin;
+            this.whitePlayerLogin = '';
+        } 
 
         for(let i = 1; i <= 8; i++){ this.chessBoard[i][0] = 'A' };
 
         this.playerInit(true); this.playerInit(false);
         this.whiteTurn = true;
+        this.pendingDrawBlack = false; this.pendingDrawWhite = false;
     }
 
-    //endregion classInit
+    //#endregion classInit
 
-    //region boardManagement
+    //#region boardManagement
 
     pieceColor(row, col){ return this.chessBoard[row][col].white; };
 
@@ -70,9 +80,9 @@ class chessGame{
         this.setPieceObj( sRow, sCol, {piece : '', color : ''} );
     }
 
-    //endregion boardManagement
+    //#endregion boardManagement
 
-    //region pieceMoveValidation
+    //#region pieceMoveValidation
 
     movesPossible(row, column){
         let guesses = [];
@@ -195,9 +205,9 @@ class chessGame{
         return this.movesPossibleRook(row, column).concat( this.movesPossibleBishop(row, column) );
     };
 
-    //endregion pieceMoveValidation
+    //#endregion pieceMoveValidation
 
-    //region pathFinder
+    //#region pathFinder
 
     shortestPath(sRow, sCol, eRow, eCol, piece){
         let pathTab;
@@ -242,9 +252,9 @@ class chessGame{
         else return this.shortestPathBishop(sRow, sCol, eRow, eCol);
     }
 
-    //endregion pathFinder
+    //#endregion pathFinder
 
-    //region checkingLogic 
+    //#region checkingLogic 
 
     pawnCheck(row, column){
         let possibilities = [];
@@ -301,9 +311,9 @@ class chessGame{
         });
     };
 
-    //endregion checkingLogic
+    //#endregion checkingLogic
 
-    //region checkmateLogic
+    //#region checkmateLogic
 
     checkMate(whitePlayer){ // input player is the one we check on
         let rescuerPawn = ( idx ) => {
@@ -361,11 +371,35 @@ class chessGame{
         });
     };
 
-    //endregion checkmateLogic
+    //#endregion checkmateLogic
 
-    //region gameManagement
+    //#region stalemateLogic
+
+    checkStalemate()
+    {
+        let movePossibleWhite = false; 
+        let movePossibleBlack = false;
+
+        for( let r = 0; r < 9; r++ ){
+            for( let c = 0; c < 9; c++ ){
+                if( this.movesPossible(r, c).length != 0 ){
+                    if( this.pieceColor(r, c) == true ) movePossibleWhite = true ;
+                    else movePossibleBlack = true;
+                }
+                if(movePossibleBlack && movePossibleWhite) return false;
+            }
+        }
+        return false; //there is some player who can't move at all
+    }
+
+    //#endregion stalemateLogic
+
+    //#region gameManagement
 
     moveRequest(sRow, sCol, eRow, eCol, playerLogin){ //it returnes what changes are needed to game state/mates or checkmates eventually
+        if( this.whitePlayerLogin == '' || this.blackPlayerLogin == '' )
+            return '';
+
         let resMess = '';
 
         let reqWhitePlayer = playerLogin == this.whitePlayerLogin ? true : false; //if whitePlayeris requesting move
@@ -378,29 +412,48 @@ class chessGame{
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
             if( this.ifCheck( !this.whiteTurn ) ) { 
-                console.log("A");
+
                 if( this.checkMate( !this.whiteTurn ) )
                 {
                     resMess += `M${ !this.whiteTurn ? 'B' : 'W' };`; //if there is a checkmate we need only to tell it
                 }
                 else 
                     resMess += `C${ !this.whiteTurn ? 'B' : 'W' };`;
-            };
+            }
+            else if( this.checkStalemate() ){
+                resMess += 'P';
+            }
             this.whiteTurn = !this.whiteTurn;
 
             return resMess;
         } else return '';
     };
 
-    setBlackPlayer(bpLogin){
-        this.blackPlayerLogin = bpLogin;
+    setSecondPlayer( secondPlayerLogin ){
+        if( this.whitePlayerLogin == '' ) this.whitePlayerLogin = secondPlayerLogin;
+        else this.blackPlayerLogin = secondPlayerLogin;
+    }
+
+    sendPlayersColors(){
+        return `${this.whitePlayerLogin};${this.blackPlayerLogin}`;
     }
 
     validateMove(sRow, sCol, eRow, eCol){
         return this.movesPossible(sRow, sCol).includes(eRow * 9 + eCol);
     };
 
-    //endregion gameManagement
+    changeDrawProposition( playerLogin ){
+        if( playerLogin == this.whitePlayerLogin ) this.pendingDrawWhite = !this.pendingDrawWhite;
+        else this.pendingDrawBlack = !this.pendingDrawBlack;
+
+        return this.pendingDrawBlack && this.pendingDrawWhite; //if there is a draw we return true, false otherwise
+    };
+
+    handleSurrender( playerLogin ){
+        return `D${ (playerLogin == this.whitePlayerLogin) ? 'B' : 'W' }`;
+    };
+
+    //#endregion gameManagement
 }
 
 module.exports = { chessGame };
