@@ -154,7 +154,7 @@ app.get('/checkers-test', authorize, (req, res) => {
     res.render('checkers.ejs')
 });
 
-app.post('/validate-room', async function(req, res) {              //maybe some default parameters? + change for other games
+app.post('/validate-room', async function(req, res) {        //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)
     let fullRoomName = (req.body.game + '-' + req.body.room).toLowerCase();
     for (let i = 0; i < ar.length; i++) {
@@ -247,17 +247,26 @@ io.on('connection', socket => {
 
     socket.on('join-new-room', data => {
         let login = socketLogin.get(socket.id);
+        let roomName = data.game + "-" + data.room;
 
-        socket.join( data.game + "-" + data.room );
-        loginRoom.set(login , data.game + "-" + data.room );
+        socket.join( roomName );
+        loginRoom.set(login , roomName );
         io.to( 'game-' + data.game ).emit( 'rooms', availableRooms(data.game) );
         console.log( io.sockets.adapter.rooms );
+        let logic;
 
         if(data.game == 'chess'){
             if( !roomChesslogic.get( data.room) ){
-                roomChesslogic.set( data.room, new chessGame( login, true ) );
+                const opts = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
+                logic = new chessGame( login, opts.side == 'white' );
+                roomChesslogic.set( data.room, logic );
             }
-            else roomChesslogic.get( data.room ).setSecondPlayer(login);
+            else{
+                logic = roomChesslogic.get( data.room );
+                logic.setSecondPlayer(login);
+                console.log(data.room);
+            } 
+            io.to( roomName ).emit( 'chess-send-players-colours', logic.sendPlayersColors() );
         };
     });
 
@@ -278,6 +287,8 @@ io.on('connection', socket => {
                 roomTurn.delete(full_room_name);
                 delete roomLastMove[full_room_name];
                 delete roomBoard[full_room_name];
+                if( full_room_name.indexOf('chess') == 0 ) 
+                    delete roomChesslogic[full_room_name];
             }
             socketLogin.delete(socket.id)
             io.to('game-' + game).emit('rooms', availableRooms(game));
@@ -290,7 +301,6 @@ io.on('connection', socket => {
         let reqRoom = loginRoom.get(reqLogin);
 
         let message = roomChesslogic.get( reqRoom.split('-')[1] ).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
-        console.log(message);
         io.to(reqRoom).emit('server-chess-move', message);
     });
 
@@ -299,7 +309,6 @@ io.on('connection', socket => {
         let reqRoom = loginRoom.get(reqLogin);
 
         let message = roomChesslogic.get( reqRoom.split('-')[1] ).handleSurrender( reqLogin );
-        console.log(message);
         io.to(reqRoom).emit('server-chess-move', message);
     });
 
@@ -310,6 +319,20 @@ io.on('connection', socket => {
         let logicRes = roomChesslogic.get( reqRoom.split('-')[1] ).changeDrawProposition( reqLogin );
         if( logicRes )
             io.to(reqRoom).emit('server-chess-move', 'P');
+    });
+
+    socket.on('message-sent-to-server', msg => {
+        if(msg == '') return;
+        const serverDate = new Date();
+
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+        const minutes = serverDate.getMinutes().length == 1 ? `0${serverDate.getMinutes()}` : serverDate.getMinutes();
+        const hours = serverDate.getHours().length == 1 ? `0${serverDate.getHours()}` : serverDate.getHours();
+
+        const sendTime = `${hours}:${minutes}`;
+
+        io.to(reqRoom).emit('message-sent-to-client', msg, reqLogin, sendTime);
     });
 
     socket.on('check-move-checkers', tab => {   //checking if move is allowed
@@ -339,6 +362,7 @@ io.on('connection', socket => {
     socket.on('surrender-checkers',() =>{
         io.to(loginRoom.get(socketLogin.get(socket.id))).emit('surrender');
     })
+
     socket.on('undo-checkers',() =>{
         roomBoard[loginRoom.get(socketLogin.get(socket.id))] = roomLastMove[loginRoom.get(socketLogin.get(socket.id))];
         if (roomTurn.get(loginRoom.get(socketLogin.get(socket.id))) == 1) {
