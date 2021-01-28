@@ -115,7 +115,7 @@ app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have th
         }
     }
     loginRoom.set(req.signedCookies.login, fullRoomName);
-    res.render('game_chess_page', { room_name: req.params.id, game_type: req.body.game_type });
+    res.render('game_chess_page', { room_name: req.params.id, game_type: req.body.game_type, user_login: req.signedCookies.login });
 });
 
 app.get('/checkers-list', authorize, (req, res) => {   //set random nick
@@ -254,10 +254,10 @@ io.on('connection', socket => {
         console.log( io.sockets.adapter.rooms );
 
         if(data.game == 'chess'){
-            if( !roomChesslogic.get(data.room) ){
-                roomChesslogic.set( data.room, new chessGame(login) );
+            if( !roomChesslogic.get( data.room) ){
+                roomChesslogic.set( data.room, new chessGame( login, true ) );
             }
-            else roomChesslogic.get( data.room ).setBlackPlayer(login);
+            else roomChesslogic.get( data.room ).setSecondPlayer(login);
         };
     });
 
@@ -289,10 +289,27 @@ io.on('connection', socket => {
         let reqLogin =  socketLogin.get(socket.id);
         let reqRoom = loginRoom.get(reqLogin);
 
-        let message = roomChesslogic.get(reqRoom.split('-')[1]).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
+        let message = roomChesslogic.get( reqRoom.split('-')[1] ).moveRequest(sRow, sCol, eRow, eCol, reqLogin);
         console.log(message);
         io.to(reqRoom).emit('server-chess-move', message);
-        console.log("CHUJ");
+    });
+
+    socket.on('chess-surrender', () => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let message = roomChesslogic.get( reqRoom.split('-')[1] ).handleSurrender( reqLogin );
+        console.log(message);
+        io.to(reqRoom).emit('server-chess-move', message);
+    });
+
+    socket.on('draw-chess', () => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let logicRes = roomChesslogic.get( reqRoom.split('-')[1] ).changeDrawProposition( reqLogin );
+        if( logicRes )
+            io.to(reqRoom).emit('server-chess-move', 'P');
     });
 
     socket.on('check-move-checkers', tab => {   //checking if move is allowed
