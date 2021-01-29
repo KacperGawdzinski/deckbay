@@ -453,6 +453,10 @@ class chessGame{
         return `D${ (playerLogin == this.whitePlayerLogin) ? 'B' : 'W' }`;
     };
 
+    isReqPlayerWhite( playerLogin ){
+        return playerLogin == this.whitePlayerLogin;
+    }
+
     //#endregion gameManagement
 }
 

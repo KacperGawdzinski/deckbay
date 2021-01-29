@@ -11,6 +11,29 @@ const blackPlayerName = document.getElementById('black-player-name');
 let pendingSurrender = false;
 let moveNum = 1;
 
+socket.on('connect', () => {
+    $.ajax({
+        type: "POST",
+        url: "/set-socket-id",
+        data: {socketid: socket.id},
+        success: function(data) {
+            if ( data === '' ) {
+                window.location.href ='/';
+            } else {
+                let room_name = data.substr(data.indexOf('-') + 1, data.length);
+                let game_type = data.substr(0, data.indexOf('-'))
+                socket.emit('join-new-room', { game: game_type, room: room_name });
+                socket.emit('chess-color-req');
+            };
+        }
+    });
+});
+
+socket.on('chess-color-res', ifWhite => {
+    console.log( ifWhite );
+    userColor = ifWhite ? whitePiece : blackPiece;
+});
+
 drawButton.addEventListener('click', () => {
     socket.emit('draw-chess');
 });
@@ -75,7 +98,7 @@ function addMoveToMoveList(moveTab){
 
     console.log(moveStr);
     let divToAppend = document.getElementById(`move-${moveNum}`);
-    if(divToAppend != null) console.log(divToAppend.childElementCount);
+
     if( divToAppend == null){ //we have to create div matched to next move and put white move there
         createMoveDiv( moveStr );
     }

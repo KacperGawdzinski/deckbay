@@ -296,6 +296,14 @@ io.on('connection', socket => {
         console.log('client disconnected');
     });
 
+    socket.on('chess-color-req', () => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let message = roomChesslogic.get( reqRoom.split('-')[1] ).isReqPlayerWhite( reqLogin );
+        io.to(socket.id).emit( 'chess-color-res', message ); 
+    });
+
     socket.on('check-move-chess', (sRow, sCol, eRow, eCol) => {
         let reqLogin =  socketLogin.get(socket.id);
         let reqRoom = loginRoom.get(reqLogin);
@@ -327,8 +335,8 @@ io.on('connection', socket => {
 
         let reqLogin =  socketLogin.get(socket.id);
         let reqRoom = loginRoom.get(reqLogin);
-        const minutes = serverDate.getMinutes().length == 1 ? `0${serverDate.getMinutes()}` : serverDate.getMinutes();
-        const hours = serverDate.getHours().length == 1 ? `0${serverDate.getHours()}` : serverDate.getHours();
+        const minutes = serverDate.getMinutes().toString().length == 1 ? `0${serverDate.getMinutes()}` : serverDate.getMinutes();
+        const hours = serverDate.getHours().toString().length == 1 ? `0${serverDate.getHours()}` : serverDate.getHours();
 
         const sendTime = `${hours}:${minutes}`;
 
