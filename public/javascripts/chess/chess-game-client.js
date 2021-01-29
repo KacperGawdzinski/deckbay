@@ -2,29 +2,14 @@ var board = document.getElementById('chess-board-tbody');
 var tab = document.getElementById('chess-board');
 
 var socket = io();
-socket.on('connect', () => {
-    $.ajax({
-        type: "POST",
-        url: "/set-socket-id",
-        data: {socketid: socket.id},
-        success: function(data) {
-            if ( data === '' ) {
-                window.location.href ='/';
-            } else {
-                let room_name = data.substr(data.indexOf('-') + 1, data.length);
-                let game_type = data.substr(0, data.indexOf('-'))
-                socket.emit('join-new-room', { game: game_type, room: room_name });
-            };
-        }
-    })
-});
 
 let blackPiece = 'rgb(65, 65, 65)'; let whitePiece = 'rgb(255, 249, 249)';
 
-let userColor = whitePiece;
 let clickedColumn = 5, clickedRow = 5;
 let fieldClicked = false; let whoseTurn = whitePiece;
 let movepossibilities = [];
+
+let userColor;
 
 let chessBoard = [[]];
 
@@ -272,6 +257,7 @@ function getChecking(){
 function ifCheck(who){
     let king = who === whitePiece ? whiteKing : blackKing;
     let kingIndex = king.row * 9 + king.col;
+    console.log( kingIndex );
     let checked = getChecking();
     let enemyChecks = false;
     checked[kingIndex].forEach( index => { if( pieceColor(Math.floor(index / 9), index % 9) !== who) enemyChecks = true; } );
@@ -358,7 +344,7 @@ function boarderSetup(){
 
 function addListeners(){
     board.addEventListener('click', (e) => {
-
+        console.log(  );
         let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
 
         clickedColumn = e.target.cellIndex;
@@ -370,7 +356,8 @@ function addListeners(){
 
         if( !fieldClicked ){
 
-            if( getPiece(clickedRow, clickedColumn) === '' || pieceColor(clickedRow, clickedColumn) !== whoseTurn ) {
+            if( getPiece(clickedRow, clickedColumn) === '' || userColor != pieceColor(clickedRow, clickedColumn) || 
+                pieceColor(clickedRow, clickedColumn) != whoseTurn ) {
                 unsetPossibilities(); 
                 return; 
             }
