@@ -6,6 +6,7 @@ class chessGame{
     whiteTurn;
     whitePlayerLogin;
     blackPlayerLogin;
+    movesHistory;
 
     blackKing = {
         row : 1,
@@ -15,6 +16,8 @@ class chessGame{
         row : 8, 
         col: 5
     };
+
+    whoRequestedTakeback;
 
     pendingDrawWhite;
     pendingDrawBlack;
@@ -49,6 +52,8 @@ class chessGame{
 
         for(let i = 1; i <= 8; i++){ this.chessBoard[i][0] = 'A' };
 
+        this.movesHistory = [];
+        this.whoRequestedTakeback = '';
         this.playerInit(true); this.playerInit(false);
         this.whiteTurn = true;
         this.pendingDrawBlack = false; this.pendingDrawWhite = false;
@@ -402,12 +407,21 @@ class chessGame{
 
         let resMess = '';
 
-        let reqWhitePlayer = playerLogin == this.whitePlayerLogin ? true : false; //if whitePlayeris requesting move
+        let reqWhitePlayer = playerLogin == this.whitePlayerLogin; //if whitePlayeris requesting move
         
         if( reqWhitePlayer != this.whiteTurn ) return ''; //it means we tried to move during another player's turn
         if( this.pieceColor( sRow, sCol ) != this.whiteTurn ) return ''; //it means we tried to move another's player piece
 
         if( this.validateMove(sRow, sCol, eRow, eCol) ){
+
+            this.movesHistory.push({
+                startRow : sRow,
+                startCol : sCol,
+                endRow : eRow,
+                endCol : eCol,
+                piece : this.getPieceObj( eRow, eCol ),
+            });
+
             this.movePieceObj(sRow, sCol, eRow, eCol);
             resMess += `${sRow}${sCol}${eRow}${eCol};`;
 
@@ -455,6 +469,32 @@ class chessGame{
 
     isReqPlayerWhite( playerLogin ){
         return playerLogin == this.whitePlayerLogin;
+    }
+
+    handleMoveReset( player, consentGranted ){ 
+        if( this.movesHistory == [] || this.movesHistory.length == 0 ) return '';
+
+        if( this.whoRequestedTakeback == '' ){
+            this.whoRequestedTakeback = player;
+            const playerToNotify = player == this.whitePlayerLogin ? this.blackPlayerLogin : this.whitePlayerLogin;
+            return playerToNotify;
+        } else { //we get response for takeback
+            if( player == this.whoRequestedTakeback ) return '';
+            
+            if( !consentGranted ) return ''; //second player doesnt want to undo a move
+        }   
+        //when we're in here we're sure different player requested and responsed + consent was granted
+        this.whoRequestedTakeback = '';
+        this.whiteTurn = !this.whiteTurn;
+        this.undoMoveOnChessboard();
+        return this.movesHistory.pop();
+    }
+
+    undoMoveOnChessboard(){
+        let moveObj = this.movesHistory[ this.movesHistory.length - 1 ];
+
+        this.movePieceObj( moveObj.endRow, moveObj.endCol, moveObj.startRow, moveObj.startCol );
+        this.setPieceObj( moveObj.endRow, moveObj.endCol, moveObj.piece );
     }
 
     //#endregion gameManagement

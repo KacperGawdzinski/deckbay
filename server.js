@@ -312,6 +312,24 @@ io.on('connection', socket => {
         io.to(reqRoom).emit('server-chess-move', message);
     });
 
+    socket.on('chess-undo-req', () => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let logicRes = roomChesslogic.get( reqRoom.split('-')[1] ).handleMoveReset( reqLogin );
+        let help1 = Array.from( socketLogin.keys() );
+        let playerToNotify = help1.find(key => socketLogin.get( key ) === logicRes );
+        io.to( playerToNotify ).emit('chess-enemy-takeback-request');
+    });
+
+    socket.on('chess-undo-res', ( consentGranted ) => {
+        let reqLogin =  socketLogin.get(socket.id);
+        let reqRoom = loginRoom.get(reqLogin);
+
+        let move = roomChesslogic.get( reqRoom.split('-')[1] ).handleMoveReset( reqLogin, consentGranted );
+        io.to( reqRoom ).emit('chess-takeback-server-response', move);
+    });
+
     socket.on('chess-surrender', () => {
         let reqLogin =  socketLogin.get(socket.id);
         let reqRoom = loginRoom.get(reqLogin);
