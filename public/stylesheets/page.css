@@ -34,7 +34,7 @@ html {
 }
 
 .header_button {
-    position: absolute;
+    float: right;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;

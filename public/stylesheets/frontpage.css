@@ -32,7 +32,7 @@
     margin-top: 7%;
     text-align: center;
     font-family: SN;
-    font-size: 2.5vw;
+    font-size: calc(12px + 1.55vw);
     font-weight: bold;
     font-style: italic;
 }
@@ -48,17 +48,16 @@
         max-width: 35%;
         padding: 15px;
     }
-
-    .game p {
-        font-size: 3.5vw;
-    }
 }
 
 @media only screen and (max-width: 500px) {
-    .game p {
-        font-size: 5vw;
-    }
     .game {
         margin: 5px 0;
+    }
+}
+
+@media only screen and (min-width: 1919px) {
+    .game p {
+        font-size: 36px;
     }
 }

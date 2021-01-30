@@ -59,7 +59,7 @@ window.addEventListener('load', function() {
             }
             else {
                 content.innerHTML += '<div style=background-color:'+ Colors.random() +
-                                    ' class="list_item"> <p>'+ room_name +'</p>' + lock +
+                                    ' class="list_item"> <p class="room_name">'+ room_name +'</p>' + '<p class="time">' + el['options']['length'] + '┃' + el['options']['bonus'] + '</p>' + lock  +
                                     insert_user_img(el['playerCount'], max_players.get(game_type)) + '</div>';
                 content.addEventListener("click", function() { getUnlockedRoom(game_type, room_name) }, false);       
             }
