@@ -181,13 +181,38 @@ input[type=text]{
     justify-content: space-around;
 }
 
+.takeback-buttons-wrapper{
+    height: 100%;
+    width: 25%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.restart-button{
+    width: 100% !important;
+    display: block;
+}
+
 .game-button{
     width: 25%;
     height: 100%;
     border-radius: 20px;
     background-color: black;
     color: white;
-    font-size: large; 
+    font-size: large;
+}
+
+.undo-button{
+    display: none;
+    width: 45%;
+}
+
+.undo-agree{
+    background-color: rgb(31, 121, 54);
+}
+
+.undo-disagree{
+    background-color: rgb(138, 30, 16);
 }
 
 .game-button:focus{

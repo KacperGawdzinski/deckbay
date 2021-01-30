@@ -3,10 +3,15 @@ const surrenderButton = document.getElementById('surrender');
 const sendMessageButton = document.getElementById('message-submit');
 const msgBox = document.getElementById('message');
 
+let confirmUndoButton = document.getElementById('undo-aye');
+let declineUndoButton = document.getElementById('undo-nay');
+let undoButton = document.getElementById('restart');
+
 const movesBox = document.getElementById('moves');
 const messagesBox = document.getElementById('messages');
 const whitePlayerName = document.getElementById('white-player-name');
 const blackPlayerName = document.getElementById('black-player-name');
+let undoButtonsClass = document.getElementsByClassName('undo-button');
 
 let pendingSurrender = false;
 let moveNum = 1;
@@ -54,6 +59,40 @@ sendMessageButton.addEventListener('click', (ev) => {
     msgBox.value = '';
 });
 
+undoButton.addEventListener('click', () => {
+    socket.emit( 'chess-undo-req' );
+});
+
+confirmUndoButton.addEventListener('click', () => {
+    socket.emit( 'chess-undo-res', true );
+});
+
+declineUndoButton.addEventListener('click', () => {
+    socket.emit( 'chess-undo-res', false );
+});
+
+socket.on('chess-takeback-server-response', (moveObj) => {
+    movePieceView( moveObj.endRow, moveObj.endCol, moveObj.startRow, moveObj.startCol );
+    setPieceObj( moveObj.endRow, moveObj.endCol, 
+        { 
+            piece : moveObj.piece.piece, 
+            color : moveObj.piece.white ? whitePiece : blackPiece
+        } );
+    
+    setPieceView( moveObj.endRow, moveObj.endCol, moveObj.piece.piece );
+    setViewColor( moveObj.endRow, moveObj.endCol, ( moveObj.piece.white ? whitePiece : blackPiece ) );
+
+    resetButtonsOutlook();
+    removeLastMove();
+    fieldClicked = false;
+    unsetPossibilities();
+});
+
+socket.on('chess-enemy-takeback-request', () => {
+    undoButton.style.display = 'none !important';
+    for(let i = 0; i < 2; i++) { undoButtonsClass[i].style.display = 'block' };
+});
+
 socket.on('chess-send-players-colours', msg => { 
     msg = msg.split(';');
     whitePlayerName.innerHTML = msg[0];
@@ -69,6 +108,8 @@ socket.on('message-sent-to-client', (msg, user, time) => {
 });
 
 socket.on('server-chess-move', msg => {
+    resetButtonsOutlook();
+
     if ( msg == "P") alert('Draw!');
     else if ( msg == "DW" || msg == "DB" )
         alert(`${ msg == 'DB' ? 'White' : 'Black' } player surrendered :c`);
@@ -107,7 +148,7 @@ function addMoveToMoveList(moveTab){
         addBlackMoveDiv( moveStr );
         moveNum += 1; //now its white's turn -> new div 
     }
-}
+};
 
 function createMoveDiv( moveText ){
     let divToAppend = document.createElement('div');
@@ -131,8 +172,26 @@ function createMoveDiv( moveText ){
     moveBlackDiv.setAttribute('id', `move-black-${moveNum}`);
     moveBlackDiv.classList.add('move-player');
     divToAppend.appendChild(moveBlackDiv);
-}
+};
 
 function addBlackMoveDiv(moveText){
     document.getElementById(`move-black-${moveNum}`).innerHTML = moveText;
-}
+};
+
+function removeLastMove(){
+    let divToRemove = document.getElementById(`move-${moveNum}`);
+
+    if( divToRemove.children[2].innerHTML != '' ){
+        divToRemove.children[2].innerHTML == '';
+    } else {
+        movesBox.removeChild( divToRemove );
+        moveNum--;
+    }
+};
+
+function resetButtonsOutlook(){
+    undoButton.style.display = 'block !important';
+    for(let i = 0; i < 2; i++) { undoButtonsClass[i].style.display = 'none' };
+
+    surrenderButton.style.color = 'white';
+};
