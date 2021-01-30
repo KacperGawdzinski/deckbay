@@ -14,14 +14,15 @@
 <header id="head" class="header">
     <a href="https://deckbay.herokuapp.com/"> <img src="/public/images/logo.png"></a>
 
-    <button class="header_button" style="right: 0;" id="register_button">
-      <%= user_login !== '' ? user_login : 'Sign up' %>
-    </button>
+    <div style="display: flex; position: absolute; right: 30px; width: 250px; height: 50px;">
+      <button class="header_button" id="register_button">
+        <%= user_login !== '' ? user_login : 'Sign up' %>
+      </button>
 
-    <button class="header_button" style="right: 120px;"" id="login_button">
-      <%= user_login !== '' ? 'logout' : 'Sign in' %>
-    </button>
-    
+      <button class="header_button" id="login_button">
+        <%= user_login !== '' ? 'Logout' : 'Sign in' %>
+      </button>
+    </div>
     <span class="menu" onclick="openNav()">&#9776;</span>
 </header>
 
