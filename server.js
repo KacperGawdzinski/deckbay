@@ -252,7 +252,6 @@ io.on('connection', socket => {
         socket.join( roomName );
         loginRoom.set(login , roomName );
         io.to( 'game-' + data.game ).emit( 'rooms', availableRooms(data.game) );
-        console.log( io.sockets.adapter.rooms );
         let logic;
 
         if(data.game == 'chess'){
@@ -274,8 +273,6 @@ io.on('connection', socket => {
         if(socketLogin.get(socket.id)) {
             let full_room_name = loginRoom.get(socketLogin.get(socket.id))
             let game = full_room_name.substr(0, full_room_name.indexOf('-'))
-            console.log(full_room_name);
-            console.log(io.sockets.adapter.rooms);
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
                 socket.leave(loginRoom.get(socketLogin.get(socket.id)));
                 if (roomPasswd.get(full_room_name)) {
@@ -457,7 +454,6 @@ io.on('connection', socket => {
     socket.on('ask-options-checkers', () =>{
         var roomId = loginRoom.get(socketLogin.get(socket.id));
         var opt = roomOptions.get(loginRoom.get(socketLogin.get(socket.id)));
-        console.log(io.sockets.adapter.rooms);
         if (opt["white"] === '' && opt["black"] === '') {
             if (opt["side"] == 1) {
                 opt["white"] = socketLogin.get(socket.id);
