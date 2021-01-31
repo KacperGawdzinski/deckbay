@@ -1,14 +1,11 @@
 const drawButton = document.getElementById('draw');
 const surrenderButton = document.getElementById('surrender');
-const sendMessageButton = document.getElementById('message-submit');
-const msgBox = document.getElementById('message');
 
 let confirmUndoButton = document.getElementById('undo-aye');
 let declineUndoButton = document.getElementById('undo-nay');
 let undoButton = document.getElementById('restart');
 
 const movesBox = document.getElementById('moves');
-const messagesBox = document.getElementById('messages');
 const whitePlayerName = document.getElementById('white-player-name');
 const blackPlayerName = document.getElementById('black-player-name');
 let undoButtonsClass = document.getElementsByClassName('undo-button');
@@ -34,10 +31,7 @@ socket.on('connect', () => {
     });
 });
 
-socket.on('chess-color-res', ifWhite => {
-    console.log( ifWhite );
-    userColor = ifWhite ? whitePiece : blackPiece;
-});
+socket.on('chess-color-res', ifWhite => { userColor = ifWhite ? whitePiece : blackPiece; });
 
 drawButton.addEventListener('click', () => {
     socket.emit('draw-chess');
@@ -137,7 +131,6 @@ function addMoveToMoveList(moveTab){
     const moveStr = `${String.fromCharCode(64 + parseInt(moveTab[1]))}${9 - moveTab[0]}➜`+
                     `${String.fromCharCode(64 + parseInt(moveTab[3]))}${9 - moveTab[2]}`;
 
-    console.log(moveStr);
     let divToAppend = document.getElementById(`move-${moveNum}`);
 
     if( divToAppend == null){ //we have to create div matched to next move and put white move there

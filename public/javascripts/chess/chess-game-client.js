@@ -257,7 +257,7 @@ function getChecking(){
 function ifCheck(who){
     let king = who === whitePiece ? whiteKing : blackKing;
     let kingIndex = king.row * 9 + king.col;
-    console.log( kingIndex );
+
     let checked = getChecking();
     let enemyChecks = false;
     checked[kingIndex].forEach( index => { if( pieceColor(Math.floor(index / 9), index % 9) !== who) enemyChecks = true; } );
@@ -344,7 +344,6 @@ function boarderSetup(){
 
 function addListeners(){
     board.addEventListener('click', (e) => {
-        console.log(  );
         let firstFieldRow = clickedRow, firstFieldCol = clickedColumn;
 
         clickedColumn = e.target.cellIndex;
