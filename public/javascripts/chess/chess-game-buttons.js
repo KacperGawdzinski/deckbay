@@ -66,6 +66,10 @@ declineUndoButton.addEventListener('click', () => {
 });
 
 socket.on('chess-takeback-server-response', (moveObj) => {
+    if( moveObj == '' ){
+        resetButtonsOutlook();
+        return;
+    } 
     movePieceView( moveObj.endRow, moveObj.endCol, moveObj.startRow, moveObj.startCol );
     setPieceObj( moveObj.endRow, moveObj.endCol, 
         { 
@@ -91,14 +95,6 @@ socket.on('chess-send-players-colours', msg => {
     msg = msg.split(';');
     whitePlayerName.innerHTML = msg[0];
     blackPlayerName.innerHTML = msg[1];
-});
-
-socket.on('message-sent-to-client', (msg, user, time) => {
-    const newMessageDiv = document.createElement('div');
-    newMessageDiv.classList.add('message-container');
-    newMessageDiv.innerHTML = `<p class='meta'>${user} <span> ${time}</span></p>
-                               <p class='msg'>${msg}</p>`;
-    messagesBox.appendChild( newMessageDiv );
 });
 
 socket.on('server-chess-move', msg => {
