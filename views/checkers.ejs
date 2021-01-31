@@ -7,15 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href= "/public/stylesheets/page.css" rel="stylesheet" type="text/css" />
-    <link href= "/public/stylesheets/frontpage.css" rel="stylesheet" type="text/css" />
     <link href= "/public/stylesheets/checkers.css" rel="stylesheet" type="text/css" />
     <title>Deckbay</title>
 </head>
 
 <%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` });%>
 <body class="content">
-
-    <div>
+<div class='checkers-container'>
+    <div class="checkers-table">
         <table class="table" id="table">
             <% for(var i=0; i<8; i++){ %>
                 <tr>
@@ -32,17 +31,46 @@
             <% } %>
         </table>
     </div>
+    <div id='checkers-chat-div' class='checkers-chat-div checkers-container-item'>
 
-    <input type="button" value="ready" id="ready_self" class="notReady">
-    <label class="notReady" id="ready_oponent">Enemy Ready</label><br>
-    <input type="button" value="Surrender" id="surrender" class="">
-    <input type="button" value="Draw" id="draw" class="">
-    <label class="notReady" id="draw_oponent">Enemy Draw</label><br>
-    <input type="button" value="Undo" id="undo" class="">
+        <div class='wrapper'>
+            <div id='messages' class='messages'> 
 
-    <div id="endofgame" class="endinng" style="visibility: hidden;">
-        <span id="endofgamespan">Game Over</span>
+            </div>
+            <div class='message-sender-container'>
+                
+                <form class='message-sender' id='message-sender'>
+                    <div class='text-container'>
+                        <input  type='text' id='message' autocomplete='off' required 
+                        placeholder='Type your message (but be nice!)' />
+                    </div>
+                    <button id='message-submit' class='message-submit'>Send</button>
+                </form>
+
+            </div>
+        </div>
+
     </div>
+
+    <div class="checkers-container-item checkers-buttons">
+        <div>
+            <input type="button" value="ready" id="ready_self" class="notReady">
+            <label class="notReady" id="ready_oponent">Enemy Ready</label><br>
+        </div>
+        <div>
+            <input type="button" value="Surrender" id="surrender" class=""> <br>
+        </div>
+        <div>
+            <input type="button" value="Draw" id="draw" class="">
+            <label class="notReady" id="draw_oponent">Enemy Draw</label><br>
+        </div>
+        <div>
+            <input type="button" value="Undo" id="undo" class="">
+        </div>
+    </div>
+
+</div>
+
 </body>
 <footer>
     2020-2021 | Deckbay by GBS

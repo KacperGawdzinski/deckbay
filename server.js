@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const faker = require('faker');
-const Checkers  = require('./public/javascripts/checkers/checkers-server');
+const Checkers  = require('./server-javascript/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
 const { chessGame } = require('./server-javascript/chess-game-server');
 
@@ -274,6 +274,8 @@ io.on('connection', socket => {
         if(socketLogin.get(socket.id)) {
             let full_room_name = loginRoom.get(socketLogin.get(socket.id))
             let game = full_room_name.substr(0, full_room_name.indexOf('-'))
+            console.log(full_room_name);
+            console.log(io.sockets.adapter.rooms);
             if(io.sockets.adapter.rooms.get(full_room_name).size == 1) {
                 socket.leave(loginRoom.get(socketLogin.get(socket.id)));
                 if (roomPasswd.get(full_room_name)) {
