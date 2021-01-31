@@ -481,7 +481,10 @@ class chessGame{
         } else { //we get response for takeback
             if( player == this.whoRequestedTakeback ) return '';
             
-            if( !consentGranted ) return ''; //second player doesnt want to undo a move
+            if( !consentGranted ){
+                this.whoRequestedTakeback = '';
+                return '';
+            } //second player doesnt want to undo a move
         }   
         //when we're in here we're sure different player requested and responsed + consent was granted
         this.whoRequestedTakeback = '';

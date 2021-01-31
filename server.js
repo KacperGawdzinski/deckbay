@@ -313,12 +313,12 @@ io.on('connection', socket => {
     });
 
     socket.on('chess-undo-req', () => {
-        let reqLogin =  socketLogin.get(socket.id);
-        let reqRoom = loginRoom.get(reqLogin);
+        let reqLogin =  socketLogin.get( socket.id );
+        let reqRoom = loginRoom.get( reqLogin );
 
         let logicRes = roomChesslogic.get( reqRoom.split('-')[1] ).handleMoveReset( reqLogin );
         let help1 = Array.from( socketLogin.keys() );
-        let playerToNotify = help1.find(key => socketLogin.get( key ) === logicRes );
+        let playerToNotify = help1.find( key => socketLogin.get( key ) === logicRes );
         io.to( playerToNotify ).emit('chess-enemy-takeback-request');
     });
 
