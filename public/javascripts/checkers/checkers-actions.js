@@ -17,6 +17,9 @@ window.addEventListener('load', (event) => {
           }
       })
    });
+  var sendMessageButton = document.getElementById('message-submit');
+  var msgBox = document.getElementById('message');
+  var messagesBox = document.getElementById('messages');
   var tab = document.getElementById("table");
   var head = document.getElementById("head");
   var button = document.getElementById("ready_self");
@@ -42,7 +45,11 @@ window.addEventListener('load', (event) => {
    })
 
    draw.addEventListener("click", () =>{
-      draw.className="Ready";
+     if (draw.style.color == "green") {
+      draw.style.color = "white";
+     } else {
+      draw.style.color = "green";
+     }
       socket.emit("draw-checkers");
   })
 
@@ -58,13 +65,25 @@ window.addEventListener('load', (event) => {
 
   socket.on("change-draw", (player) => {
     if (check.own != player) {
-      if (labeld.className == 'notReady') {
-        labeld.className='Ready';
+      if (labeld.style.color == 'white') {
+        labeld.style.color == 'green';
       }else{
-        if (labeld.className == 'Ready')
-        labeld.className='notReady';
+        labeld.style.color == 'white';
       }
     }
+  });
+
+  sendMessageButton.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    socket.emit( 'message-sent-to-server', msgBox.value );
+    msgBox.value = '';
+  });
+  socket.on('message-sent-to-client', (msg, user, time) => {
+    const newMessageDiv = document.createElement('div');
+    newMessageDiv.classList.add('message-container');
+    newMessageDiv.innerHTML = `<p class='meta'>${user} <span> ${time}</span></p>
+                              <p class='msg'>${msg}</p>`;
+    messagesBox.appendChild( newMessageDiv );
   });
 
   undo.addEventListener("click", () => {
@@ -138,11 +157,10 @@ window.addEventListener('load', (event) => {
 
   socket.on("change-ready", (player) => {
     if (check.own != player) {
-      if (label.className == 'notReady') {
-        label.className='Ready';
+      if (label.style.color == 'white') {
+        label.style.color == 'green';
       }else{
-        if (label.className == 'Ready')
-        label.className='notReady';
+        label.style.color == 'white';
       }
     }
   });
@@ -193,13 +211,12 @@ window.addEventListener('load', (event) => {
   });
 
   button.addEventListener('click', () => {
-    if (button.className == 'notReady') {
-      socket.emit("ready");
-      button.className='Ready';
-    }else{
-      button.className='notReady';
-      socket.emit("ready");
-    }
+    if (button.style.color == "green") {
+      button.style.color = "white";
+     } else {
+      button.style.color = "green";
+     }
+     socket.emit("ready");
   });
 
     tab.addEventListener('click', (event) => {

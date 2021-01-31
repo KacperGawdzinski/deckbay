@@ -1,12 +1,23 @@
 .table{
     border-spacing: 0;
-     border-collapse: collapse; 
+    border-collapse: collapse; 
     padding: 0px;
     margin: 0px;
 }
 .checkers-table{
     padding: 20px;
     margin: 20px;
+    height: 100%;
+}
+.checkers-container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkers-table-tbody{
+    height: 100%;
+    width: 100%;
 }
 .field1{
     padding: 5px;
@@ -28,52 +39,45 @@
     background-color: lightblue;
 }
 .white{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     padding: 10px;
     background-color: white;
     border-radius: 50px;
 }
 .whiteQ{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     padding: 10px;
     background-color: white;
     border: 3px solid black;
     border-radius: 50px;
 }
 .black{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     padding: 10px;
     background-color: black;
     border-radius: 50px;
 }
 .blackQ{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     padding: 10px;
     background-color: black;
     border: 3px solid white;
     border-radius: 50px;
 }
 .marked{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     padding: 10px;
-    background-color: red;
+    background-color: white;
     border: 1px solid black;
     border-radius: 50px;
 }
 span {
     display: inline-block;
-}
-.notReady{
-    color: red;
-}
-
-.Ready{
-    color: green;
 }
 .endinng{
     border: 2px solid black;
@@ -84,12 +88,6 @@ span {
     height: calc(100vh - 110px);
 }
 
-.checkers-container{
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .checkers-container-item{
     margin: 3.5px;
@@ -177,11 +175,25 @@ input[type=text]{
 
 input[type=button]{
     margin-left: 10px;
-    width: 100px;
+    width: 150px;
+    height: 70px;
     border-radius: 20px;
     background-color: black;
     color: white;
 }
 .checkers-buttons{
+    justify-content: center;
     align-items: center;
+    background-color: gray;
 }
+
+.label{
+    color: white;
+}
+
+@media only screen and (max-width:620px) {
+    /* For mobile phones: */
+    .checkers-container-item {
+      width:100%;
+    }
+  }
