@@ -174,7 +174,7 @@ function removeLastMove(){
         divToRemove.children[2].innerHTML == '';
     } else {
         movesBox.removeChild( divToRemove );
-        moveNum--;
+        moveNum = moveNum--;
     }
 };
 
