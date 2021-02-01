@@ -1,7 +1,7 @@
 .table{
     border-spacing: 0;
     border-collapse: collapse; 
-    width: 45%;
+    width: 40%;
     height: 100%;
 }
 .checkers-container{
@@ -223,6 +223,27 @@ body{
         flex-wrap: wrap;
     }
     html{
-        height: 160%;
+        height: 170%;
+    }
+  }
+  @media only screen and (max-width:1100px) {
+    /* For mobile phones: */
+    .table, .checkers-chat-div, .checkers-buttons {
+      width:100%;
+    }
+    .table{
+        height: 50%;
+    }
+    .checkers-chat-div{
+        height: 70%;
+    }
+    .checkers-buttons{
+        height: 35%;
+    }
+    .checkers-container{
+        flex-wrap: wrap;
+    }
+    html{
+        height: 200%;
     }
   }

@@ -32,6 +32,10 @@ window.addEventListener('load', (event) => {
   var divend = document.getElementById("endofgamediv");
   var options = false;
   var check;
+  var cw = $('#table').width();
+  $('#table').css({
+  'height': cw + 'px'
+  });
 
    surr.addEventListener("click", () =>{
     check.turn==-1;
@@ -220,8 +224,9 @@ window.addEventListener('load', (event) => {
   });
 
     tab.addEventListener('click', (event) => {
-      var x= Math.floor(event.clientX/tab.rows[0].cells[0].clientWidth);
-      var y = Math.floor((event.clientY-head.clientHeight)/tab.rows[0].cells[0].clientHeight);
+      var bounds = tab.getBoundingClientRect();
+      var x= Math.floor((event.clientX - bounds.left)/tab.rows[0].cells[0].clientWidth);
+      var y = Math.floor((event.clientY - bounds.top)/tab.rows[0].cells[0].clientHeight);
       if (check.turn==1 && check.own>=0) {
         if (check.checed!=null) {
           if (check.checed==check.convertxy(x,y)) {
