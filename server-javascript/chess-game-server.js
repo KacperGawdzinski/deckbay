@@ -320,7 +320,7 @@ class chessGame{
 
     //#region checkmateLogic
 
-    checkMate(whitePlayer){ // input player is the one we check on
+    checkMate( whitePlayer ){ // input player is the one we check on
         let rescuerPawn = ( idx ) => {
             let idxRow = Math.floor( idx / 9 ); 
             let idxCol = idx % 9;
@@ -342,7 +342,7 @@ class chessGame{
 
         let enemyChecks = currChecking[king.row * 9 + king.col].filter( idx => {
             return this.pieceColor(Math.floor( idx / 9 ), idx % 9) !== whitePlayer;
-        }); //we get pieces of opposite player who attack our king
+        }); //we get the enemy pieces atacking our king
 
         return enemyChecks.some( atkIdx => {
             let rescued = false; 
@@ -366,7 +366,7 @@ class chessGame{
                         let phRow = Math.floor( pieceToHelp / 9); 
                         let phCol = pieceToHelp % 9;
                         if( this.pieceColor( phRow, phCol ) === whitePlayer &&
-                            this.validateMove( phRow, phCol, atkRow, atkCol ) ) rescued = true; //we can move and block atacking piece
+                            this.validateMove( phRow, phCol, Math.floor(index / 9), index % 9 ) ) rescued = true; //we can move and block atacking piece
                     });
                 })
             };
@@ -481,7 +481,10 @@ class chessGame{
         } else { //we get response for takeback
             if( player == this.whoRequestedTakeback ) return '';
             
-            if( !consentGranted ) return ''; //second player doesnt want to undo a move
+            if( !consentGranted ){
+                this.whoRequestedTakeback = '';
+                return '';
+            } //second player doesnt want to undo a move
         }   
         //when we're in here we're sure different player requested and responsed + consent was granted
         this.whoRequestedTakeback = '';
