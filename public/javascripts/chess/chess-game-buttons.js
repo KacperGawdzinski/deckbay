@@ -1,14 +1,11 @@
 const drawButton = document.getElementById('draw');
 const surrenderButton = document.getElementById('surrender');
-const sendMessageButton = document.getElementById('message-submit');
-const msgBox = document.getElementById('message');
 
 let confirmUndoButton = document.getElementById('undo-aye');
 let declineUndoButton = document.getElementById('undo-nay');
 let undoButton = document.getElementById('restart');
 
 const movesBox = document.getElementById('moves');
-const messagesBox = document.getElementById('messages');
 const whitePlayerName = document.getElementById('white-player-name');
 const blackPlayerName = document.getElementById('black-player-name');
 let undoButtonsClass = document.getElementsByClassName('undo-button');
@@ -34,10 +31,7 @@ socket.on('connect', () => {
     });
 });
 
-socket.on('chess-color-res', ifWhite => {
-    console.log( ifWhite );
-    userColor = ifWhite ? whitePiece : blackPiece;
-});
+socket.on('chess-color-res', ifWhite => { userColor = ifWhite ? whitePiece : blackPiece; });
 
 drawButton.addEventListener('click', () => {
     socket.emit('draw-chess');
@@ -72,6 +66,10 @@ declineUndoButton.addEventListener('click', () => {
 });
 
 socket.on('chess-takeback-server-response', (moveObj) => {
+    if( moveObj == '' ){
+        resetButtonsOutlook();
+        return;
+    } 
     movePieceView( moveObj.endRow, moveObj.endCol, moveObj.startRow, moveObj.startCol );
     setPieceObj( moveObj.endRow, moveObj.endCol, 
         { 
@@ -97,14 +95,6 @@ socket.on('chess-send-players-colours', msg => {
     msg = msg.split(';');
     whitePlayerName.innerHTML = msg[0];
     blackPlayerName.innerHTML = msg[1];
-});
-
-socket.on('message-sent-to-client', (msg, user, time) => {
-    const newMessageDiv = document.createElement('div');
-    newMessageDiv.classList.add('message-container');
-    newMessageDiv.innerHTML = `<p class='meta'>${user} <span> ${time}</span></p>
-                               <p class='msg'>${msg}</p>`;
-    messagesBox.appendChild( newMessageDiv );
 });
 
 socket.on('server-chess-move', msg => {
@@ -137,7 +127,6 @@ function addMoveToMoveList(moveTab){
     const moveStr = `${String.fromCharCode(64 + parseInt(moveTab[1]))}${9 - moveTab[0]}➜`+
                     `${String.fromCharCode(64 + parseInt(moveTab[3]))}${9 - moveTab[2]}`;
 
-    console.log(moveStr);
     let divToAppend = document.getElementById(`move-${moveNum}`);
 
     if( divToAppend == null){ //we have to create div matched to next move and put white move there

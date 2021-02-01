@@ -24,26 +24,7 @@
                 </table>
             </div>
 
-            <div id='chess-chat-div' class='chess-chat-div chess-container-item'>
-
-                <div class='wrapper'>
-                    <div id='messages' class='messages'> 
-
-                    </div>
-                    <div class='message-sender-container'>
-                        
-                        <form class='message-sender' id='message-sender'>
-                            <div class='text-container'>
-                                <input  type='text' id='message' autocomplete='off' required 
-                                placeholder='Type your message (but be nice!)' />
-                            </div>
-                            <button id='message-submit' class='message-submit'>Send</button>
-                        </form>
-    
-                    </div>
-                </div>
-
-            </div>
+            <%- include('components/chat.ejs'); %>
 
             <div id='chess-info-div' class='chess-info-div chess-container-item''>
 
@@ -75,6 +56,9 @@
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script src='/public/javascripts/chess/chess-game-client.js'></script>
+    <script src="../../public/javascripts/chat-scripts.js"></script>
     <script src='/public/javascripts/chess/chess-game-buttons.js'></script>
+    <script stc='/public/javascripts/chess/chess-server-response-handlers.s'></script>
 </html>
