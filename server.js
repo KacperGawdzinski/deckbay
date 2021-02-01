@@ -414,7 +414,7 @@ io.on('connection', socket => {
             }else{
                 opt['drawBlack']=true;
             }
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",0);
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",1);
         }
         if (opt['drawBlack'] == true && opt['drawWhite'] == true) {
             io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-draw",1);

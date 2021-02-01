@@ -394,13 +394,13 @@ class Checkers{
     }
 
     checkQueens(){
-        for (let i = 27; i < this.boarad.length; i++) {
+        for (let i = 28; i < this.boarad.length; i++) {
             const element = this.boarad[i];
             if (element==1) {
                 this.boarad[i]+= 2;
             }
         }
-        for (let i = 4; i > -1 ; i--) {
+        for (let i = 3; i > -1 ; i--) {
             const element = this.boarad[i];
             if (element==2) {
                 this.boarad[i]+= 2;

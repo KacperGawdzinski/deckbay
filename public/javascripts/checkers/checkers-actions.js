@@ -29,7 +29,7 @@ window.addEventListener('load', (event) => {
   var draw = document.getElementById("draw");
   var undo = document.getElementById("undo");
   var ending = document.getElementById("endofgame");
-  var spanend = document.getElementById("endofgamespan");
+  var divend = document.getElementById("endofgamediv");
   var options = false;
   var check;
 
@@ -40,7 +40,7 @@ window.addEventListener('load', (event) => {
 
    socket.on("surrender", () =>{
       check.turn=-1;
-      spanend.innerHTML=spanend.innerHTML+"<br> Surennder"
+      divend.innerHTML=divend.innerHTML+"<br> Surennder"
       ending.style.visibility="visible";
    })
 
@@ -56,7 +56,7 @@ window.addEventListener('load', (event) => {
   socket.on("players-draw", (draw) => {
     if (draw == 1) {
       check.turn=-1;
-      spanend.innerHTML=spanend.innerHTML+"<br> Draw"
+      divend.innerHTML=divend.innerHTML+"<br> Draw"
       ending.style.visibility="visible";
     }
     labeld.style.display="none";
@@ -65,10 +65,10 @@ window.addEventListener('load', (event) => {
 
   socket.on("change-draw", (player) => {
     if (check.own != player) {
-      if (labeld.style.color == 'white') {
-        labeld.style.color == 'green';
+      if (labeld.className == 'labelR') {
+        labeld.className = 'labelNR';
       }else{
-        labeld.style.color == 'white';
+        labeld.className = 'labelR';
       }
     }
   });
@@ -81,7 +81,7 @@ window.addEventListener('load', (event) => {
   socket.on('message-sent-to-client', (msg, user, time) => {
     const newMessageDiv = document.createElement('div');
     newMessageDiv.classList.add('message-container');
-    newMessageDiv.innerHTML = `<p class='meta'>${user} <span> ${time}</span></p>
+    newMessageDiv.innerHTML = `<p class='meta'>${user} <div> ${time}</div></p>
                               <p class='msg'>${msg}</p>`;
     messagesBox.appendChild( newMessageDiv );
   });
@@ -102,19 +102,19 @@ window.addEventListener('load', (event) => {
       for (let j = 0; j < 8; j++) {
         var c= check.convertxy(i,j);
         if (1==check.boarad[c]) {
-          tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="white"></div>';
         }
         if (2==check.boarad[c]) {
-          tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="black"> </div>';
         }
         if(3==check.boarad[c]){
-          tab.rows[j].cells[i].innerHTML='<span class="whiteQ"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="whiteQ"> </div>';
         }
         if(4==check.boarad[c]){
-          tab.rows[j].cells[i].innerHTML='<span class="blackQ"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="blackQ"></div>';
         }
         if (0==check.boarad[c]) {
-          tab.rows[j].cells[i].innerHTML='';
+          tab.rows[j].cells[i].innerHTML=' ';
         }
       }
     }
@@ -134,10 +134,10 @@ window.addEventListener('load', (event) => {
         for (let j = 0; j < 8; j++) {
           var c= check.convertxy(i,j);
           if (1==check.boarad[c]) {
-            tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
+            tab.rows[j].cells[i].innerHTML='<div class="white"></div>';
           }
           if (2==check.boarad[c]) {
-            tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+            tab.rows[j].cells[i].innerHTML='<div class="black"></div>';
           }
         }
       }
@@ -157,10 +157,10 @@ window.addEventListener('load', (event) => {
 
   socket.on("change-ready", (player) => {
     if (check.own != player) {
-      if (label.style.color == 'white') {
-        label.style.color == 'green';
+      if (label.className == 'labelNR') {
+        label.className = 'labelR';
       }else{
-        label.style.color == 'white';
+        label.className = 'labelNR';
       }
     }
   });
@@ -192,16 +192,16 @@ window.addEventListener('load', (event) => {
       for (let j = 0; j < 8; j++) {
         var c= check.convertxy(i,j);
         if (1==check.boarad[c]) {
-          tab.rows[j].cells[i].innerHTML='<span class="white"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="white"></div>';
         }
         if (2==check.boarad[c]) {
-          tab.rows[j].cells[i].innerHTML='<span class="black"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="black"></div>';
         }
         if(3==check.boarad[c]){
-          tab.rows[j].cells[i].innerHTML='<span class="whiteQ"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="whiteQ"></div>';
         }
         if(4==check.boarad[c]){
-          tab.rows[j].cells[i].innerHTML='<span class="blackQ"></span>';
+          tab.rows[j].cells[i].innerHTML='<div class="blackQ"></div>';
         }
         if (0==check.boarad[c]) {
           tab.rows[j].cells[i].innerHTML='';
@@ -227,16 +227,16 @@ window.addEventListener('load', (event) => {
           if (check.checed==check.convertxy(x,y)) {
             var c= check.convertxy(x,y);
             if(check.boarad[check.checed]==1){
-              tab.rows[y].cells[x].innerHTML='<span class="white"></span>';
+              tab.rows[y].cells[x].innerHTML='<div class="white"></div>';
             }
             if(check.boarad[check.checed]==2){
-              tab.rows[y].cells[x].innerHTML='<span class="black"></span>';
+              tab.rows[y].cells[x].innerHTML='<div class="black"></div>';
             }
             if(check.boarad[check.checed]==3){
-              tab.rows[y].cells[x].innerHTML='<span class="whiteQ"></span>';
+              tab.rows[y].cells[x].innerHTML='<div class="whiteQ"></div>';
             }
             if(check.boarad[check.checed]==4){
-              tab.rows[y].cells[x].innerHTML='<span class="blackQ"></span>';
+              tab.rows[y].cells[x].innerHTML='<div class="blackQ"></div>';
             }
             check.checed=null;
             check.moves.forEach(element => {
@@ -259,7 +259,7 @@ window.addEventListener('load', (event) => {
             if (check.haveToMove.length > 0) {
               if (check.boarad[check.convertxy(x,y)]%2==check.own) {
                 check.checed=check.convertxy(x,y);
-                tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
+                tab.rows[y].cells[x].innerHTML='<div class="marked"></div>';
                 check.checkBeating(x,y,-1);
                 check.moves.forEach(element => {
                   var move = check.convertId(element);
@@ -269,7 +269,7 @@ window.addEventListener('load', (event) => {
             } else {
               if (check.boarad[check.convertxy(x,y)]%2==check.own) {
                 check.checed=check.convertxy(x,y);
-                tab.rows[y].cells[x].innerHTML='<span class="marked"></span>';
+                tab.rows[y].cells[x].innerHTML='<div class="marked"></div>';
                 check.checkMoves(x,y);
                 check.moves.forEach(element => {
                   var move = check.convertId(element);
@@ -308,20 +308,20 @@ window.addEventListener('load', (event) => {
     }
     function settingPawan(element, id){
       if(check.boarad[id]==1){
-        element.innerHTML='<span class="white"></span>';
+        element.innerHTML='<div class="white"> </div>';
       }
       if(check.boarad[id]==2){
-        element.innerHTML='<span class="black"></span>';
+        element.innerHTML='<div class="black"> </div>';
       }
       if(check.boarad[id]==3){
-        element.innerHTML='<span class="whiteQ"></span>';
+        element.innerHTML='<div class="whiteQ"> </div>';
       }
       if(check.boarad[id]==4){
-        element.innerHTML='<span class="blackQ"></span>';
+        element.innerHTML='<div class="blackQ"> </div>';
       }
     }
     function settingEmpty(element){
-        element.innerHTML='';
+        element.innerHTML=' ';
     }
     function settingFields(){
       check.moves.forEach(element => {
