@@ -30,6 +30,7 @@ window.addEventListener('load', (event) => {
   var undo = document.getElementById("undo");
   var ending = document.getElementById("endofgame");
   var divend = document.getElementById("endofgamediv");
+  var enemy = document.getElementById("oponent");
   var options = false;
   var check;
   var cw = $('#table').width();
@@ -125,13 +126,14 @@ window.addEventListener('load', (event) => {
   });
 
   socket.on("send-options-checkers", temp => {
-    console.log("gunwo");
     if(!options){
-      if (temp.length == 3) {
+      if (temp.length == 4) {
         check = new Checkers(temp[0]);
         check.updateBoard(temp[2]);
+        enemy.innerHTML = temp[3];
       }else{
         check = new Checkers(temp[0]);
+        enemy.innerHTML = temp[3];
       }
       socket.emit('ready-check');
       for (let i = 0; i < 8; i++) {

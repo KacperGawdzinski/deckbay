@@ -14,21 +14,36 @@
 <%- include('components/header.ejs', { err_message : `${error_message}`, user_login : `${user_login}` });%>
 <body class="content">
 <div class='checkers-container'>
+
+
+    <div class="board">
+        <div class="labels">
+            <label class="User" id="oponent"></label><br>
+            <label class="labelNR" id="draw_oponent">Enemy Draw</label><br>
+            <label class="labelNR" id="ready_oponent">Enemy Ready</label><br>        
+        </div>
         <table class="table" id="table">
-                <% for(var i=0; i<8; i++){ %>
-                    <tr>
-                        <% for(var j=0; j<8; j++){ %>
-                            <% if((i%2==1&&j%2==1) || (i%2==0&&j%2==0)) {%>
-                                <th class="field2">
-                                </th>
-                            <% }else{ %>
-                                <th class="field1">
-                                </th>
-                            <% } %>
+            <% for(var i=0; i<8; i++){ %>
+                <tr>
+                    <% for(var j=0; j<8; j++){ %>
+                        <% if((i%2==1&&j%2==1) || (i%2==0&&j%2==0)) {%>
+                            <th class="field2">
+                            </th>
+                        <% }else{ %>
+                            <th class="field1">
+                            </th>
                         <% } %>
-                    </tr>
-                <% } %>    
-        </table>
+                    <% } %>
+                </tr>
+            <% } %>    
+    </table>
+    </div>
+    <div class="checkers-container-item checkers-buttons">
+            <input type="button" value="Surrender" id="surrender" class=""> <br>
+            <input type="button" value="Draw" id="draw" class="">
+            <input type="button" value="Undo" id="undo" class="">
+            <input type="button" value="Ready" id="ready_self" class="notReady">
+    </div>
     <div id='checkers-chat-div' class='checkers-chat-div checkers-container-item'>
 
         <div class='wrapper'>
@@ -49,33 +64,12 @@
         </div>
 
     </div>
-
-    <div class="checkers-container-item checkers-buttons">
-        <div class="checkers-buttons">
-            <input type="button" value="Surrender" id="surrender" class=""> <br>
-        </div>
-        <div class="checkers-buttons">
-            <input type="button" value="Draw" id="draw" class="">
-            <label class="labelNR" id="draw_oponent">Enemy Draw</label><br>
-        </div>
-        <div class="checkers-buttons">
-            <input type="button" value="Undo" id="undo" class="">
-        </div>
-        <div class="checkers-buttons">
-            <input type="button" value="Ready" id="ready_self" class="notReady">
-            <label class="labelNR" id="ready_oponent">Enemy Ready</label><br>
-        </div>
-    </div>
-
 </div>
 
 </body>
 <footer>
     2020-2021 | Deckbay by GBS
 </footer>
-<script>
-    var room_name ="ssss";
-</script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/public/javascripts/modal_handler.js"></script>

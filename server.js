@@ -406,7 +406,7 @@ io.on('connection', socket => {
             }else{
                 opt['drawWhite']=true;
             }
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",0);
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",1);
         }
         if (opt["black"]==socketLogin.get(socket.id)) {
             if (opt['drawBlack']==true) {
@@ -414,7 +414,7 @@ io.on('connection', socket => {
             }else{
                 opt['drawBlack']=true;
             }
-            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",1);
+            io.to(loginRoom.get(socketLogin.get(socket.id))).emit("change-draw",0);
         }
         if (opt['drawBlack'] == true && opt['drawWhite'] == true) {
             io.to(loginRoom.get(socketLogin.get(socket.id))).emit("players-draw",1);
@@ -457,27 +457,27 @@ io.on('connection', socket => {
         if (opt["white"] === '' && opt["black"] === '') {
             if (opt["side"] == 1) {
                 opt["white"] = socketLogin.get(socket.id);
-                io.to(roomId).emit("send-options-checkers",[1,1]);
+                io.to(roomId).emit("send-options-checkers",[1,1,'Oponent']);
             } else {
                 opt["black"] = socketLogin.get(socket.id);
-                io.to(roomId).emit("send-options-checkers",[2,1]);
+                io.to(roomId).emit("send-options-checkers",[2,1,'Oponent']);
             }
         }else{
             if (opt["white"] == '') {
                 opt["white"] = socketLogin.get(socket.id);
-                io.to(roomId).emit("send-options-checkers",[1,1]);
+                io.to(roomId).emit("send-options-checkers",[1,1,opt['black']]);
             } else {
                 if (opt["black"] == '') {
                     opt["black"] = socketLogin.get(socket.id);
-                    io.to(roomId).emit("send-options-checkers",[2,1]);
+                    io.to(roomId).emit("send-options-checkers",[2,1,opt['white']]);
                 } else {
                     if (roomOptions.get(roomId)["white"] == socketLogin.get(socket.id)) {
-                        io.to(roomId).emit("send-options-checkers",[1,roomTurn.get(roomId),roomBoard[roomId]]);
+                        io.to(roomId).emit("send-options-checkers",[1,roomTurn.get(roomId),roomBoard[roomId],opt['black']]);
                     } else {
                         if (roomOptions.get(loginRoom.get(socketLogin.get(socket.id)))["black"] == socketLogin.get(socket.id)) {
-                            io.to(roomId).emit("send-options-checkers",[2,roomTurn.get(roomId),roomBoard[roomId]]);
+                            io.to(roomId).emit("send-options-checkers",[2,roomTurn.get(roomId),roomBoard[roomId],opt['white']]);
                         } else {
-                            io.to(roomId).emit("send-options-checkers",[-1,roomTurn.get(roomId),roomBoard[roomId]]);
+                            io.to(roomId).emit("send-options-checkers",[-1,roomTurn.get(roomId),roomBoard[roomId],'Game']);
                         }
                     }
                 }

@@ -1,8 +1,26 @@
 .table{
     border-spacing: 0;
     border-collapse: collapse; 
+    width: 100%;
+    height: 100%;
+}
+.board{
     width: 40%;
     height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.labels{
+    display: flex;
+    flex-wrap: wrap;
+}
+.User{
+    color: white;
+}
+label{
+    padding-left: 20px;
 }
 .checkers-container{
     width: 100%;
@@ -181,17 +199,21 @@ input[type=text]{
 
 input[type=button]{
     margin-left: 10px;
-    width: 150px;
-    height: 70px;
+    padding: 20px;
     border-radius: 20px;
     background-color: black;
     color: white;
+    display: block;
 }
 .checkers-buttons{
     justify-content: center;
     align-items: center;
     background-color: gray;
-    width: 25%;
+    white-space: normal;
+    display: block;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
 .labelNR{
@@ -203,47 +225,51 @@ input[type=button]{
 body{
     overflow: inherit;
 }
-
-
-@media only screen and (max-width:620px) {
+@media only screen and (max-width:1100px) {
     /* For mobile phones: */
     .table, .checkers-chat-div, .checkers-buttons {
       width:100%;
-    }
-    .table{
-        height: 50%;
     }
     .checkers-chat-div{
         height: 70%;
     }
     .checkers-buttons{
-        height: 35%;
-    }
-    .checkers-container{
+        height: 20%;
+        display: flex;
         flex-wrap: wrap;
-    }
-    html{
-        height: 170%;
-    }
-  }
-  @media only screen and (max-width:1100px) {
-    /* For mobile phones: */
-    .table, .checkers-chat-div, .checkers-buttons {
-      width:100%;
-    }
-    .table{
-        height: 50%;
-    }
-    .checkers-chat-div{
-        height: 70%;
-    }
-    .checkers-buttons{
-        height: 35%;
     }
     .checkers-container{
         flex-wrap: wrap;
     }
     html{
         height: 200%;
+    }
+    .black,.blackQ,.white,.whiteQ{
+        padding-top: 10%;
+        padding-left: 10%;
+    }
+  }
+
+@media only screen and (max-width:620px) {
+    /* For mobile phones: */
+    .table, .checkers-chat-div, .checkers-buttons,.board {
+      width:100%;
+    }
+    .checkers-chat-div{
+        height: 70%;
+    }
+    .checkers-buttons{
+        height: 20%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .labels{
+        height: 10%;
+    }
+    .checkers-container{
+        flex-wrap: wrap;
+    }
+    html{
+        height: 170%;
     }
   }
