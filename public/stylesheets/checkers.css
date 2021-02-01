@@ -1,15 +1,11 @@
 .table{
     border-spacing: 0;
     border-collapse: collapse; 
-    padding: 0px;
-    margin: 0px;
-}
-.checkers-table{
-    padding: 20px;
-    margin: 20px;
+    width: 45%;
     height: 100%;
 }
 .checkers-container{
+    width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -21,58 +17,69 @@
 }
 .field1{
     padding: 5px;
-    width: 60px;
-    height: 60px;
+    width: 11%;
+    height: 11%;
     background-color: gray;
+    box-sizing: content-box;
+    flex-grow: 1;
+    padding: 1%;
+    overflow: hidden;
 }
 .field2{
     padding: 5px;
-    width: 60px;
-    height: 60px;
+    width: 11%;
+    height: 11%;
     background-color: white;
+    box-sizing: content-box;
+    flex-grow: 1;
+    padding: 1%;
+    overflow: hidden;
 }
 .movefield{
     margin: 0px;
     padding: 0px;
-    width: 60px;
-    height: 60px;
+    width: 11%;
+    height: 11%;
     background-color: lightblue;
+    box-sizing: content-box;
+    flex-grow: 1;
+    overflow: hidden;
 }
 .white{
-    width: 50px;
-    height: 50px;
-    padding: 10px;
+    width: 80%;
+    height: 80%;
+    padding: 10%;
     background-color: white;
     border-radius: 50px;
 }
 .whiteQ{
-    width: 50px;
-    height: 50px;
-    padding: 10px;
+    width: 80%;
+    height: 80%;
+    padding: 10%;
     background-color: white;
     border: 3px solid black;
     border-radius: 50px;
 }
 .black{
-    width: 50px;
-    height: 50px;
-    padding: 10px;
+    width: 80%;
+    height: 80%;
+    padding: 10%;
     background-color: black;
     border-radius: 50px;
 }
 .blackQ{
-    width: 50px;
-    height: 50px;
-    padding: 10px;
+    width: 80%;
+    height: 80%;
+    padding: 10%;
     background-color: black;
     border: 3px solid white;
     border-radius: 50px;
 }
 .marked{
-    width: 50px;
-    height: 50px;
-    padding: 10px;
-    background-color: white;
+    width: 80%;
+    height: 80%;
+    padding: 10%;
+    background-color: rgb(255, 0, 0);
     border: 1px solid black;
     border-radius: 50px;
 }
@@ -88,7 +95,6 @@ span {
     height: calc(100vh - 110px);
 }
 
-
 .checkers-container-item{
     margin: 3.5px;
 }
@@ -96,7 +102,7 @@ span {
 .checkers-chat-div{
     display: flex;
     height: 100%;
-    flex: 3;
+    width: 30%;
 }
 
 .wrapper{
@@ -185,15 +191,38 @@ input[type=button]{
     justify-content: center;
     align-items: center;
     background-color: gray;
+    width: 25%;
 }
 
-.label{
+.labelNR{
     color: white;
 }
+.labelR{
+    color: green;
+}
+body{
+    overflow: inherit;
+}
+
 
 @media only screen and (max-width:620px) {
     /* For mobile phones: */
-    .checkers-container-item {
+    .table, .checkers-chat-div, .checkers-buttons {
       width:100%;
+    }
+    .table{
+        height: 50%;
+    }
+    .checkers-chat-div{
+        height: 70%;
+    }
+    .checkers-buttons{
+        height: 35%;
+    }
+    .checkers-container{
+        flex-wrap: wrap;
+    }
+    html{
+        height: 160%;
     }
   }
