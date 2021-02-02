@@ -117,7 +117,7 @@ app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have th
     res.render('game_chess_page', { room_name: req.params.id, game_type: req.body.game_type, user_login: req.signedCookies.login });
 });
 
-app.get('/checkers-list', authorize, (req, res) => {   //set random nick
+app.get('/checkers-list', authorize, (req, res) => {   //set random nick - give it on main page
     if(!req.signedCookies.login)
         res.cookie("login",  faker.name.findName(), { signed: true });
     res.render('room_list.ejs', { game_type: 'CHECKERS', user_login : req.login }
