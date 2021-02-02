@@ -4,7 +4,6 @@ window.addEventListener('load', function() {
         let side
         if($("#black").is(':checked'))      side = 2
         else if($("#white").is(':checked')) side = 1
-        console.log(side);
         $.ajax({    //add validation on client site
             method: "POST",
             url: '/validate-room',
@@ -39,5 +38,4 @@ window.addEventListener('load', function() {
     $('#white').on('change', function() {
         $('#black').prop( "checked", false );
     })
-
 })

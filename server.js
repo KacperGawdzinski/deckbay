@@ -84,8 +84,8 @@ app.get('/verify/:id', (req, res) => {
 })
 
 app.post('/set-socket-id', (req, res) => {
-    socketLogin.set(req.body.socketid, req.signedCookies.login);
     if (roomOptions.get(loginRoom.get(req.signedCookies.login))) {
+        socketLogin.set(req.body.socketid, req.signedCookies.login);
         res.send(loginRoom.get(req.signedCookies.login));
     }else{
         res.send("");
@@ -97,7 +97,6 @@ app.get('/chess-list', authorize, (req, res) => {   //set random nick
         res.cookie("login",  faker.name.findName(), { signed: true });
     res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
 )});
-
 
 app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
     if(req.body.game_type != 'chess') {
@@ -148,10 +147,6 @@ app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have
         roomTurn.set(fullRoomName,1);
     }
     res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type, user_login : req.login });
-});
-
-app.get('/checkers-test', authorize, (req, res) => {
-    res.render('checkers.ejs')
 });
 
 app.post('/validate-room', async function(req, res) {        //maybe some default parameters? + change for other games
@@ -235,13 +230,12 @@ io.on('connection', socket => {
     console.log('client connected');
 
     socket.on('join-room-list', data => {
-        console.log('joining game-' + data);
+        console.log(`joining ${data} game list`);
         socket.join('game-' + data);
     })
 
     socket.on('load_rooms', data => {
-        console.log('returning room list...');
-        console.log(data);
+        console.log('returning room list');
         io.to('game-' + data).emit('rooms', availableRooms(data));
     });
 
@@ -250,7 +244,6 @@ io.on('connection', socket => {
         let roomName = data.game + "-" + data.room;
 
         socket.join( roomName );
-        loginRoom.set(login , roomName );
         io.to( 'game-' + data.game ).emit( 'rooms', availableRooms(data.game) );
         let logic;
 
@@ -263,13 +256,12 @@ io.on('connection', socket => {
             else{
                 logic = roomChesslogic.get( data.room );
                 logic.setSecondPlayer(login);
-                console.log(data.room);
             } 
             io.to( roomName ).emit( 'chess-send-players-colours', logic.sendPlayersColors() );
         };
     });
 
-    socket.on('disconnecting', () => {
+    socket.on('disconnecting', () => {  //todo: add delay
         if(socketLogin.get(socket.id)) {
             let full_room_name = loginRoom.get(socketLogin.get(socket.id))
             let game = full_room_name.substr(0, full_room_name.indexOf('-'))
