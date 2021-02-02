@@ -11,5 +11,5 @@ window.addEventListener('load', function() {
                 socket.emit('join-new-room', { game: game_type, room: room_name });
             }
         })
-     });
+    });
 })
