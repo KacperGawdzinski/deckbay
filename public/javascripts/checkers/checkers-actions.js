@@ -267,7 +267,11 @@ window.addEventListener('load', (event) => {
               if (check.boarad[check.convertxy(x,y)]%2==check.own) {
                 check.checed=check.convertxy(x,y);
                 tab.rows[y].cells[x].innerHTML='<div class="marked"></div>';
-                check.checkBeating(x,y,-1);
+                if (check.boarad[check.checed] > 2) {
+                  check.checkBeatingQueen(x,y);
+                }else{
+                  check.checkBeating(x,y,-1);
+                }
                 check.moves.forEach(element => {
                   var move = check.convertId(element);
                   tab.rows[move[1]].cells[move[0]].className="movefield";
