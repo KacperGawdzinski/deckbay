@@ -93,6 +93,87 @@ class Checkers{
             return false;
         }
     }
+    checkBeatingQueen(x,y){
+        if (this.own==1) {
+                if (this.boarad[this.convertxy(x,y)]==(this.own)+2){
+                    let i=1;
+                    while (this.boarad[this.convertxy(x-i,y+i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x-i,y+i)]==this.enemy+2 || this.boarad[this.convertxy(x-i,y+i)]==this.enemy+4) && 
+                    this.boarad[this.convertxy(x-i-1,y+i+1)]==0) {
+                        this.moves.push(this.convertxy(x-i-1,y+i+1));
+                        this.checkBeating(x-i-1,y+i+1,3);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x+i,y+i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x+i,y+i)]==this.enemy+2 || this.boarad[this.convertxy(x+i,y+i)]==this.enemy+4) && 
+                    this.boarad[this.convertxy(x+i+1,y+i+1)]==0) {
+                        this.moves.push(this.convertxy(x+i+1,y+i+1));
+                        this.checkBeating(x+i+1,y+i+1,1);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x-i,y-i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x-i,y-i)]==this.enemy+2 || this.boarad[this.convertxy(x-i,y-i)]==this.enemy+4) && 
+                    this.boarad[this.convertxy(x-i-1,y-i-1)]==0) {
+                        this.moves.push(this.convertxy(x-i-1,y-i-1));
+                        this.checkBeating(x-i-1,y-i-1,4);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x+i,y-i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x+i,y-i)]==this.enemy+2 || this.boarad[this.convertxy(x+i,y-i)]==this.enemy+4) && 
+                    this.boarad[this.convertxy(x+i+1,y-i-1)]==0) {
+                        this.moves.push(this.convertxy(x+i+1,y-i-1));
+                        this.checkBeating(x+i+1,y-i-1,2);
+                    }
+            }
+        }else{
+                if (this.boarad[this.convertxy(x,y)]==4+(this.own)) {
+                    let i=1;
+                    while (this.boarad[this.convertxy(x-i,y+i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x-i,y+i)]==this.enemy || this.boarad[this.convertxy(x-i,y+i)]==this.enemy+2) && 
+                    this.boarad[this.convertxy(x-i-1,y+i+1)]==0) {
+                        this.moves.push(this.convertxy(x-i-1,y+i+1));
+                        this.checkBeating(x-i-1,y+i+1,3);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x+i,y+i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x+i,y+i)]==this.enemy || this.boarad[this.convertxy(x+i,y+i)]==this.enemy+2) && 
+                    this.boarad[this.convertxy(x+i+1,y+i+1)]==0) {
+                        this.moves.push(this.convertxy(x+i+1,y+i+1));
+                        this.checkBeating(x+i+1,y+i+1,1);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x-i,y-i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x-i,y-i)]==this.enemy || this.boarad[this.convertxy(x-i,y-i)]==this.enemy+2) && 
+                    this.boarad[this.convertxy(x-i-1,y-i-1)]==0) {
+                        this.moves.push(this.convertxy(x-i-1,y-i-1));
+                        this.checkBeating(x-i-1,y-i-1,4);
+                    }
+                    i=1;
+                    while (this.boarad[this.convertxy(x+i,y-i)]==0) {
+                        i++;
+                    }
+                    if ((this.boarad[this.convertxy(x+i,y-i)]==this.enemy || this.boarad[this.convertxy(x+i,y-i)]==this.enemy+2) && 
+                    this.boarad[this.convertxy(x+i+1,y-i-1)]==0) {
+                        this.moves.push(this.convertxy(x+i+1,y-i-1));
+                        this.checkBeating(x+i+1,y-i-1,2);
+                    }
+                }
+        }
+    }
 
     checkBeating(x,y,way){
         if (x-2>=0||y-2>=0) {
