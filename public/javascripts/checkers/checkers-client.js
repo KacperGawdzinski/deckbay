@@ -215,25 +215,25 @@ class Checkers{
             this.deleting=[...this.deletingtemp];
         }
         if ((x-2>=0||y-2>=0)) {
-            if (this.inMoves(this.convertxy(x-2,y-2)) && way!=1) {
+            if (this.inMoves(this.convertxy(x-2,y-2)) && this.boarad[this.convertxy(x-1,y-1)] != 0 && this.boarad[this.convertxy(x-1,y-1)]%2 != this.own  && way!=1) {
                 this.deletingtemp.push(this.convertxy(x-1,y-1));
                 this.beat(x-2,y-2,xz,yz,4);
             }
         }
         if ((x-2>=0||y+2<=7)) {
-            if (this.inMoves(this.convertxy(x-2,y+2))&& way!=2) {
+            if (this.inMoves(this.convertxy(x-2,y+2)) && this.boarad[this.convertxy(x-1,y+1)] != 0 && this.boarad[this.convertxy(x-1,y+1)]%2 != this.own  && way!=2) {
                 this.deletingtemp.push(this.convertxy(x-1,y+1));
                 this.beat(x-2,y+2,xz,yz,3);
             }
         }
         if ((x+2<=7||y-2>=0)) {
-            if (this.inMoves(this.convertxy(x+2,y-2))&& way!=3) {
+            if (this.inMoves(this.convertxy(x+2,y-2)) && this.boarad[this.convertxy(x+1,y-1)] != 0 && this.boarad[this.convertxy(x+1,y-1)]%2 != this.own  && way!=3) {
                 this.deletingtemp.push(this.convertxy(x+1,y-1));
                 this.beat(x+2,y-2,xz,yz,2);
             }
         }
         if ((x+2<=7||y+2<=7)) {
-            if (this.inMoves(this.convertxy(x+2,y+2))&& way!=4) {
+            if (this.inMoves(this.convertxy(x+2,y+2)) && this.boarad[this.convertxy(x+1,y+1)] != 0 && this.boarad[this.convertxy(x+1,y+1)]%2 != this.own  && way!=4) {
                 this.deletingtemp.push(this.convertxy(x+1,y+1));
                 this.beat(x+2,y+2,xz,yz,1);
             }
@@ -435,34 +435,22 @@ class Checkers{
                     while (this.boarad[this.convertxy(x-i,y+i)]==0) {
                         i++;
                     }
-                    if (this.inMoves(this.convertxy(x-i-1,y+i+1))) {
-                        this.boarad[this.convertxy(x-i,y+i)]=0;
-                        this.beat(x-i-1,y+i+1,xz,yz,-1);
-                    }
+                        this.beat(x-i+1,y+i-1,xz,yz,-1);
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y+i)]==0) {
                         i++;
                     }
-                    if (this.inMoves[this.convertxy(x+i+1,y+i+1)]) {
-                        this.boarad[this.convertxy(x+i,y+i)]=0;
-                        this.beat(x+i+1,y+i+1,xz,yz,-1);
-                    }
+                        this.beat(x+i-1,y+i-1,xz,yz,-1);
                     i=1;
                     while (this.boarad[this.convertxy(x-i,y-i)]==0) {
                         i++;
                     }
-                    if (this.inMoves[this.convertxy(x-i-1,y-i-1)]) {
-                        this.boarad[this.convertxy(x-i,y-i)]=0;
-                        this.beat(x-i-1,y-i-1,xz,yz,-1);
-                    }
+                        this.beat(x-i+1,y-i+1,xz,yz,-1);
                     i=1;
                     while (this.boarad[this.convertxy(x+i,y-i)]==0) {
                         i++;
                     }
-                    if (this.inMoves[this.convertxy(x+i+1,y-i-1)]) {
-                        this.boarad[this.convertxy(x+i,y-i)]=0;
-                        this.beat(x+i+1,y-i-1,xz,yz,-1);
-                    }
+                        this.beat(x+i-1,y-i+1,xz,yz,-1);
                     }else{
                         this.beat(x,y,xz,yz,-1);
                     }
