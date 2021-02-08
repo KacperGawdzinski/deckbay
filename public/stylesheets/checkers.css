@@ -270,6 +270,6 @@ body{
         flex-wrap: wrap;
     }
     html{
-        height: 170%;
+        height: 70% + 100vw;
     }
   }

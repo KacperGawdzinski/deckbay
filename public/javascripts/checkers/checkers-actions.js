@@ -38,6 +38,8 @@ window.addEventListener('load', (event) => {
   'height': cw + 'px'
   });
 
+  
+
    surr.addEventListener("click", () =>{
     check.turn==-1;
     socket.emit("surrender-checkers");
@@ -341,3 +343,12 @@ window.addEventListener('load', (event) => {
       });
     }
 });
+
+window.onresize = res;
+
+function res(){
+  var cw = $('#table').width();
+  $('#table').css({
+  'height': cw + 'px'
+  });
+}
