@@ -37,9 +37,9 @@ app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103'));   //HIDE
 app.use(express.static(path.join(__dirname, "client", "build")));
 app.use(express.static("public"));
 
-app.use('/charades', charades)
+/*app.use('/charades', charades)
 app.use('/checkers', checkers)
-app.use('/chess', chess)
+app.use('/chess', chess)*/
 
 //app.set('views', './views');
 //app.set('view engine', 'ejs');
@@ -49,11 +49,11 @@ app.use('/chess', chess)
     //res.render('index.ejs', { user_login : req.login } );
 });*/
 
-app.get('/', (req,res) =>{
+app.get('/*', (req,res) =>{
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
-app.post("/login", authorize, (req, res) => {
+/*app.post("/login", authorize, (req, res) => {
     let password = req.body.passwd,
         login = req.body.login;
 
@@ -174,7 +174,7 @@ app.post('/validate-room-password', (req, res) => {
             res.send("Invalid password!");
         }
     });
-});
+});*/
 
 server.listen(process.env.PORT || 3000, () => {
     console.log('Server turned on');

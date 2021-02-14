@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import getImage from '../getImage'
+import getImage from '../../getImage'
 import './GameMiniature.css'
 
 const GameMiniature = ({game}) => {
