@@ -1,6 +1,7 @@
 const http = require('http');
 const socket = require('socket.io');
 const express = require('express');
+const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -9,13 +10,14 @@ const faker = require('faker');
 const Checkers  = require('./server-javascript/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
 const { chessGame } = require('./server-javascript/chess-game-server');
-
+const charades = require('./routes/charades')
+const checkers = require('./routes/checkers')
+const chess = require('./routes/chess')
 const saltRounds = 10;
 
 var app = express();
 var server = http.createServer(app);
 var io = socket(server);
-
 let loggingControl = new loggingInfo();
 
 var socketLogin = new Map();    //socket.id -> login
@@ -26,20 +28,29 @@ var roomPlayers = {};           //full room name -> [players allowed to play (lo
 var roomBoard = {};             //full room name -> gameboard
 var roomTurn = new Map();       //full room name -> turn
 var roomLastMove = {};
-
 let roomChesslogic = new Map(); //full room name -> it's game in class representation
 
 app.use(express.urlencoded({
     extended: true
 }));
 app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103'));   //HIDE
-app.use('/public', express.static('public'));
+app.use(express.static(path.join(__dirname, "client", "build")));
+app.use(express.static("public"));
 
-app.set('views', './views');
-app.set('view engine', 'ejs');
+app.use('/charades', charades)
+app.use('/checkers', checkers)
+app.use('/chess', chess)
 
-app.get('/', authorize, (req, res) => {
-    res.render('index.ejs', { user_login : req.login } );
+//app.set('views', './views');
+//app.set('view engine', 'ejs');
+
+/*app.get('/', authorize, (req, res) => {
+    res.send('xd')
+    //res.render('index.ejs', { user_login : req.login } );
+});*/
+
+app.get('/', (req,res) =>{
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
 app.post("/login", authorize, (req, res) => {
@@ -91,63 +102,6 @@ app.post('/set-socket-id', (req, res) => {
         res.send("");
     }
 })
-
-app.get('/chess-list', authorize, (req, res) => {   //set random nick
-    if(!req.signedCookies.login)
-        res.cookie("login",  faker.name.findName(), { signed: true });
-    res.render('room_list.ejs', { game_type: 'CHESS', user_login : req.login }
-)});
-
-app.post('/chess-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
-    if(req.body.game_type != 'chess') {
-        res.status(403);
-        res.send("You don't have permission to enter this room!");
-        return;
-    }
-    let fullRoomName = req.body.game_type + "-" + req.params.id
-    if(roomPasswd.get(fullRoomName)) {
-        let temp = roomPlayers[fullRoomName]
-        if(!temp.includes(req.signedCookies.login)) {
-            res.status(403);
-            res.send("You don't have permission to enter this room!");
-            return;
-        }
-    }
-    loginRoom.set(req.signedCookies.login, fullRoomName);
-    res.render('game_chess_page', { room_name: req.params.id, game_type: req.body.game_type, user_login: req.signedCookies.login });
-});
-
-app.get('/checkers-list', authorize, (req, res) => {   //set random nick - give it on main page
-    if(!req.signedCookies.login)
-        res.cookie("login",  faker.name.findName(), { signed: true });
-    res.render('room_list.ejs', { game_type: 'CHECKERS', user_login : req.login }
-)});
-
-app.post('/checkers-list/:id', authorize, (req, res) => {  //if two players have the same nick may be problem - remove spaces
-    if(req.body.game_type != 'checkers') {
-        res.status(403);
-        res.send("You don't have permission to enter this room!");
-        return;
-    }
-    let fullRoomName = req.body.game_type + "-" + req.params.id
-    if(roomPasswd.get(fullRoomName)) {
-        let temp = roomPlayers[fullRoomName]
-        if(!temp.includes(req.signedCookies.login)) {
-            res.status(403);
-            res.send("You don't have permission to enter this room!");
-            return;
-        }
-    }
-    loginRoom.set(req.signedCookies.login, fullRoomName);
-    if (roomBoard.hasOwnProperty(fullRoomName)) {
-        
-    }else{
-        var check = new Checkers(1);
-        roomBoard[fullRoomName] = check.boarad;
-        roomTurn.set(fullRoomName,1);
-    }
-    res.render('checkers.ejs', { room_name: req.params.id, game_type: req.body.game_type, user_login : req.login });
-});
 
 app.post('/validate-room', async function(req, res) {        //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)

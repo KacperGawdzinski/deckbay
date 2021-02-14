@@ -8,7 +8,7 @@ class loggingInfo{
         service : 'gmail',
         auth : {
             user : 'deckbay.notifications@gmail.com',
-            pass : 'szajnertochuj1'
+            pass : 'abcd'
         }
     })
 

@@ -1,0 +1,62 @@
+.game_list {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-top: 100px;
+}
+
+.game {
+    width: 20%;
+    height: auto;
+    border-radius: 10%;
+    background-color: lightgray;
+    border-style: solid;
+    padding: 3.5% 3.5% 2% 3.5%;
+    margin: 20px 0;
+}
+
+.game img {
+    transition: transform .5s ease;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.game:hover img{
+    transform: scale(1.1);
+}
+
+.game p {
+    margin-top: 7%;
+    text-align: center;
+    font-family: SN;
+    font-size: calc(12px + 1.55vw);
+    font-weight: bold;
+    font-style: italic;
+    width: 100%;
+}
+
+.game a {
+    text-decoration: none;
+    color: black;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+@media only screen and (max-width: 1000px) {
+   .game_list {
+        margin-top: 20px;
+    }
+   .game {
+        margin: 5px 0;
+        width: 40%;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .game_list {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+}
