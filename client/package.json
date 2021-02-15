@@ -15,8 +15,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start-client": "react-scripts start && (cd .. && yarn start)",
-    "start": "yarn run build && (cd .. && yarn start)",
+    "start-client": "react-scripts start && cd .. && yarn server",
+    "start": "yarn run build && cd .. && yarn server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -39,5 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3000"
+  "proxy": "http://localhost:5000"
 }

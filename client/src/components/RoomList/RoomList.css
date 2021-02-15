@@ -36,17 +36,6 @@
     color: white;
 }
 
-.new_room_div {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-flow: column;
-    background-color: #3E3E3E;
-    font-family: SN;
-    font-size: calc(16px + 0.5vw);
-    color: white;
-}
-
 .list_item {
     position: relative;
     display: flex;

@@ -176,7 +176,7 @@ app.post('/validate-room-password', (req, res) => {
     });
 });*/
 
-server.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 5000, () => {
     console.log('Server turned on');
 });
 
