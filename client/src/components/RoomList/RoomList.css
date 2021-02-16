@@ -36,6 +36,11 @@
     color: white;
 }
 
+.animation_wrapper {
+    transition: max-height 0.6s ease;
+    overflow: hidden;
+}
+
 .list_item {
     position: relative;
     display: flex;
