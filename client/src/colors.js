@@ -1,4 +1,4 @@
-Colors = {};
+let Colors = {};
 Colors.names = {
     aqua: "#00ffff",
     azure: "#f0ffff",
@@ -53,3 +53,5 @@ Colors.random = function() {
            result = prop;
     return result;
 };
+
+export default Colors

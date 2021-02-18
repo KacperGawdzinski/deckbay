@@ -33,6 +33,7 @@ let roomChesslogic = new Map(); //full room name -> it's game in class represent
 app.use(express.urlencoded({
     extended: true
 }));
+app.use(express.json());
 app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103'));   //HIDE
 app.use(express.static(path.join(__dirname, "client", "build")));
 app.use(express.static("public"));
@@ -49,59 +50,9 @@ app.use('/chess', chess)*/
     //res.render('index.ejs', { user_login : req.login } );
 });*/
 
-app.get('/*', (req,res) =>{
+app.get('/', (req,res) =>{
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
-
-/*app.post("/login", authorize, (req, res) => {
-    let password = req.body.passwd,
-        login = req.body.login;
-
-    if ( !loggingControl.userLoginLookup(login) ) {
-        res.render("index.ejs", { error_message: "User with such login doesn't exist" });
-    } else if ( !loggingControl.userValidateByLogin(login, password) ) {
-        res.render("index.ejs", { error_message: "Password is incorrect" });
-    } else {
-        res.cookie("login", login, { signed: true });
-        res.redirect( req.body.reqUrl );
-    }
-});
-
-app.post('/register', (req, res) => {
-    let password = req.body.password,
-        login = req.body.login,
-        mail = req.body.email;
-
-    if (loggingControl.userLookup(login, mail) || loggingControl.insertMailToVerify(login, mail, password) === false) {
-        res.render( 'index', { error_message: 'This mail/login is already taken!' } );
-    } else {
-        res.redirect( req.body.reqUrl );
-    }
-});
-
-app.post('/logout', (req, res) => {
-    res.cookie("login", "", { maxAge : -1 } );
-    res.redirect( req.body.reqUrl );
-}); 
-
-app.get('/verify/:id', (req, res) => {
-    let ID = req.params.id,
-        gotLogin = loggingControl.checkID(ID);
-
-    if( gotLogin !== false){
-        res.cookie('login', gotLogin, { signed : true } );
-    } 
-    res.redirect('/');
-})
-
-app.post('/set-socket-id', (req, res) => {
-    if (roomOptions.get(loginRoom.get(req.signedCookies.login))) {
-        socketLogin.set(req.body.socketid, req.signedCookies.login);
-        res.send(loginRoom.get(req.signedCookies.login));
-    }else{
-        res.send("");
-    }
-})
 
 app.post('/validate-room', async function(req, res) {        //maybe some default parameters? + change for other games
     let ar = availableRooms(req.body.game)
@@ -160,6 +111,58 @@ app.post('/validate-room', async function(req, res) {        //maybe some defaul
     })
     res.send(true);
 });
+
+/*app.post("/login", authorize, (req, res) => {
+    let password = req.body.passwd,
+        login = req.body.login;
+
+    if ( !loggingControl.userLoginLookup(login) ) {
+        res.render("index.ejs", { error_message: "User with such login doesn't exist" });
+    } else if ( !loggingControl.userValidateByLogin(login, password) ) {
+        res.render("index.ejs", { error_message: "Password is incorrect" });
+    } else {
+        res.cookie("login", login, { signed: true });
+        res.redirect( req.body.reqUrl );
+    }
+});
+
+app.post('/register', (req, res) => {
+    let password = req.body.password,
+        login = req.body.login,
+        mail = req.body.email;
+
+    if (loggingControl.userLookup(login, mail) || loggingControl.insertMailToVerify(login, mail, password) === false) {
+        res.render( 'index', { error_message: 'This mail/login is already taken!' } );
+    } else {
+        res.redirect( req.body.reqUrl );
+    }
+});
+
+app.post('/logout', (req, res) => {
+    res.cookie("login", "", { maxAge : -1 } );
+    res.redirect( req.body.reqUrl );
+}); 
+
+app.get('/verify/:id', (req, res) => {
+    let ID = req.params.id,
+        gotLogin = loggingControl.checkID(ID);
+
+    if( gotLogin !== false){
+        res.cookie('login', gotLogin, { signed : true } );
+    } 
+    res.redirect('/');
+})
+
+app.post('/set-socket-id', (req, res) => {
+    if (roomOptions.get(loginRoom.get(req.signedCookies.login))) {
+        socketLogin.set(req.body.socketid, req.signedCookies.login);
+        res.send(loginRoom.get(req.signedCookies.login));
+    }else{
+        res.send("");
+    }
+})
+
+
 
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {

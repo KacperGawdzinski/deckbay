@@ -20,6 +20,9 @@ function App() {
             <Route exact path='/chess'>
                 <RoomList game='chess'/>
             </Route>
+            <Route exact path='/chess/:id'>
+                <div>XDXD</div>
+            </Route>
         </Switch>
         <Footer/>
     </Router>
