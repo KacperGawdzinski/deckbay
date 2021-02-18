@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import NewRoom from './NewRoom/NewRoom'
+import RoomListItem from '../RoomListItem/RoomListItem'
 import './RoomList.css'
 
 const RoomList = ({game}) => {
@@ -16,7 +17,7 @@ const RoomList = ({game}) => {
         socket.emit('load_rooms', game);
         
         socket.on('rooms', data => {
-            console.log(data);
+            setRooms(data)
         })
     }, [])
 
@@ -32,7 +33,11 @@ const RoomList = ({game}) => {
             <div ref={content} className="animation_wrapper" style={{ maxHeight: `${setHeight}` }}>
                 <NewRoom game={game}/>
             </div>
-            <div id="rooms"></div>
+            <div id="rooms">
+                {rooms.map(info => {
+                    return <RoomListItem info={info} game={game}/>
+                })}
+            </div>
         </div>
     </div>
 )}
