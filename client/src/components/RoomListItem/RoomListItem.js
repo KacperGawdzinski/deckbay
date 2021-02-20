@@ -3,6 +3,8 @@ import Colors from '../../colors'
 import ActiveUser from '../../assets/images/user.png'
 import InactiveUser from '../../assets/images/inactive-user.png'
 import Lock from '../../assets/images/lock.png'
+import { useHistory } from "react-router-dom";
+import axios from 'axios'
 import './RoomListItem.css'
 
 const RoomListItem = ({ info, game }) => {
@@ -11,10 +13,13 @@ const RoomListItem = ({ info, game }) => {
         ['checkers', 2],
         ['charades', 10],
     ]);
-    const [color, setColor] = useState(Colors.random())
+    const color = useState(Colors.random())
     const [expanded, setExpanded] = useState(false);
     const [setHeight, setHeightState] = useState("0px")
+    const [infoLabel, setInfoLabel] = useState('Password')
+    const [infoValue, setInfoValue] = useState('')
     const wrapper = useRef(null)
+    const history = useHistory()
     let playerIcons = []
     
     if(game === 'chess' || game === 'checkers') {
@@ -30,6 +35,25 @@ const RoomListItem = ({ info, game }) => {
         setExpanded(!expanded)
         if(info.password)
             setHeightState(expanded? "0px" : `${wrapper.current.scrollHeight}px`)
+    }
+
+    const Submit = (e) => {
+        e.preventDefault()
+        var targetElement = e.target
+        let roomFullName = targetElement.childNodes[2].value
+        let roomName = roomFullName.substring(roomFullName.indexOf("-") + 1)
+
+        axios.post('validate-room-password', {
+            fullRoomName: roomFullName,
+            password: targetElement.firstChild.value
+        }).then(res => {
+            if(res.data === true)
+                history.push(`/${roomName}`)
+            else {
+                setInfoValue('')
+                setInfoLabel(res.data)
+            }
+        })
     }
 
     return(
@@ -52,8 +76,8 @@ const RoomListItem = ({ info, game }) => {
         {info.password &&
         <div ref={wrapper} className="animation_wrapper" style={{ maxHeight: `${setHeight}` }}>
             <div style={{backgroundColor: color}} className="list_item">
-                <form className="formPwdValidator" method="POST" style={{width: "100%"}}>
-                    <input name="password" style={{display: "inline", width: "50%", maxWidth: "400px", marginLeft: "10%", height: "30px"}} type="password" placeholder="Password"/>
+                <form className="formPwdValidator" method="POST" style={{width: "100%"}} onSubmit={Submit}>
+                    <input name="password" style={{display: "inline", width: "50%", maxWidth: "400px", marginLeft: "10%", height: "30px"}} type="password" placeholder={infoLabel} value={infoValue}/>
                     <input style={{display: "inline", width: "30%", marginRight: "10%", height: "30px", marginBottom: 0, padding: 0}} type="submit" value="Join"/>
                     <input type="hidden" name="room" value={info.fullRoomName}/>
                 </form>

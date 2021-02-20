@@ -4,41 +4,25 @@ import axios from 'axios'
 import './NewRoom.css'
 
 const NewRoom = ({ game }) => {
-    const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://deckbay.herokuapp.com';
+    //const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://deckbay.herokuapp.com';
+    //change to useReducer()
     const [roomName, setRoomName] = useState("")
+    const [infoLabel, setInfoLabel] = useState("Room name")
     const [roomPassword, setRoomPassword] = useState("")
     const [roomSide, setRoomSide] = useState("")
     const [roomGameLength, setGameLength] = useState("")
     const [roomGameBonus, setGameBonus] = useState("")
+    const [infoLabelColor, setInfoLabelColor] = useState("white")
     const history = useHistory()
 
     const Submit = (e) => {
-        /*e.preventDefault()
-        var targetElement = e.target
-        let roomFullName = targetElement.childNodes[2].value
-        let roomName = roomFullName.substring(roomFullName.indexOf("-") + 1)
-
-        axios.post("http://localhost:3000/validate-room", {
-            fullRoomName: roomFullName,
-            password: targetElement.firstChild.value
-        }).then(res => {
-            if(res === true)
-                history.push(`/${roomName}`)
-            else {
-                targetElement.firstChild.value = ""
-                targetElement.firstChild.placeholder = res
-            }
-        })*/
         e.preventDefault();
-        let side = 1
-        //if($("#black").is(':checked'))      side = 2
-        //else if($("#white").is(':checked')) side = 1 //add validation on client site
-        axios.post("localhost:5000/validate-room", {
+        axios.post("validate-room", {
         //axios.post(`${API_ENDPOINT}/validate-room`, {
             game: game, 
             room: roomName,
             password: roomPassword,
-            side: side,
+            side: roomSide,
             white: null,
             black: null,
             readyWhite: false,
@@ -51,32 +35,37 @@ const NewRoom = ({ game }) => {
             if(res.data === true)
                 history.push(`/chess/${roomName}`)
             else {
-                //room_name_label.innerHTML = msg;
-                //room_name_label.style.color = 'red';
+                setInfoLabel(res.data);
+                setInfoLabelColor('red')
             }
         })
     }
 
     return (
     <div className="new_room_div">
-        <form id="new_room_form" className="new_room_form" autoComplete="off" onSubmit={Submit}>
+        <form className="new_room_form" autoComplete="off" onSubmit={Submit}>
 
-            <label id="room_name_label">Room name</label>
-            <input type="text" placeholder="Your room name..." onChange={(e) => setRoomName(e.target.value.toLowerCase())}/>
+            <label style={{ color: infoLabelColor }}> {infoLabel} </label>
+            <input type="text" placeholder="Your room name..." onChange={(e) => { setRoomName(e.target.value.toLowerCase());
+                                                                                  setInfoLabel('Room name');
+                                                                                  setInfoLabelColor('white') }}/>
 
-            <label>Password</label>
+            <label> Password </label>
             <input type="password" placeholder="(optional)" onChange={(e) => setRoomPassword(e.target.value.toLowerCase())}/>
+
             {(game === 'chess' || game === 'checkers') &&
             <div>
                 <div style={{display: "flex", justifyContent: "space-around", marginTop: "10px"}}>
                     <div className="ck-button">
                         <label>
-                            <input type="checkbox" id="black" value="1" hidden/><span>Black</span>
+                            <input type="checkbox" id="black" value="1" hidden onClick={() => setRoomSide(2)}/>
+                            <span>Black</span>
                         </label>
                     </div>
                     <div className="ck-button">
                         <label>
-                            <input type="checkbox" id="white" value="1" hidden/><span>White</span>
+                            <input type="checkbox" id="white" value="1" hidden onClick={() => setRoomSide(1)}/>
+                            <span>White</span>
                         </label>
                     </div>
                 </div>
