@@ -5,9 +5,9 @@ import charades from './assets/images/charades_icon.png';
 let imgs = {
     chess,
     checkers,
-    charades
+    charades,
 };
 
-let getImage = (key) => imgs[key];
+let getImage = key => imgs[key];
 
 export default getImage;
