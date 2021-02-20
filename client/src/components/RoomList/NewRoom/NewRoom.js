@@ -34,7 +34,7 @@ const NewRoom = ({ game }) => {
                 bonus: roomGameBonus,
             })
             .then(res => {
-                if (res.data === true) history.push(`/chess/${roomName}`);
+                if (res.data === true) history.push(`/${game}/${roomName}`);
                 else {
                     setInfoLabel(res.data);
                     setInfoLabelColor('red');

@@ -1,0 +1,31 @@
+.charadesBackground {
+    margin-top: 75px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.charadesContainer {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    background-color: red;
+    width: 90%;
+    height: 700px;
+}
+
+.userList {
+    width: 20%;
+    background-color: saddlebrown;
+}
+
+.canvas {
+    width: 60%;
+    background-color: white;
+}
+
+.chat {
+    width: 20%;
+    background-color: seagreen;
+}
