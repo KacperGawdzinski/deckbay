@@ -18,9 +18,13 @@
     align-items: center;
     background-color: #3E3E3E;
     height: 50px;
+}
+
+.list_header p {
     font-family: SN;
     font-size: calc(12px + 1vw);
     color: white;
+    margin-bottom: 0;
 }
 
 .add_btn {

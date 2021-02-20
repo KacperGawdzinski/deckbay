@@ -19,21 +19,23 @@ const RoomList = ({game}) => {
         socket.on('rooms', data => {
             setRooms(data)
         })
+
+        return () => socket.disconnect();
     }, [])
 
     return (
     <div className="container">
         <div className="list">
             <div className="list_header">
-                <button id="add_btn" className="add_btn" onClick={() => {setNewRoom(!newRoom); setHeightState(newRoom? "0px" : `${content.current.scrollHeight}px`)}}> 
+                <button className="add_btn" onClick={() => {setNewRoom(!newRoom); setHeightState(newRoom? "0px" : `${content.current.scrollHeight}px`)}}> 
                     {newRoom? '−' : '+'}
                 </button>
-                <p id="game_type"> { game.toUpperCase() } ROOM LIST</p>
+                <p> { game.toUpperCase() } ROOM LIST</p>
             </div>
             <div ref={content} className="animation_wrapper" style={{ maxHeight: `${setHeight}` }}>
                 <NewRoom game={game}/>
             </div>
-            <div id="rooms">
+            <div>
                 {rooms.map(info => {
                     return <RoomListItem info={info} game={game}/>
                 })}

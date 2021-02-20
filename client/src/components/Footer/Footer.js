@@ -3,7 +3,7 @@ import './Footer.css'
 const Footer = () => {
     return (
     <footer>
-        2020-2021 | Deckbay by GBS
+        <p>2020-2021 | Deckbay by GBS</p>
     </footer>
 )}
 

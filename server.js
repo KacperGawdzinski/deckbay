@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require ('bcrypt');
 const faker = require('faker');
+//const cors = require('cors');
 const Checkers  = require('./server-javascript/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
 const { chessGame } = require('./server-javascript/chess-game-server');
@@ -30,6 +31,18 @@ var roomTurn = new Map();       //full room name -> turn
 var roomLastMove = {};
 let roomChesslogic = new Map(); //full room name -> it's game in class representation
 
+/*var whitelist = ['http://localhost:3000', 'http://localhost:5000', 'http://deckbay.herokuapp.com']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+//app.use(cors());*/
 app.use(express.urlencoded({
     extended: true
 }));
@@ -162,7 +175,7 @@ app.post('/set-socket-id', (req, res) => {
     }
 })
 
-
+*/
 
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {
@@ -177,7 +190,7 @@ app.post('/validate-room-password', (req, res) => {
             res.send("Invalid password!");
         }
     });
-});*/
+});
 
 server.listen(process.env.PORT || 5000, () => {
     console.log('Server turned on');

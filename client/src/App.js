@@ -3,11 +3,19 @@ import Navbar from './components/Navbar/Navbar'
 import Footer from './components/Footer/Footer'
 import GameMiniature from './components/GameMiniature/GameMiniature'
 import RoomList from './components/RoomList/RoomList'
+import {Helmet} from "react-helmet";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 
 function App() {
     return (
     <Router>
+        <Helmet>
+            <meta charSet="utf-8" />
+            <meta name="description" content="Free Web tutorials"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>Deckbay</title>
+        </Helmet>
         <Navbar/>
         <Switch>
             <Route exact path='/'>
