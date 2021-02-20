@@ -21,6 +21,7 @@ const RoomList = ({ game }) => {
             password: true,
         },
     ];
+
     useEffect(() => {
         const socket = io();
         socket.emit('join-room-list', game);

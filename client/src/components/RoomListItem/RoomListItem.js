@@ -59,23 +59,27 @@ const RoomListItem = ({ info, game }) => {
         <div>
             <div style={{ backgroundColor: color }} className="list_item" onClick={Expand}>
                 <p className="room_name"> {info.fullRoomName} </p>
-                <p className="time"> {`${info.options.length} ┃ ${info.options.bonus}`} </p>
+                {(game === 'chess' || game === 'checkers') && (
+                    <React.Fragment>
+                        <p className="time"> {`${info.options.length} ┃ ${info.options.bonus}`} </p>
+                    </React.Fragment>
+                )}
 
                 {info.password ? <img className="lock_img" src={Lock} /> : null}
 
                 {game === 'chess' || game === 'checkers' ? (
                     <React.Fragment> {playerIcons} </React.Fragment>
                 ) : (
-                    <div>
-                        <p>{`${info.PlayerCount}/${maxPlayers[game]}`}</p>
+                    <React.Fragment>
+                        <p>{`${info.playerCount} / ${maxPlayers.get(game)}`}</p>
                         <img class="user_img" src={ActiveUser} />
-                    </div>
+                    </React.Fragment>
                 )}
             </div>
             {info.password && (
                 <div ref={wrapper} className="animation_wrapper" style={{ maxHeight: `${setHeight}` }}>
                     <div style={{ backgroundColor: color }} className="list_item">
-                        <form className="formPwdValidator" method="POST" style={{ width: '100%' }} onSubmit={Submit}>
+                        <form method="POST" style={{ width: '100%' }} onSubmit={Submit}>
                             <input
                                 name="password"
                                 style={{
@@ -84,6 +88,7 @@ const RoomListItem = ({ info, game }) => {
                                     maxWidth: '400px',
                                     marginLeft: '10%',
                                     height: '30px',
+                                    fontSize: '16px',
                                 }}
                                 type="password"
                                 placeholder={infoLabel}
@@ -97,6 +102,7 @@ const RoomListItem = ({ info, game }) => {
                                     height: '30px',
                                     marginBottom: 0,
                                     padding: 0,
+                                    fontSize: '16px',
                                 }}
                                 type="submit"
                                 value="Join"
