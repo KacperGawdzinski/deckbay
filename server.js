@@ -22,6 +22,7 @@ var server = http.createServer(app);
 var io = socket(server);
 let loggingControl = new loggingInfo();
 
+const uri = process.env.MONGODB_URI;
 var socketLogin = new Map(); //socket.id -> login
 var loginRoom = new Map(); //player login -> full room name
 var roomPasswd = new Map(); //full room name -> hashed password
