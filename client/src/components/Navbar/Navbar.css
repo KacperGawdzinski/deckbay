@@ -4,18 +4,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #0D1317;
+    background-color: #0d1317;
 }
 
-.header a img{
+.header a img {
     width: 300px;
 }
 
 .header_button_container {
-    display: flex; 
-    position: absolute; 
-    right: 0px; 
-    width: 250px; 
+    display: flex;
+    position: absolute;
+    right: 0px;
+    width: 250px;
     height: 50px;
 }
 
@@ -49,12 +49,11 @@
         width: 220px;
         margin: 0;
         margin-left: 10px;
-        margin-top: 10px;
-   }
+    }
 }
 
 @media only screen and (max-width: 500px) {
-    .header_button {
+    .header_button_container {
         display: none;
     }
 }
