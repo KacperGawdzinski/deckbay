@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const faker = require('faker');
-//const cors = require('cors');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const Checkers = require('./server-javascript/checkers-server');
 const { loggingInfo, authorize } = require('./auth-logic');
@@ -22,7 +22,6 @@ var server = http.createServer(app);
 var io = socket(server);
 let loggingControl = new loggingInfo();
 
-const uri = process.env.MONGODB_URI;
 var socketLogin = new Map(); //socket.id -> login
 var loginRoom = new Map(); //player login -> full room name
 var roomPasswd = new Map(); //full room name -> hashed password
@@ -33,39 +32,28 @@ var roomTurn = new Map(); //full room name -> turn
 var roomLastMove = {};
 let roomChesslogic = new Map(); //full room name -> it's game in class representation
 
-/*var whitelist = ['http://localhost:3000', 'http://localhost:5000', 'http://deckbay.herokuapp.com']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-
-//app.use(cors());*/
+dotenv.config({ path: './config.env' });
 app.use(
     express.urlencoded({
         extended: true,
     })
 );
 app.use(express.json());
-app.use(cookieParser('awdbui3gt197234rnoiwnf0138hr0inr1r1038fh103')); //HIDE
+app.use(cookieParser(process.env.SECRET_KEY));
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use(express.static('public'));
 
-/*app.use('/charades', charades)
-app.use('/checkers', checkers)
-app.use('/chess', chess)*/
-
-//app.set('views', './views');
-//app.set('view engine', 'ejs');
-
-/*app.get('/', authorize, (req, res) => {
-    res.send('xd')
-    //res.render('index.ejs', { user_login : req.login } );
-});*/
+//resolve mongoDB warnings
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
+mongoose
+    .connect(DB, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+    })
+    .then(() => {
+        console.log('Database connected');
+    });
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
