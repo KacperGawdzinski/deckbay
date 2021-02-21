@@ -4,7 +4,8 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "start": "cd client && yarn start",
+        "start": "yarn start",
+        "heroku-postbuild": "cd client && yarn && yarn run build",
         "server": "nodemon server.js",
         "client": "cd client && yarn start-client",
         "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
