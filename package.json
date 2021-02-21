@@ -4,7 +4,7 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "start": "yarn start",
+        "start": "node start",
         "heroku-postbuild": "cd client && yarn && yarn run build",
         "server": "nodemon server.js",
         "client": "cd client && yarn start-client",
