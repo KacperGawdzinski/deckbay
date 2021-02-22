@@ -6,6 +6,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const faker = require('faker');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -54,6 +55,32 @@ mongoose
     .then(() => {
         console.log('Database connected');
     });
+
+const userSchema = new mongoose.Schema({
+    login: {
+        type: String,
+        required: true,
+        unique: [true, 'User with given login already exists'],
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+});
+
+const tokenSchema = new mongoose.Schema({
+    value: {
+        type: String,
+        required: true,
+    },
+});
+
+const User = mongoose.model('User', userSchema);
+const Token = mongoose.model('Token', tokenSchema);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
@@ -120,25 +147,54 @@ app.post('/validate-room', async function (req, res) {
     res.send(true);
 });
 
-app.post('/login', (req, res) => {
-    let password = req.body.passwd,
-        login = req.body.login;
+app.post('/login', async (req, res) => {
+    const user = await User.findOne({
+        login: req.body.login,
+    });
+    if (!user) {
+        res.status(401).json({ error: 'User not found' });
+        return;
+    }
 
-    if (!loggingControl.userLoginLookup(login)) res.send('Unable to find account with given credentials');
-    else if (!loggingControl.userValidateByLogin(login, password)) res.send('Incorrect password');
-    else res.send(login);
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) {
+        res.status(401).json({ error: 'Invalid password' });
+        return;
+    }
+
+    const userObject = {
+        login: req.body.login,
+    };
+    const accessToken = jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN);
+    const refreshToken = jwt.sign(userObject, process.env.JWT_REFRESH_TOKEN);
+
+    await Token.create({
+        value: refreshToken,
+    });
+
+    res.cookie('jwtAccess', accessToken, {
+        //httpOnly: true,
+        expiresIn: '15s',
+    });
+    res.cookie('jwtRefresh', refreshToken);
+    res.status(200).json({ login: req.body.login });
 });
 
-app.post('/register', (req, res) => {
-    let password = req.body.password,
-        login = req.body.login,
-        mail = req.body.email;
-
-    if (loggingControl.userLookup(login, mail) || loggingControl.insertMailToVerify(login, mail, password) === false) {
-        res.render('index', { error_message: 'This mail/login is already taken!' });
-    } else {
-        res.redirect(req.body.reqUrl);
+app.post('/register', async (req, res) => {
+    const hashed = await bcrypt.hash(req.body.password, saltRounds);
+    try {
+        await User.create({
+            email: req.body.email,
+            login: req.body.login,
+            password: hashed,
+        });
+    } catch (err) {
+        if (err.code === 11000) {
+            res.send(401).json({ error: 'User already exists' });
+            return;
+        }
     }
+    res.sendStatus(200);
 });
 
 /*

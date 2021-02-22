@@ -10,8 +10,7 @@ import { useState, useEffect } from 'react';
 import Charades from './components/Charades/Charades';
 
 function App() {
-    const [login, setLogin] = useState('');
-    const [loginToken, setLoginToken] = useState('');
+    const [login, setLogin] = useState('Sign in');
 
     return (
         <Router>
@@ -21,7 +20,7 @@ function App() {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>Deckbay</title>
             </Helmet>
-            <Navbar login={login} setLogin={setLogin} setLoginToken={setLoginToken} />
+            <Navbar login={login} setLogin={setLogin} />
             <Switch>
                 <Route exact path="/">
                     <div className="game_list">
