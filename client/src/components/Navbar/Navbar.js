@@ -4,7 +4,7 @@ import logo from '../../assets/images/logo.png';
 import AccountModal from './AccountModal/AccountModal';
 import './Navbar.css';
 
-const Navbar = ({ login, setLogin, setLoginToken }) => {
+const Navbar = ({ login, setLogin }) => {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const handleCloseLoginModal = () => setShowLoginModal(false);
@@ -14,7 +14,12 @@ const Navbar = ({ login, setLogin, setLoginToken }) => {
 
     return (
         <div>
-            <AccountModal type={'login'} show={showLoginModal} handleClose={handleCloseLoginModal} />
+            <AccountModal
+                type={'login'}
+                show={showLoginModal}
+                handleClose={handleCloseLoginModal}
+                setLoginLabel={setLogin}
+            />
             <AccountModal type={'register'} show={showRegisterModal} handleClose={handleCloseRegisterModal} />
             <header className="header">
                 <Link to="/">

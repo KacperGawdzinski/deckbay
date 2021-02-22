@@ -19,7 +19,6 @@ const NewRoom = ({ game }) => {
         e.preventDefault();
         axios
             .post('validate-room', {
-                //axios.post(`${API_ENDPOINT}/validate-room`, {
                 game: game,
                 room: roomName,
                 password: roomPassword,
