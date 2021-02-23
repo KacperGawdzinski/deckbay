@@ -3,8 +3,10 @@ import { useState } from 'react';
 import logo from '../../assets/images/logo.png';
 import AccountModal from './AccountModal/AccountModal';
 import './Navbar.css';
+import axios from 'axios';
 
-const Navbar = ({ login, setLogin }) => {
+const Navbar = () => {
+    const [loginLabel, setLoginLabel] = useState('Sign in');
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const handleCloseLoginModal = () => setShowLoginModal(false);
@@ -12,20 +14,25 @@ const Navbar = ({ login, setLogin }) => {
     const handleCloseRegisterModal = () => setShowRegisterModal(false);
     const handleShowRegisterModal = () => setShowRegisterModal(true);
 
+    const Logout = () => {
+        axios.post('/logout');
+        setLoginLabel('Sign in');
+    };
+
     return (
         <div>
             <AccountModal
                 type={'login'}
                 show={showLoginModal}
                 handleClose={handleCloseLoginModal}
-                setLoginLabel={setLogin}
+                setLoginLabel={setLoginLabel}
             />
             <AccountModal type={'register'} show={showRegisterModal} handleClose={handleCloseRegisterModal} />
             <header className="header">
                 <Link to="/">
                     <img src={logo} alt="Deckbay logo" />
                 </Link>
-                {login.length == 0 && (
+                {loginLabel === 'Sign in' && (
                     <div className="header_button_container">
                         <button className="header_button" onClick={handleShowLoginModal}>
                             Sign in
@@ -35,10 +42,12 @@ const Navbar = ({ login, setLogin }) => {
                         </button>
                     </div>
                 )}
-                {login.length > 0 && (
+                {loginLabel != 'Sign in' && (
                     <div className="header_button_container">
-                        <button className="header_button">{login}</button>
-                        <button className="header_button">Logout</button>
+                        <button className="header_button">{loginLabel}</button>
+                        <button className="header_button" onClick={Logout}>
+                            Logout
+                        </button>
                     </div>
                 )}
                 <span className="menu" />

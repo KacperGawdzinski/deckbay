@@ -16,6 +16,7 @@ const { chessGame } = require('./server-javascript/chess-game-server');
 const charades = require('./routes/charades');
 const checkers = require('./routes/checkers');
 const chess = require('./routes/chess');
+const account = require('./routes/account');
 const saltRounds = 10;
 
 var app = express();
@@ -39,15 +40,18 @@ app.use(
         extended: true,
     })
 );
+
 app.use(express.json());
-app.use(cookieParser(process.env.SECRET_KEY));
+app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use(express.static('public'));
 
-//resolve mongoDB warnings
+app.use('/', account);
+
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 mongoose
     .connect(DB, {
+        useUnifiedTopology: true,
         useNewUrlParser: true,
         useCreateIndex: true,
         useFindAndModify: false,
@@ -55,32 +59,6 @@ mongoose
     .then(() => {
         console.log('Database connected');
     });
-
-const userSchema = new mongoose.Schema({
-    login: {
-        type: String,
-        required: true,
-        unique: [true, 'User with given login already exists'],
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-});
-
-const tokenSchema = new mongoose.Schema({
-    value: {
-        type: String,
-        required: true,
-    },
-});
-
-const User = mongoose.model('User', userSchema);
-const Token = mongoose.model('Token', tokenSchema);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
@@ -147,82 +125,40 @@ app.post('/validate-room', async function (req, res) {
     res.send(true);
 });
 
-app.post('/login', async (req, res) => {
-    const user = await User.findOne({
-        login: req.body.login,
-    });
-    if (!user) {
-        res.status(401).json({ error: 'User not found' });
-        return;
-    }
-
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) {
-        res.status(401).json({ error: 'Invalid password' });
-        return;
-    }
-
-    const userObject = {
-        login: req.body.login,
-    };
-    const accessToken = jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN);
-    const refreshToken = jwt.sign(userObject, process.env.JWT_REFRESH_TOKEN);
-
-    await Token.create({
-        value: refreshToken,
-    });
-
-    res.cookie('jwtAccess', accessToken, {
-        //httpOnly: true,
-        expiresIn: '15s',
-    });
-    res.cookie('jwtRefresh', refreshToken);
-    res.status(200).json({ login: req.body.login });
-});
-
-app.post('/register', async (req, res) => {
-    const hashed = await bcrypt.hash(req.body.password, saltRounds);
-    try {
-        await User.create({
-            email: req.body.email,
-            login: req.body.login,
-            password: hashed,
-        });
-    } catch (err) {
-        if (err.code === 11000) {
-            res.send(401).json({ error: 'User already exists' });
+//verify jwt token - if verification fails return temporary username for player
+app.post('/set-temp-login', (req, res) => {
+    if (req.cookies['jwtAccess']) {
+        try {
+            jwt.verify(req.cookies['jwtAccess'], process.env.JWT_ACCESS_TOKEN);
             return;
+        } catch (err) {
+            try {
+                jwt.verify(req.cookies['jwtRefresh'], process.env.JWT_REFRESH_TOKEN);
+                jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN, { expiresIn: '15s' });
+                return;
+            } catch (err) {
+                res.cookie('tempName', faker.internet.userName(), {
+                    signed: true,
+                });
+            }
         }
+    } else {
+        res.cookie('tempName', faker.internet.userName(), {
+            signed: true,
+        });
     }
     res.sendStatus(200);
 });
 
 /*
-app.post('/logout', (req, res) => {
-    res.cookie("login", "", { maxAge : -1 } );
-    res.redirect( req.body.reqUrl );
-}); 
-
-app.get('/verify/:id', (req, res) => {
-    let ID = req.params.id,
-        gotLogin = loggingControl.checkID(ID);
-
-    if( gotLogin !== false){
-        res.cookie('login', gotLogin, { signed : true } );
-    } 
-    res.redirect('/');
-})
-
 app.post('/set-socket-id', (req, res) => {
     if (roomOptions.get(loginRoom.get(req.signedCookies.login))) {
         socketLogin.set(req.body.socketid, req.signedCookies.login);
         res.send(loginRoom.get(req.signedCookies.login));
-    }else{
-        res.send("");
+    } else {
+        res.send('');
     }
-})
-
-*/
+});
 
 app.post('/validate-room-password', (req, res) => {
     bcrypt.compare(req.body.password, roomPasswd.get(req.body.fullRoomName), (err, result) => {
@@ -238,7 +174,7 @@ app.post('/validate-room-password', (req, res) => {
         }
     });
 });
-
+*/
 server.listen(process.env.PORT || 5000, () => {
     console.log('Server turned on');
 });

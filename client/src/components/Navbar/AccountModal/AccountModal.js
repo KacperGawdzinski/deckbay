@@ -10,14 +10,14 @@ const AccountModal = ({ type, show, handleClose, setLoginLabel }) => {
     const Submit = async e => {
         e.preventDefault();
         try {
-            const res = await axios.post(type, {
+            const res = await axios.post(`/${type}`, {
                 login: login,
                 password,
                 password,
                 ...(type === 'register' && { email: email }),
             });
+            handleClose();
             setLoginLabel(res.data.login);
-            //localStorage.setItem('login', res.data.login);
         } catch (err) {
             console.log(err.response);
         }
