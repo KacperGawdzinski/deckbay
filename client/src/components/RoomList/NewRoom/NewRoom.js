@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './NewRoom.css';
+import ScrollMenu from 'react-horizontal-scrolling-menu';
 
 const NewRoom = ({ game }) => {
-    //const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://deckbay.herokuapp.com';
     //change to useReducer()
     const [roomName, setRoomName] = useState('');
     const [infoLabel, setInfoLabel] = useState('Room name');
@@ -13,7 +13,10 @@ const NewRoom = ({ game }) => {
     const [roomGameLength, setGameLength] = useState('');
     const [roomGameBonus, setGameBonus] = useState('');
     const [infoLabelColor, setInfoLabelColor] = useState('white');
+    const [selected, setSelected] = useState('All');
     const history = useHistory();
+
+    const list = [{ name: 'All' }, { name: 'Animals' }, { name: 'Celebrities' }, { name: 'Films' }, { name: 'LoL' }];
 
     const Submit = e => {
         e.preventDefault();
@@ -41,6 +44,30 @@ const NewRoom = ({ game }) => {
             });
     };
 
+    const MenuItem = ({ text, selected }) => {
+        return <div className={`menu-item ${selected ? 'active' : ''}`}>{text}</div>;
+    };
+
+    const Menu = (list, selected) =>
+        list.map(el => {
+            const { name } = el;
+
+            return <MenuItem text={name} key={name} selected={selected} />;
+        });
+
+    const Arrow = ({ text, className }) => {
+        return <div className={className}>{text}</div>;
+    };
+
+    const ArrowLeft = Arrow({ text: '<', className: 'arrow-prev' });
+    const ArrowRight = Arrow({ text: '>', className: 'arrow-next' });
+
+    const menu = Menu(list, selected);
+
+    const onSelect = key => {
+        setSelected(key);
+    };
+
     return (
         <div className="new_room_div">
             <form className="new_room_form" autoComplete="off" onSubmit={Submit}>
@@ -55,7 +82,7 @@ const NewRoom = ({ game }) => {
                     }}
                 />
 
-                <label> Password </label>
+                <label>Password</label>
                 <input
                     type="password"
                     placeholder="(optional)"
@@ -104,6 +131,20 @@ const NewRoom = ({ game }) => {
                             />
                         </div>
                     </div>
+                )}
+                {game === 'charades' && (
+                    <React.Fragment>
+                        <label>Category</label>
+                        <ScrollMenu
+                            data={menu}
+                            arrowLeft={ArrowLeft}
+                            arrowRight={ArrowRight}
+                            selected={selected}
+                            onSelect={onSelect}
+                            translate={-0.1}
+                            innerWrapperStyle={false}
+                        />
+                    </React.Fragment>
                 )}
                 <input type="submit" value="Create new room!"></input>
             </form>

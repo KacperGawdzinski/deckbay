@@ -126,15 +126,15 @@ app.post('/validate-room', async function (req, res) {
 });
 
 //verify jwt token - if verification fails return temporary username for player
-app.post('/set-temp-login', (req, res) => {
+app.post('/set-temp-login', async (req, res) => {
     if (req.cookies['jwtAccess']) {
         try {
-            jwt.verify(req.cookies['jwtAccess'], process.env.JWT_ACCESS_TOKEN);
+            await jwt.verify(req.cookies['jwtAccess'], process.env.JWT_ACCESS_TOKEN);
             return;
         } catch (err) {
             try {
-                jwt.verify(req.cookies['jwtRefresh'], process.env.JWT_REFRESH_TOKEN);
-                jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN, { expiresIn: '15s' });
+                await jwt.verify(req.cookies['jwtRefresh'], process.env.JWT_REFRESH_TOKEN);
+                await jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN, { expiresIn: '15s' });
                 return;
             } catch (err) {
                 res.cookie('tempName', faker.internet.userName(), {
