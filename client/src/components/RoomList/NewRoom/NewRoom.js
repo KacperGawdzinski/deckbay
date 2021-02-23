@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import HorizontalScroll from '../HorizontalScroll/HorizontalScroll';
 import './NewRoom.css';
-import ScrollMenu from 'react-horizontal-scrolling-menu';
 
 const NewRoom = ({ game }) => {
     //change to useReducer()
@@ -13,15 +13,13 @@ const NewRoom = ({ game }) => {
     const [roomGameLength, setGameLength] = useState('');
     const [roomGameBonus, setGameBonus] = useState('');
     const [infoLabelColor, setInfoLabelColor] = useState('white');
-    const [selected, setSelected] = useState('All');
+
     const history = useHistory();
 
-    const list = [{ name: 'All' }, { name: 'Animals' }, { name: 'Celebrities' }, { name: 'Films' }, { name: 'LoL' }];
-
-    const Submit = e => {
+    const Submit = async e => {
         e.preventDefault();
-        axios
-            .post('validate-room', {
+        if (game === 'chess' || game === 'checkers') {
+            const res = await axios.post(`/${game}/validate-room`, {
                 game: game,
                 room: roomName,
                 password: roomPassword,
@@ -34,38 +32,20 @@ const NewRoom = ({ game }) => {
                 drawBlack: false,
                 length: roomGameLength,
                 bonus: roomGameBonus,
-            })
-            .then(res => {
-                if (res.data === true) history.push(`/${game}/${roomName}`);
-                else {
-                    setInfoLabel(res.data);
-                    setInfoLabelColor('red');
-                }
             });
-    };
-
-    const MenuItem = ({ text, selected }) => {
-        return <div className={`menu-item ${selected ? 'active' : ''}`}>{text}</div>;
-    };
-
-    const Menu = (list, selected) =>
-        list.map(el => {
-            const { name } = el;
-
-            return <MenuItem text={name} key={name} selected={selected} />;
-        });
-
-    const Arrow = ({ text, className }) => {
-        return <div className={className}>{text}</div>;
-    };
-
-    const ArrowLeft = Arrow({ text: '<', className: 'arrow-prev' });
-    const ArrowRight = Arrow({ text: '>', className: 'arrow-next' });
-
-    const menu = Menu(list, selected);
-
-    const onSelect = key => {
-        setSelected(key);
+        } else if (game === 'charades') {
+            const res = await axios.post(`/${game}/validate-room`, {
+                game: game,
+                room: roomName,
+                password: roomPassword,
+            });
+            if (res.data != 'OK') {
+                setInfoLabel(res.data.err);
+                setInfoLabelColor('red');
+            } else {
+                history.push(`/${game}/${roomName}`);
+            }
+        }
     };
 
     return (
@@ -135,15 +115,7 @@ const NewRoom = ({ game }) => {
                 {game === 'charades' && (
                     <React.Fragment>
                         <label>Category</label>
-                        <ScrollMenu
-                            data={menu}
-                            arrowLeft={ArrowLeft}
-                            arrowRight={ArrowRight}
-                            selected={selected}
-                            onSelect={onSelect}
-                            translate={-0.1}
-                            innerWrapperStyle={false}
-                        />
+                        <HorizontalScroll />
                     </React.Fragment>
                 )}
                 <input type="submit" value="Create new room!"></input>

@@ -2,7 +2,6 @@ const http = require('http');
 const socket = require('socket.io');
 const express = require('express');
 const path = require('path');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
@@ -24,6 +23,7 @@ var server = http.createServer(app);
 var io = socket(server);
 let loggingControl = new loggingInfo();
 
+//CLEAN IN THE FUTURE
 var socketLogin = new Map(); //socket.id -> login
 var loginRoom = new Map(); //player login -> full room name
 var roomPasswd = new Map(); //full room name -> hashed password
@@ -33,6 +33,15 @@ var roomBoard = {}; //full room name -> gameboard
 var roomTurn = new Map(); //full room name -> turn
 var roomLastMove = {};
 let roomChesslogic = new Map(); //full room name -> it's game in class representation
+
+app.locals.roomOptions = roomOptions;
+app.locals.loginRoom = loginRoom;
+app.locals.roomPasswd = roomPasswd;
+app.locals.roomPlayers = roomPlayers;
+app.locals.roomBoard = roomBoard;
+app.locals.roomTurn = roomTurn;
+app.locals.roomLastMove = roomLastMove;
+app.locals.roomChesslogic = roomChesslogic;
 
 dotenv.config({ path: './config.env' });
 app.use(
@@ -47,6 +56,7 @@ app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use(express.static('public'));
 
 app.use('/', account);
+app.use('/charades', charades);
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 mongoose
@@ -188,7 +198,7 @@ io.on('connection', socket => {
     });
 
     socket.on('load_rooms', data => {
-        console.log('returning room list');
+        console.log(`returning ${data} room list`);
         io.to('game-' + data).emit('rooms', availableRooms(data));
     });
 
@@ -197,6 +207,7 @@ io.on('connection', socket => {
         let roomName = data.game + '-' + data.room;
 
         socket.join(roomName);
+        console.log(`broadcasting ${data.game} room list`);
         io.to('game-' + data.game).emit('rooms', availableRooms(data.game));
         let logic;
 
@@ -456,7 +467,7 @@ io.on('connection', socket => {
     });
 });
 
-function availableRooms(game) {
+const availableRooms = game => {
     var availableRoomsTab = [];
     var rooms = io.sockets.adapter.rooms;
     for (let k of rooms.keys()) {
@@ -472,4 +483,5 @@ function availableRooms(game) {
         }
     }
     return availableRoomsTab;
-}
+};
+app.locals.availableRooms = availableRooms;
