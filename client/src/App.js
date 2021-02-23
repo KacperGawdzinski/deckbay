@@ -7,11 +7,9 @@ import { Helmet } from 'react-helmet';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { useState, useEffect } from 'react';
-import Charades from './components/Charades/Charades';
+import Charades from './components/Game/Charades/Charades';
 
 function App() {
-    const [login, setLogin] = useState('Sign in');
-
     return (
         <Router>
             <Helmet>
@@ -20,7 +18,7 @@ function App() {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>Deckbay</title>
             </Helmet>
-            <Navbar login={login} setLogin={setLogin} />
+            <Navbar />
             <Switch>
                 <Route exact path="/">
                     <div className="game_list">

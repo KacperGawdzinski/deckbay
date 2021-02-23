@@ -54,7 +54,7 @@ const RoomList = ({ game }) => {
                 </div>
                 <div>
                     {a.map(info => {
-                        return <RoomListItem info={info} game={game} />;
+                        return <RoomListItem key={info.fullRoomName} info={info} game={game} />;
                     })}
                 </div>
             </div>

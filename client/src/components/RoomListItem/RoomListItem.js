@@ -72,7 +72,7 @@ const RoomListItem = ({ info, game }) => {
                 ) : (
                     <React.Fragment>
                         <p>{`${info.playerCount} / ${maxPlayers.get(game)}`}</p>
-                        <img class="user_img" src={ActiveUser} />
+                        <img className="user_img" src={ActiveUser} />
                     </React.Fragment>
                 )}
             </div>
@@ -93,6 +93,7 @@ const RoomListItem = ({ info, game }) => {
                                 type="password"
                                 placeholder={infoLabel}
                                 value={infoValue}
+                                onChange={e => setInfoValue(e.target.value)}
                             />
                             <input
                                 style={{
