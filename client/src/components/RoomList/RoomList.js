@@ -10,17 +10,6 @@ const RoomList = ({ game }) => {
     const [setHeight, setHeightState] = useState('0px');
 
     const content = useRef(null);
-    let a = [
-        {
-            fullRoomName: 'asdadad',
-            playerCount: 1,
-            options: {
-                length: 1,
-                bonus: 2,
-            },
-            password: true,
-        },
-    ];
 
     useEffect(() => {
         const socket = io();
@@ -53,7 +42,7 @@ const RoomList = ({ game }) => {
                     <NewRoom game={game} />
                 </div>
                 <div>
-                    {a.map(info => {
+                    {rooms.map(info => {
                         return <RoomListItem key={info.fullRoomName} info={info} game={game} />;
                     })}
                 </div>

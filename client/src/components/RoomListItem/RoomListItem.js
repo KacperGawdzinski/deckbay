@@ -58,7 +58,10 @@ const RoomListItem = ({ info, game }) => {
     return (
         <div>
             <div style={{ backgroundColor: color }} className="list_item" onClick={Expand}>
-                <p className="room_name"> {info.fullRoomName} </p>
+                <p className="room_name">
+                    {' '}
+                    {info.fullRoomName.substr(info.fullRoomName.indexOf('-') + 1, info.fullRoomName.length)}{' '}
+                </p>
                 {(game === 'chess' || game === 'checkers') && (
                     <React.Fragment>
                         <p className="time"> {`${info.options.length} ┃ ${info.options.bonus}`} </p>

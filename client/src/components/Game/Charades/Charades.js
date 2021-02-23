@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import axios from 'axios';
 import './Charades.css';
@@ -10,16 +11,14 @@ const Charades = () => {
     const [isDrawing, setIsDrawing] = useState(false);
     const canvasRef = useRef(null);
     const canvasContext = useRef(null);
+    const { id } = useParams();
 
     useEffect(() => {
         axios.post('/set-temp-login', {}, { withCredentials: true });
         const socket = io();
         socket.on('connect', async () => {
-            const res = await axios.post('/set-socket-id', {});
-            /*let room_name = data.substr(data.indexOf('-') + 1, data.length);
-            let game_type = data.substr(0, data.indexOf('-'));
-            socket.emit('join-new-room', { game: game_type, room: room_name });
-            socket.emit('ask-options-checkers');*/
+            //const res = await axios.post('/set-socket-id', {});
+            socket.emit('join-new-room', { game: 'charades', room: id });
         });
 
         return () => socket.disconnect();
