@@ -1,22 +1,22 @@
-@font-face {
-    font-family: SuperNintendo;
-    src: url('./SN.ttf');
-}
+/* @font-face {
+  font-family: SuperNintendo;
+  src: url("./SN.ttf");
+} */
 
 * {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif !important;
-    outline: 0 !important;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif !important;
+  outline: 0 !important;
 }
 
 html {
-    background-color: #36393e;
-    position: relative;
-    min-height: 100%;
+  background-color: #36393e;
+  /* position: relative;
+    min-height: 100%; */
 }
 
-body {
+/* body {
     background-color: #36393e;
     overflow: auto !important;
     padding-right: 0 !important;
@@ -35,4 +35,4 @@ label {
 ::after,
 ::before {
     box-sizing: content-box;
-}
+} */
