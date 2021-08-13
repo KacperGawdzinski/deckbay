@@ -5,7 +5,7 @@ import GameMiniature from "./components/GameMiniature/GameMiniature";
 import RoomList from "./components/RoomList/RoomList";
 import { Helmet } from "react-helmet";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import "./App.css";
+import "./App.css";
 import { useState, useEffect } from "react";
 import Charades from "./components/Game/Charades/Charades";
 import PrimarySearchAppBar from "./components/Navbar/Navbar";
