@@ -9,18 +9,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import Charades from "./components/Game/Charades/Charades";
 import PrimarySearchAppBar from "./components/Navbar/Navbar";
+import ThemeProvider from "@material-ui/styles/ThemeProvider";
+import theme from "./theme";
 
 function App() {
   return (
-    <Router>
-      {/* <Helmet>
+    <ThemeProvider theme={theme}>
+      <Router>
+        {/* <Helmet>
         <meta charSet="utf-8" />
         <meta name="description" content="Free Web tutorials" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Deckbay</title>
       </Helmet> */}
-      <PrimarySearchAppBar />
-      {/* <Switch>
+        <PrimarySearchAppBar />
+        {/* <Switch>
         <Route exact path="/">
           <div className="game_list">
             <GameMiniature game="chess" />
@@ -40,7 +43,8 @@ function App() {
         </Route>
       </Switch>
       <Footer /> */}
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
 
