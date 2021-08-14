@@ -3,14 +3,12 @@ const socket = require("socket.io");
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const faker = require("faker");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const Checkers = require("./server-javascript/checkers-server");
-const { loggingInfo, authorize } = require("./auth-logic");
 const { chessGame } = require("./server-javascript/chess-game-server");
 const charades = require("./routes/charades");
 const checkers = require("./routes/checkers");
@@ -18,30 +16,11 @@ const chess = require("./routes/chess");
 const account = require("./routes/account");
 const saltRounds = 10;
 
+import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
+
 var app = express();
 var server = http.createServer(app);
 var io = socket(server);
-let loggingControl = new loggingInfo();
-
-//CLEAN IN THE FUTURE
-var socketLogin = new Map(); //socket.id -> login
-var loginRoom = new Map(); //player login -> full room name
-var roomPasswd = new Map(); //full room name -> hashed password
-var roomOptions = new Map(); //full room name -> options
-var roomPlayers = {}; //full room name -> [players allowed to play (logins)]  //merge maps into one
-var roomBoard = {}; //full room name -> gameboard
-var roomTurn = new Map(); //full room name -> turn
-var roomLastMove = {};
-let roomChesslogic = new Map(); //full room name -> it's game in class representation
-
-app.locals.roomOptions = roomOptions;
-app.locals.loginRoom = loginRoom;
-app.locals.roomPasswd = roomPasswd;
-app.locals.roomPlayers = roomPlayers;
-app.locals.roomBoard = roomBoard;
-app.locals.roomTurn = roomTurn;
-app.locals.roomLastMove = roomLastMove;
-app.locals.roomChesslogic = roomChesslogic;
 
 dotenv.config({ path: "./config.env" });
 app.use(
@@ -52,29 +31,50 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
-app.use(express.static(path.join(__dirname, "client", "build")));
-app.use(express.static("public"));
 
 app.use("/", (req, res) => {
   res.send("OK");
 });
-app.use("/charades", charades);
 
-// const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-// mongoose
-//     .connect(DB, {
-//         useUnifiedTopology: true,
-//         useNewUrlParser: true,
-//         useCreateIndex: true,
-//         useFindAndModify: false,
-//     })
-//     .then(() => {
-//         console.log('Database connected');
-//     });
+const connectWithRetry = () => {
+  mongoose
+    .connect(MONGO_CONNECTION_STRING, MONGO_CONNECTION_OPTIONS)
+    .then(() => {
+      console.log("MongoDB is connected");
+    })
+    .catch((err) => {
+      console.log("MongoDB connection unsuccessful, retry after 5 seconds.");
+      setTimeout(connectWithRetry, 5000);
+    });
+};
+
+connectWithRetry();
+
+// //CLEAN IN THE FUTURE
+// var socketLogin = new Map(); //socket.id -> login
+// var loginRoom = new Map(); //player login -> full room name
+// var roomPasswd = new Map(); //full room name -> hashed password
+// var roomOptions = new Map(); //full room name -> options
+// var roomPlayers = {}; //full room name -> [players allowed to play (logins)]  //merge maps into one
+// var roomBoard = {}; //full room name -> gameboard
+// var roomTurn = new Map(); //full room name -> turn
+// var roomLastMove = {};
+// let roomChesslogic = new Map(); //full room name -> it's game in class representation
+
+// app.locals.roomOptions = roomOptions;
+// app.locals.loginRoom = loginRoom;
+// app.locals.roomPasswd = roomPasswd;
+// app.locals.roomPlayers = roomPlayers;
+// app.locals.roomBoard = roomBoard;
+// app.locals.roomTurn = roomTurn;
+// app.locals.roomLastMove = roomLastMove;
+// app.locals.roomChesslogic = roomChesslogic;
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
+
+app.use("/charades", charades);
 
 app.post("/validate-room", async function (req, res) {
   //maybe some default parameters? + change for other games
