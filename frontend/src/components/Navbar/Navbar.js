@@ -9,14 +9,20 @@ import LoginModal from "./LoginModal";
 import logo from "../../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { Typography } from "@material-ui/core";
+import RegisterModal from "./RegisterModal";
 
 export default function Navbar() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
+  const [openLoginModal, toggleLoginModal] = React.useState(false);
+  const [openRegisterModal, toggleRegisterModal] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpenLogin = () => {
+    toggleLoginModal(true);
+  };
+
+  const handleClickOpenRegister = () => {
+    toggleRegisterModal(true);
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -49,13 +55,14 @@ export default function Navbar() {
           <img src={logo} alt="Deckbay logo" className={classes.logo} />
         </Link>
         <div className={classes.rightGrow} />
-        <Button color="inherit" onClick={handleClickOpen}>
+        <Button color="inherit" onClick={handleClickOpenLogin}>
           <Typography>Login</Typography>
         </Button>
-        <LoginModal open={open} setOpen={setOpen} />
-        <Button color="inherit">
+        <LoginModal open={openLoginModal} setOpen={toggleLoginModal} />
+        <Button color="inherit" onClick={handleClickOpenRegister}>
           <Typography>Register</Typography>
         </Button>
+        <RegisterModal open={openRegisterModal} setOpen={toggleRegisterModal} />
       </Toolbar>
     </AppBar>
   );

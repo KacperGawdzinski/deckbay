@@ -6,7 +6,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default function LoginModal(props) {
+export default function RegisterModal(props) {
   const handleClose = () => {
     props.setOpen(false);
   };
@@ -21,9 +21,18 @@ export default function LoginModal(props) {
         id="form-dialog-title"
         style={{ alignSelf: "center", paddingBottom: 0 }}
       >
-        Login
+        Register
       </DialogTitle>
       <DialogContent style={{ width: "400px" }}>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="standard-basic"
+          label="Email"
+          type="email"
+          fullWidth
+          autoComplete="false"
+        />
         <TextField
           autoFocus
           margin="dense"
