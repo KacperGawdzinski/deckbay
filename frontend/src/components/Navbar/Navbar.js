@@ -5,10 +5,61 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-
+import LoginModal from "./LoginModal";
 import logo from "../../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { Typography } from "@material-ui/core";
+
+export default function Navbar() {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const menuId = "primary-search-account-menu";
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+    </Menu>
+  );
+
+  return (
+    <AppBar position="static" className={classes.background}>
+      <Toolbar>
+        <div className={classes.leftGrow} />
+        <Link to="/">
+          <img src={logo} alt="Deckbay logo" className={classes.logo} />
+        </Link>
+        <div className={classes.rightGrow} />
+        <Button color="inherit" onClick={handleClickOpen}>
+          <Typography>Login</Typography>
+        </Button>
+        <LoginModal open={open} setOpen={setOpen} />
+        <Button color="inherit">
+          <Typography>Register</Typography>
+        </Button>
+      </Toolbar>
+    </AppBar>
+  );
+}
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -42,48 +93,3 @@ const useStyles = makeStyles((theme) => ({
     color: "inherit",
   },
 }));
-
-export default function Navbar() {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
-  return (
-    <AppBar position="static" className={classes.background}>
-      <Toolbar>
-        <div className={classes.leftGrow} />
-        <Link to="/">
-          <img src={logo} alt="Deckbay logo" className={classes.logo} />
-        </Link>
-        <div className={classes.rightGrow} />
-        <Button color="inherit">
-          <Typography>Login</Typography>
-        </Button>
-        <Button color="inherit">
-          <Typography>Register</Typography>
-        </Button>
-      </Toolbar>
-    </AppBar>
-  );
-}
