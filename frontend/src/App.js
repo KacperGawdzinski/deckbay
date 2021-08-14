@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import GameMiniature from "./components/GameMiniature/GameMiniature";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
@@ -19,7 +20,7 @@ function App() {
           <title>Deckbay</title>
         </Helmet>
         <Navbar />
-        {/* <Switch>
+        <Switch>
           <Route exact path="/">
             <div className="game_list">
               <GameMiniature game="chess" />
@@ -27,7 +28,7 @@ function App() {
               <GameMiniature game="charades" />
             </div>
           </Route>
-          <Route exact path="/chess">
+          {/* <Route exact path="/chess">
             <RoomList game="chess" />
           </Route>
           <Route exact path="/chess/:id"></Route>
@@ -36,9 +37,9 @@ function App() {
           </Route>
           <Route exact path="/charades/:id">
             <Charades />
-          </Route>
+          </Route> */}
         </Switch>
-        <Footer /> */}
+        {/* <Footer /> */}
       </Router>
     </ThemeProvider>
   );
