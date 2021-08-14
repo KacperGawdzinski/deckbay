@@ -28,7 +28,7 @@ export default function App() {
         <Switch>
           <Route exact path="/">
             <Container className={classes.cardGrid} maxWidth="lg">
-              <Grid container spacing={3}>
+              <Grid container alignItems="center" justify="center" spacing={3}>
                 <Grid item xs={12} md={4} sm={6}>
                   <SimpleCard className={classes.card} />
                 </Grid>
@@ -67,29 +67,34 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(2),
   },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
+
   heroButtons: {
     marginTop: theme.spacing(4),
   },
+
   cardGrid: {
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8),
+    [theme.breakpoints.down("xs")]: {
+      paddingTop: theme.spacing(2),
+    },
   },
+
   card: {
     height: "100%",
+    width: "25px",
     display: "flex",
-    flexDirection: "row",
-    width: "50px",
+    flexDirection: "column",
   },
+
   cardMedia: {
     paddingTop: "56.25%", // 16:9
   },
+
   cardContent: {
     flexGrow: 1,
   },
+
   footer: {
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
