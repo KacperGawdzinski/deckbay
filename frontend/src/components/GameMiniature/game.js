@@ -19,9 +19,7 @@ export default function SimpleCard() {
         className={classes.image}
         component="img"
         image={getImage("chess")}
-      >
-        {/* <img src={getImage("chess")} alt={"chess"} /> */}
-      </CardMedia>
+      ></CardMedia>
     </Card>
   );
 }
@@ -31,11 +29,16 @@ const useStyles = makeStyles({
     width: "100%",
     height: "400px",
     borderRadius: "10%",
+    borderStyle: "solid",
+    [theme.breakpoints.only("sm")]: {
+      height: "300px",
+    },
+    [theme.breakpoints.only("xs")]: {
+      height: "240px",
+    },
   },
   image: {
-    width: "70%",
-    height: "70%",
-    minWidth: "280px",
+    maxWidth: "280px",
     maxHeight: "280px",
     marginLeft: "auto",
     marginRight: "auto",
@@ -44,16 +47,18 @@ const useStyles = makeStyles({
     "&:hover": {
       transform: "scale(1.1)",
     },
+    [theme.breakpoints.only("xs")]: {
+      maxHeight: "150px",
+      maxWidth: "150px",
+    },
+    [theme.breakpoints.only("sm")]: {
+      maxHeight: "200px",
+      maxWidth: "200px",
+    },
   },
   bullet: {
     display: "inline-block",
     margin: "0 2px",
     transform: "scale(0.8)",
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
   },
 });

@@ -29,13 +29,13 @@ export default function App() {
           <Route exact path="/">
             <Container className={classes.cardGrid} maxWidth="lg">
               <Grid container alignItems="center" justify="center" spacing={3}>
-                <Grid item xs={12} md={4} sm={6}>
+                <Grid item xs={10} md={4} sm={5}>
                   <SimpleCard className={classes.card} />
                 </Grid>
-                <Grid item xs={12} md={4} sm={6}>
+                <Grid item xs={10} md={4} sm={5}>
                   <SimpleCard className={classes.card} />
                 </Grid>
-                <Grid item xs={12} md={4} sm={6}>
+                <Grid item xs={10} md={4} sm={5}>
                   <SimpleCard className={classes.card} />
                 </Grid>
                 {/* <div className="game_list">
