@@ -6,9 +6,12 @@ import Navbar from "./components/Navbar/Navbar";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import theme from "./theme";
 import SimpleCard from "./components/GameMiniature/game";
+import { makeStyles } from "@material-ui/core/styles";
 import { Container, Grid } from "@material-ui/core";
 
-function App() {
+export default function App() {
+  const classes = useStyles();
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -24,9 +27,17 @@ function App() {
         <Navbar />
         <Switch>
           <Route exact path="/">
-            <Container>
-              <Grid>
-                <SimpleCard />
+            <Container className={classes.cardGrid} maxWidth="lg">
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4} sm={6}>
+                  <SimpleCard className={classes.card} />
+                </Grid>
+                <Grid item xs={12} md={4} sm={6}>
+                  <SimpleCard className={classes.card} />
+                </Grid>
+                <Grid item xs={12} md={4} sm={6}>
+                  <SimpleCard className={classes.card} />
+                </Grid>
                 {/* <div className="game_list">
               <GameMiniature game="chess" />
               <GameMiniature game="checkers" />
@@ -52,4 +63,35 @@ function App() {
   );
 }
 
-export default App;
+const useStyles = makeStyles((theme) => ({
+  icon: {
+    marginRight: theme.spacing(2),
+  },
+  heroContent: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(8, 0, 6),
+  },
+  heroButtons: {
+    marginTop: theme.spacing(4),
+  },
+  cardGrid: {
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(8),
+  },
+  card: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "row",
+    width: "50px",
+  },
+  cardMedia: {
+    paddingTop: "56.25%", // 16:9
+  },
+  cardContent: {
+    flexGrow: 1,
+  },
+  footer: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(6),
+  },
+}));
