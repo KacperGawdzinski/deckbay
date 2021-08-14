@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   logoContainer: {
     marginLeft: "auto",
     marginRight: "auto",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
     },
   },

@@ -20,6 +20,7 @@ export default function SimpleCard() {
         component="img"
         image={getImage("chess")}
       ></CardMedia>
+      <CardContent className={classes.gameText}>CHESS</CardContent>
     </Card>
   );
 }
@@ -35,6 +36,19 @@ const useStyles = makeStyles({
     },
     [theme.breakpoints.only("xs")]: {
       height: "240px",
+    },
+  },
+  gameText: {
+    textAlign: "center",
+    fontSize: "40px",
+    fontWeight: "bold",
+    fontStyle: "italic",
+    lineHeight: "1.5",
+    [theme.breakpoints.only("sm")]: {
+      fontSize: "30px",
+    },
+    [theme.breakpoints.only("xs")]: {
+      fontSize: "25px",
     },
   },
   image: {
