@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import GameMiniature from "./components/GameMiniature/GameMiniature";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import theme from "./theme";
-import SimpleCard from "./components/GameMiniature/game";
+import GameCard from "./components/GameCard/GameCard";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Grid } from "@material-ui/core";
+import { GAME_LIST } from "./config";
 
 export default function App() {
   const classes = useStyles();
@@ -28,21 +28,20 @@ export default function App() {
         <Switch>
           <Route exact path="/">
             <Container className={classes.cardGrid} maxWidth="lg">
-              <Grid container alignItems="center" justify="center" spacing={3}>
-                <Grid item xs={10} md={4} sm={5}>
-                  <SimpleCard className={classes.card} />
-                </Grid>
-                <Grid item xs={10} md={4} sm={5}>
-                  <SimpleCard className={classes.card} />
-                </Grid>
-                <Grid item xs={10} md={4} sm={5}>
-                  <SimpleCard className={classes.card} />
-                </Grid>
-                {/* <div className="game_list">
-              <GameMiniature game="chess" />
-              <GameMiniature game="checkers" />
-              <GameMiniature game="charades" />
-            </div> */}
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="center"
+                spacing={3}
+              >
+                {GAME_LIST.map((game) => (
+                  <Grid item key={game} xs={10} md={4} sm={5}>
+                    <GameCard
+                      className={classes.card}
+                      game={game.toUpperCase()}
+                    />
+                  </Grid>
+                ))}
               </Grid>
             </Container>
           </Route>

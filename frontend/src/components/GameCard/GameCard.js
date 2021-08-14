@@ -1,26 +1,25 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import getImage from "../../getImage";
 import CardMedia from "@material-ui/core/CardMedia";
 import theme from "../../theme";
+import { Link } from "react-router-dom";
 
-export default function SimpleCard() {
+export default function GameCard(props) {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
 
   return (
     <Card className={classes.root}>
-      <CardMedia
-        className={classes.image}
-        component="img"
-        image={getImage("chess")}
-      ></CardMedia>
-      <CardContent className={classes.gameText}>CHESS</CardContent>
+      <Link to={`/${props.game.toLowerCase()}`} className={classes.link}>
+        <CardMedia
+          className={classes.image}
+          component="img"
+          image={getImage(props.game.toLowerCase())}
+        ></CardMedia>
+        <CardContent className={classes.gameText}>{props.game}</CardContent>
+      </Link>
     </Card>
   );
 }
@@ -44,6 +43,7 @@ const useStyles = makeStyles({
     fontWeight: "bold",
     fontStyle: "italic",
     lineHeight: "1.5",
+    color: "black !important",
     [theme.breakpoints.only("sm")]: {
       fontSize: "30px",
     },
@@ -70,9 +70,7 @@ const useStyles = makeStyles({
       maxWidth: "200px",
     },
   },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
+  link: {
+    textDecoration: "none !important",
   },
 });
