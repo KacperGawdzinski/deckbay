@@ -5,6 +5,8 @@ import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import theme from "./theme";
+import SimpleCard from "./components/GameMiniature/game";
+import { Container, Grid } from "@material-ui/core";
 
 function App() {
   return (
@@ -22,11 +24,16 @@ function App() {
         <Navbar />
         <Switch>
           <Route exact path="/">
-            <div className="game_list">
+            <Container>
+              <Grid>
+                <SimpleCard />
+                {/* <div className="game_list">
               <GameMiniature game="chess" />
               <GameMiniature game="checkers" />
               <GameMiniature game="charades" />
-            </div>
+            </div> */}
+              </Grid>
+            </Container>
           </Route>
           {/* <Route exact path="/chess">
             <RoomList game="chess" />

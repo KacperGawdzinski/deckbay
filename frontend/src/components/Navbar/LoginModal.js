@@ -35,7 +35,6 @@ export default function LoginModal(props) {
         />
         <div style={{ paddingTop: 5 }}>
           <TextField
-            autoFocus
             margin="dense"
             id="standard-basic"
             label="Password"

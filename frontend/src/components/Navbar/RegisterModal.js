@@ -34,7 +34,6 @@ export default function RegisterModal(props) {
           autoComplete="false"
         />
         <TextField
-          autoFocus
           margin="dense"
           id="standard-basic"
           label="Username"
@@ -44,7 +43,6 @@ export default function RegisterModal(props) {
         />
         <div style={{ paddingTop: 5 }}>
           <TextField
-            autoFocus
             margin="dense"
             id="standard-basic"
             label="Password"
