@@ -13,6 +13,11 @@ export default function LoginModal(props) {
     props.setOpen(false);
   };
 
+  const handleLogin = () => {
+
+    
+  }
+
   return (
     <Dialog
       open={props.open}
@@ -52,7 +57,6 @@ export default function LoginModal(props) {
         <Button onClick={handleClose} color="primary">
           Submit
         </Button>
-        <CircularProgress />
       </DialogActions>
     </Dialog>
   );
