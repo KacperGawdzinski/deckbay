@@ -1,16 +1,21 @@
 import { CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import React, { useState } from 'react';
 
 import { LOADING_STEPS } from '../../config';
 
 export default function RegisterModal(props) {
+  const classes = useStyles();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -22,19 +27,23 @@ export default function RegisterModal(props) {
 
   const handleRegister = async () => {
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
-    setTimeout(async () => {
-      try {
-        await axios.post('http://localhost:5000/register', {
-          username: username,
-          password: password,
-          email: email,
-        });
+    try {
+      await axios.post('http://localhost:5000/register', {
+        username: username,
+        password: password,
+        email: email,
+      });
+      setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
+      setTimeout(() => {
         handleClose();
-      } catch (err) {
-        console.log(err.response);
-      }
-    }, 3000);
+        setLoadingStep(LOADING_STEPS.INPUT_DATA);
+      }, 1000);
+    } catch (err) {
+      setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
+      console.log(err.response);
+    }
   };
+
   return (
     <Dialog
       open={props.open}
@@ -45,7 +54,13 @@ export default function RegisterModal(props) {
         style={{ marginLeft: 'auto', marginRight: 'auto', paddingBottom: 0 }}>
         Register
         {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
-          <CircularProgress style={{ position: 'absolute', right: 10 }} />
+          <CircularProgress className={classes.iconWrapper} />
+        )}
+        {loadingStep === LOADING_STEPS.POSITIVE_RESPONSE && (
+          <CheckCircleOutlineIcon className={classes.largeIcon} />
+        )}
+        {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
+          <HighlightOffIcon className={classes.largeIcon} />
         )}
       </DialogTitle>
 
@@ -88,3 +103,30 @@ export default function RegisterModal(props) {
     </Dialog>
   );
 }
+
+const useStyles = makeStyles((theme) => ({
+  dialogTitle: {
+    alignSelf: 'center',
+    paddingBottom: 0,
+  },
+  passwordWrapper: {
+    paddingTop: 5,
+  },
+  dialogContent: {
+    width: '400px',
+    [theme.breakpoints.down('xs')]: {
+      width: '70vw',
+    },
+  },
+  iconWrapper: {
+    position: 'absolute',
+    right: 10,
+  },
+  largeIcon: {
+    width: '50px',
+    height: '50px',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+}));

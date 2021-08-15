@@ -5,9 +5,15 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { SettingsInputAntennaTwoTone } from '@material-ui/icons';
+import green from '@material-ui/core/colors/green';
+import red from '@material-ui/core/colors/red';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
+import clsx from 'clsx';
 import React, { useState } from 'react';
+
+import { LOADING_STEPS } from '../../config';
 
 export default function LoginModal(props) {
   const classes = useStyles();
@@ -16,15 +22,22 @@ export default function LoginModal(props) {
   const [password, setPassword] = useState('');
   const [usernameError, toggleUsernameError] = useState(false);
   const [passwordError, togglePasswordError] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
 
   const handleLogin = async () => {
+    setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
       await axios.post('http://localhost:5000/login', {
         username: username,
         password: password,
       });
-      handleClose();
+      setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
+      setTimeout(() => {
+        handleClose();
+        setLoadingStep(LOADING_STEPS.INPUT_DATA);
+      }, 1000);
     } catch (err) {
+      setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
       else if (err.response.data.passwordError) {
         togglePasswordError(true);
@@ -33,11 +46,13 @@ export default function LoginModal(props) {
   };
 
   const switchUsernameErrorTextField = (e) => {
+    setLoadingStep(LOADING_STEPS.INPUT_DATA);
     setUsername(e.target.value);
     toggleUsernameError(false);
   };
 
   const switchPasswordErrorTextField = (e) => {
+    setLoadingStep(LOADING_STEPS.INPUT_DATA);
     togglePasswordError(false);
   };
 
@@ -52,6 +67,19 @@ export default function LoginModal(props) {
       aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
         Login
+        {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
+          <CircularProgress className={classes.iconWrapper} />
+        )}
+        {loadingStep === LOADING_STEPS.POSITIVE_RESPONSE && (
+          <CheckCircleOutlineIcon
+            className={clsx(classes.largeIcon, classes.successIcon)}
+          />
+        )}
+        {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
+          <HighlightOffIcon
+            className={clsx(classes.largeIcon, classes.failIcon)}
+          />
+        )}
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
         {usernameError ? (
@@ -124,5 +152,22 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('xs')]: {
       width: '70vw',
     },
+  },
+  iconWrapper: {
+    position: 'absolute',
+    right: 10,
+  },
+  largeIcon: {
+    width: '50px',
+    height: '50px',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  failIcon: {
+    color: red[500],
+  },
+  successIcon: {
+    color: green[500],
   },
 }));
