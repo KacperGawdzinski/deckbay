@@ -11,7 +11,6 @@ import React, { useState } from 'react';
 export default function LoginModal(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
 
   const handleClose = () => {
     props.setOpen(false);
@@ -19,14 +18,14 @@ export default function LoginModal(props) {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(`/login`, {
+      const res = await axios.post('http://localhost:5000/login', {
         username: username,
         password: password,
       });
+      // setUsername(res.data.login);
       handleClose();
-      setUsername(res.data.login);
     } catch (err) {
-      console.log(err.response);
+      console.log(err);
     }
   };
 
@@ -49,6 +48,7 @@ export default function LoginModal(props) {
           type="text"
           fullWidth
           autoComplete="false"
+          onChange={(e) => setUsername(e.target.value)}
         />
         <div style={{ paddingTop: 5 }}>
           <TextField
@@ -57,6 +57,7 @@ export default function LoginModal(props) {
             label="Password"
             type="password"
             fullWidth
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </DialogContent>
@@ -64,7 +65,7 @@ export default function LoginModal(props) {
         <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleLogin} color="primary">
           Submit
         </Button>
       </DialogActions>

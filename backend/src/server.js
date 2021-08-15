@@ -13,7 +13,7 @@ import mongoose from "mongoose";
 // import charades = require("./routes/charades");
 // import checkers = require("./routes/checkers");
 // import chess = require("./routes/chess");
-import account from "./routes/account";
+import accountRouter from "./routes/account.js";
 import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config.js";
 const saltRounds = 10;
 
@@ -30,6 +30,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
+app.use(accountRouter);
 
 app.use("/", (req, res) => {
   res.send("OK");
@@ -69,9 +70,9 @@ connectWithRetry();
 // app.locals.roomLastMove = roomLastMove;
 // app.locals.roomChesslogic = roomChesslogic;
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+// });
 
 app.post("/validate-room", async function (req, res) {
   //maybe some default parameters? + change for other games

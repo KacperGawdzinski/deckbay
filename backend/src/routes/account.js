@@ -1,17 +1,18 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/userModel";
+import User from "../models/userModel.js";
 // import Token =("../models/tokenModel");
 
-const router = express.Router();
+const accountRouter = express.Router();
 const saltRounds = 10;
 
-router.post("/login", async (req, res) => {
+accountRouter.post("/login", async (req, res) => {
   console.log("xd");
   const user = await User.findOne({
     username: req.body.username,
   });
+
   if (!user) {
     res.status(401).json({ error: "User not found" });
     return;
@@ -44,7 +45,7 @@ router.post("/login", async (req, res) => {
   res.status(200).send("OK");
 });
 
-router.post("/register", async (req, res) => {
+accountRouter.post("/register", async (req, res) => {
   const hashed = await bcrypt.hash(req.body.password, saltRounds);
   try {
     await User.create({
@@ -61,7 +62,7 @@ router.post("/register", async (req, res) => {
   res.sendStatus(200);
 });
 
-router.post("/logout", (req, res) => {
+accountRouter.post("/logout", (req, res) => {
   try {
     Token.findOneAndRemove({
       value: req.cookies["jwtRefresh"],
@@ -78,4 +79,4 @@ router.post("/logout", (req, res) => {
   }
 });
 
-export default router;
+export default accountRouter;
