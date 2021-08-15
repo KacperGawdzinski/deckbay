@@ -5,6 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import { SettingsInputAntennaTwoTone } from '@material-ui/icons';
 import axios from 'axios';
 import React, { useState } from 'react';
 
@@ -25,7 +26,9 @@ export default function LoginModal(props) {
       handleClose();
     } catch (err) {
       if (err.response.data.usernameError) toggleUsernameError(true);
-      else if (err.response.data.passwordError) togglePasswordError(true);
+      else if (err.response.data.passwordError) {
+        togglePasswordError(true);
+      }
     }
   };
 
@@ -35,7 +38,6 @@ export default function LoginModal(props) {
   };
 
   const switchPasswordErrorTextField = (e) => {
-    setPassword('');
     togglePasswordError(false);
   };
 
@@ -83,8 +85,7 @@ export default function LoginModal(props) {
               fullWidth
               margin="dense"
               label="Incorrect password"
-              type="text"
-              defaultValue={username}
+              type="password"
               onChange={switchPasswordErrorTextField}
             />
           ) : (

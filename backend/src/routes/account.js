@@ -2,23 +2,28 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import { SALT_ROUNDS } from "../config.js";
 // import Token =("../models/tokenModel");
 
 const accountRouter = express.Router();
-const saltRounds = 10;
 
 accountRouter.post("/login", async (req, res) => {
+  if (!req.body.username)
+    return res.status(401).json({ usernameError: "Username not found" });
+  if (!req.body.username)
+    return res.status(401).json({ passwordError: "Invalid password" });
+
   const user = await User.findOne({
     username: req.body.username,
   });
 
-  if (!user) return res.status(401).json({ userError: "Username not found" });
+  if (!user)
+    return res.status(401).json({ usernameError: "Username not found" });
 
-  //const validPassword = await bcrypt.compare(req.body.password, user.password);
-  //   if (!validPassword) {
-  //     res.status(401).json({ error: "Invalid password" });
-  //     return;
-  //   }
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!validPassword)
+    return res.status(401).send({ passwordError: "Invalid password" });
+
   //   const accessToken = jwt.sign(
   //     req.body.username,
   //     process.env.JWT_ACCESS_TOKEN,
@@ -42,18 +47,23 @@ accountRouter.post("/login", async (req, res) => {
 });
 
 accountRouter.post("/register", async (req, res) => {
-  const hashed = await bcrypt.hash(req.body.password, saltRounds);
+  if (!req.body.email)
+    return res.status(401).send({ emailError: "Email not found" });
+  if (!req.body.username)
+    return res.status(401).send({ usernameError: "Username not found" });
+  if (!req.body.password)
+    return res.status(401).send({ passwordError: "Password not found" });
+
+  const hashed = await bcrypt.hash(req.body.password, SALT_ROUNDS);
   try {
     await User.create({
       email: req.body.email,
-      login: req.body.login,
+      username: req.body.username,
       password: hashed,
     });
   } catch (err) {
-    if (err.code === 11000) {
-      res.send(401).json({ error: "User already exists" });
-      return;
-    }
+    if (err.code === 11000)
+      return res.status(401).send({ error: "User already exists" });
   }
   res.sendStatus(200);
 });
