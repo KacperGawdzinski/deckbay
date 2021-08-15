@@ -84,6 +84,7 @@ export default function RegisterModal(props) {
     toggleEmailError(false);
   };
 
+  // TODO: custom error message for email on register
   return (
     <Dialog
       open={props.open}
@@ -134,7 +135,7 @@ export default function RegisterModal(props) {
               error
               fullWidth
               margin="dense"
-              label="Username not found"
+              label="Username already taken"
               autoComplete="false"
               type="text"
               defaultValue={username}

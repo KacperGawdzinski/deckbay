@@ -62,8 +62,15 @@ accountRouter.post("/register", async (req, res) => {
       password: hashed,
     });
   } catch (err) {
-    if (err.code === 11000)
-      return res.status(401).send({ error: "User already exists" });
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyValue)[0];
+      if (field == "username")
+        return res
+          .status(401)
+          .send({ usernameError: "Username already exists" });
+      else if (field == "email")
+        return res.status(401).send({ emailError: "Email already exists" });
+    }
   }
   res.sendStatus(200);
 });
