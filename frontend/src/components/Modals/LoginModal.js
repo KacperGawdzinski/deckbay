@@ -34,14 +34,11 @@ export default function LoginModal(props) {
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       setTimeout(() => {
         handleClose();
-        setLoadingStep(LOADING_STEPS.INPUT_DATA);
       }, 1000);
     } catch (err) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
-      else if (err.response.data.passwordError) {
-        togglePasswordError(true);
-      }
+      else if (err.response.data.passwordError) togglePasswordError(true);
     }
   };
 
@@ -58,6 +55,11 @@ export default function LoginModal(props) {
 
   const handleClose = () => {
     props.setOpen(false);
+    setLoadingStep(LOADING_STEPS.INPUT_DATA);
+    setUsername('');
+    setPassword('');
+    toggleUsernameError(false);
+    togglePasswordError(false);
   };
 
   return (
