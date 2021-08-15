@@ -14,26 +14,33 @@ export default function LoginModal(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameError, toggleUsernameError] = useState(false);
-
-  const handleClose = () => {
-    props.setOpen(false);
-  };
+  const [passwordError, togglePasswordError] = useState(false);
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/login', {
+      await axios.post('http://localhost:5000/login', {
         username: username,
         password: password,
       });
       handleClose();
     } catch (err) {
-      if (err.response.data.userError) toggleUsernameError(true);
+      if (err.response.data.usernameError) toggleUsernameError(true);
+      else if (err.response.data.passwordError) togglePasswordError(true);
     }
   };
 
-  const switchErrorTextField = (e) => {
+  const switchUsernameErrorTextField = (e) => {
     setUsername(e.target.value);
     toggleUsernameError(false);
+  };
+
+  const switchPasswordErrorTextField = (e) => {
+    setPassword('');
+    togglePasswordError(false);
+  };
+
+  const handleClose = () => {
+    props.setOpen(false);
   };
 
   return (
@@ -44,7 +51,7 @@ export default function LoginModal(props) {
       <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
         Login
       </DialogTitle>
-      <DialogContent style={{ width: '400px' }}>
+      <DialogContent className={classes.dialogContent}>
         {usernameError ? (
           <TextField
             error
@@ -54,7 +61,7 @@ export default function LoginModal(props) {
             autoComplete="false"
             type="text"
             defaultValue={username}
-            onChange={switchErrorTextField}
+            onChange={switchUsernameErrorTextField}
           />
         ) : (
           <TextField
@@ -69,14 +76,26 @@ export default function LoginModal(props) {
           />
         )}
 
-        <div style={{ paddingTop: 5 }}>
-          <TextField
-            margin="dense"
-            label="Password"
-            type="password"
-            fullWidth
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <div className={classes.passwordWrapper}>
+          {passwordError ? (
+            <TextField
+              error
+              fullWidth
+              margin="dense"
+              label="Incorrect password"
+              type="text"
+              defaultValue={username}
+              onChange={switchPasswordErrorTextField}
+            />
+          ) : (
+            <TextField
+              margin="dense"
+              label="Password"
+              type="password"
+              fullWidth
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          )}
         </div>
       </DialogContent>
       <DialogActions>
@@ -95,5 +114,14 @@ const useStyles = makeStyles((theme) => ({
   dialogTitle: {
     alignSelf: 'center',
     paddingBottom: 0,
+  },
+  passwordWrapper: {
+    paddingTop: 5,
+  },
+  dialogContent: {
+    width: '400px',
+    [theme.breakpoints.down('xs')]: {
+      width: '70vw',
+    },
   },
 }));
