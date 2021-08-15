@@ -8,15 +8,11 @@ const accountRouter = express.Router();
 const saltRounds = 10;
 
 accountRouter.post("/login", async (req, res) => {
-  console.log("xd");
   const user = await User.findOne({
     username: req.body.username,
   });
 
-  if (!user) {
-    res.status(401).json({ error: "User not found" });
-    return;
-  }
+  if (!user) return res.status(401).json({ userError: "Username not found" });
 
   //const validPassword = await bcrypt.compare(req.body.password, user.password);
   //   if (!validPassword) {

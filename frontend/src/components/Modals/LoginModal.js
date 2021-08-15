@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,8 +9,11 @@ import axios from 'axios';
 import React, { useState } from 'react';
 
 export default function LoginModal(props) {
+  const classes = useStyles();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [usernameError, toggleUsernameError] = useState(false);
 
   const handleClose = () => {
     props.setOpen(false);
@@ -22,11 +25,15 @@ export default function LoginModal(props) {
         username: username,
         password: password,
       });
-      // setUsername(res.data.login);
       handleClose();
     } catch (err) {
-      console.log(err);
+      if (err.response.data.userError) toggleUsernameError(true);
     }
+  };
+
+  const switchErrorTextField = (e) => {
+    setUsername(e.target.value);
+    toggleUsernameError(false);
   };
 
   return (
@@ -34,26 +41,37 @@ export default function LoginModal(props) {
       open={props.open}
       onClose={handleClose}
       aria-labelledby="form-dialog-title">
-      <DialogTitle
-        id="form-dialog-title"
-        style={{ alignSelf: 'center', paddingBottom: 0 }}>
+      <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
         Login
       </DialogTitle>
       <DialogContent style={{ width: '400px' }}>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="standard-basic"
-          label="Username"
-          type="text"
-          fullWidth
-          autoComplete="false"
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        {usernameError ? (
+          <TextField
+            error
+            fullWidth
+            margin="dense"
+            label="Username not found"
+            autoComplete="false"
+            type="text"
+            defaultValue={username}
+            onChange={switchErrorTextField}
+          />
+        ) : (
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Username"
+            type="text"
+            fullWidth
+            defaultValue={username}
+            autoComplete="false"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        )}
+
         <div style={{ paddingTop: 5 }}>
           <TextField
             margin="dense"
-            id="standard-basic"
             label="Password"
             type="password"
             fullWidth
@@ -72,3 +90,10 @@ export default function LoginModal(props) {
     </Dialog>
   );
 }
+
+const useStyles = makeStyles((theme) => ({
+  dialogTitle: {
+    alignSelf: 'center',
+    paddingBottom: 0,
+  },
+}));
