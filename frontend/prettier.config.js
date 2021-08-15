@@ -7,4 +7,5 @@ module.exports = {
   semi: true,
   importOrder: ['^@core/(.*)$', '^@server/(.*)$', '^@ui/(.*)$', '^[./]'],
   importOrderSeparation: true,
+  experimentalBabelParserPluginsList: ['jsx', 'typescript'],
 };

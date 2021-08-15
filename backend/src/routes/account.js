@@ -1,13 +1,14 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const router = express.Router();
-
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import User from "../models/userModel";
-const Token = require("../models/tokenModel");
+// import Token =("../models/tokenModel");
+
+const router = express.Router();
 const saltRounds = 10;
 
 router.post("/login", async (req, res) => {
+  console.log("xd");
   const user = await User.findOne({
     username: req.body.username,
   });
@@ -77,4 +78,4 @@ router.post("/logout", (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

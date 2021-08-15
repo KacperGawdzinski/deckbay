@@ -1,26 +1,25 @@
-const http = require("http");
-const socket = require("socket.io");
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const faker = require("faker");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const Checkers = require("./server-javascript/checkers-server");
-const { chessGame } = require("./server-javascript/chess-game-server");
-const charades = require("./routes/charades");
-const checkers = require("./routes/checkers");
-const chess = require("./routes/chess");
-const account = require("./routes/account");
+import { Server } from "socket.io";
+import { createServer } from "http";
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import faker from "faker";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+// import Checkers = require("./server-javascript/checkers-server");
+// import { chessGame } = require("./server-javascript/chess-game-server");
+// import charades = require("./routes/charades");
+// import checkers = require("./routes/checkers");
+// import chess = require("./routes/chess");
+import account from "./routes/account";
+import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config.js";
 const saltRounds = 10;
 
-import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
-
 var app = express();
-var server = http.createServer(app);
-var io = socket(server);
+const httpServer = createServer();
+var io = new Server(httpServer);
 
 dotenv.config({ path: "./config.env" });
 app.use(
@@ -73,8 +72,6 @@ connectWithRetry();
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
-
-app.use("/charades", charades);
 
 app.post("/validate-room", async function (req, res) {
   //maybe some default parameters? + change for other games
@@ -192,10 +189,12 @@ app.post('/validate-room-password', (req, res) => {
     });
 });
 */
-server.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log("Server turned on");
 });
 
+// app.use("/charades", charades);
+/*
 io.on("connection", (socket) => {
   console.log("client connected");
 
@@ -518,3 +517,4 @@ const availableRooms = (game) => {
   return availableRoomsTab;
 };
 app.locals.availableRooms = availableRooms;
+*/
