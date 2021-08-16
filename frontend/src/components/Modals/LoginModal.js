@@ -35,10 +35,9 @@ export default function LoginModal(props) {
         password: password,
       });
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
-      setTimeout(() => {
-        handleClose();
-        dispatch(login(username));
-      }, 1000);
+      handleClose();
+      props.toggleLoginCorfirmation(true);
+      dispatch(login(username));
     } catch (err) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
@@ -75,11 +74,6 @@ export default function LoginModal(props) {
         Login
         {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
           <CircularProgress className={classes.iconWrapper} />
-        )}
-        {loadingStep === LOADING_STEPS.POSITIVE_RESPONSE && (
-          <CheckCircleOutlineIcon
-            className={clsx(classes.largeIcon, classes.successIcon)}
-          />
         )}
         {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
           <HighlightOffIcon

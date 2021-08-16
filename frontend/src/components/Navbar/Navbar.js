@@ -1,11 +1,14 @@
-import { CircularProgress, Typography } from '@material-ui/core';
+import { CircularProgress, Fade, Typography } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
+import green from '@material-ui/core/colors/green';
 import { makeStyles } from '@material-ui/core/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
+import MuiAlert from '@material-ui/lab/Alert';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -21,6 +24,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const [openLoginModal, toggleLoginModal] = useState(false);
   const [openRegisterModal, toggleRegisterModal] = useState(false);
+  const [loginConfirmation, toggleLoginCorfirmation] = useState(false);
   const username = useSelector((state) => state.username);
 
   const handleClickOpenLogin = () => {
@@ -84,8 +88,22 @@ export default function Navbar() {
           className={classes.hamburgerMenu}>
           <MenuIcon />
         </IconButton>
-        <LoginModal open={openLoginModal} setOpen={toggleLoginModal} />
+        <LoginModal
+          open={openLoginModal}
+          setOpen={toggleLoginModal}
+          toggleLoginCorfirmation={toggleLoginCorfirmation}
+        />
         <RegisterModal open={openRegisterModal} setOpen={toggleRegisterModal} />
+        <Snackbar
+          open={loginConfirmation}
+          autoHideDuration={2500}
+          style={{ marginTop: '50px' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClose={() => toggleLoginCorfirmation(false)}>
+          <MuiAlert elevation={6} variant="filled" severity="success">
+            <Typography>Succesful login!</Typography>
+          </MuiAlert>
+        </Snackbar>
       </Toolbar>
     </AppBar>
   );
