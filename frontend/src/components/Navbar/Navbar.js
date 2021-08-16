@@ -8,14 +8,17 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
+import { logout } from '../../redux/actions/usernameActions';
 import LoginModal from '../Modals/LoginModal';
 import RegisterModal from '../Modals/RegisterModal';
 
 export default function Navbar() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [openLoginModal, toggleLoginModal] = useState(false);
   const [openRegisterModal, toggleRegisterModal] = useState(false);
   const username = useSelector((state) => state.username);
@@ -28,6 +31,10 @@ export default function Navbar() {
     toggleRegisterModal(true);
   };
 
+  const handleClickLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <AppBar position="static" className={classes.background}>
       <Toolbar>
@@ -36,23 +43,33 @@ export default function Navbar() {
         </Link>
         <div style={{ flexGrow: 1 }} />
         {username ? (
-          <div>
+          <div className={classes.buttonContainer}>
             <Button
+              className={classes.button}
               variant="contained"
               color="primary"
               endIcon={<AccountCircleIcon />}>
-              {username}
+              <Typography>{username}</Typography>
+            </Button>
+            <Button
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              onClick={handleClickLogout}>
+              <Typography>Log out</Typography>
             </Button>
           </div>
         ) : (
           <div className={classes.buttonContainer}>
             <Button
+              className={classes.button}
               color="primary"
               variant="contained"
               onClick={handleClickOpenLogin}>
               <Typography>Login</Typography>
             </Button>
             <Button
+              className={classes.button}
               color="primary"
               variant="contained"
               onClick={handleClickOpenRegister}>
@@ -84,6 +101,12 @@ const useStyles = makeStyles((theme) => ({
     gap: '10px',
     [theme.breakpoints.down('xs')]: {
       display: 'none',
+    },
+  },
+
+  button: {
+    '&:hover': {
+      backgroundColor: 'grey',
     },
   },
 
