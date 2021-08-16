@@ -1,9 +1,10 @@
-import { Typography } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -35,15 +36,26 @@ export default function Navbar() {
         </Link>
         <div style={{ flexGrow: 1 }} />
         {username ? (
-          <IconButton>
-            <Typography>{username}</Typography>
-          </IconButton>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={<AccountCircleIcon />}>
+              {username}
+            </Button>
+          </div>
         ) : (
           <div className={classes.buttonContainer}>
-            <Button color="inherit" onClick={handleClickOpenLogin}>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleClickOpenLogin}>
               <Typography>Login</Typography>
             </Button>
-            <Button color="inherit" onClick={handleClickOpenRegister}>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleClickOpenRegister}>
               <Typography>Register</Typography>
             </Button>
           </div>
@@ -68,6 +80,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   buttonContainer: {
+    display: 'flex',
+    gap: '10px',
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
