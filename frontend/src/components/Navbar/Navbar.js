@@ -5,7 +5,8 @@ import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
@@ -14,8 +15,9 @@ import RegisterModal from '../Modals/RegisterModal';
 
 export default function Navbar() {
   const classes = useStyles();
-  const [openLoginModal, toggleLoginModal] = React.useState(false);
-  const [openRegisterModal, toggleRegisterModal] = React.useState(false);
+  const [openLoginModal, toggleLoginModal] = useState(false);
+  const [openRegisterModal, toggleRegisterModal] = useState(false);
+  const username = useSelector((state) => state.username);
 
   const handleClickOpenLogin = () => {
     toggleLoginModal(true);
@@ -32,14 +34,20 @@ export default function Navbar() {
           <img src={logo} alt="Deckbay logo" className={classes.logo} />
         </Link>
         <div style={{ flexGrow: 1 }} />
-        <div className={classes.buttonContainer}>
-          <Button color="inherit" onClick={handleClickOpenLogin}>
-            <Typography>Login</Typography>
-          </Button>
-          <Button color="inherit" onClick={handleClickOpenRegister}>
-            <Typography>Register</Typography>
-          </Button>
-        </div>
+        {username ? (
+          <IconButton>
+            <Typography>{username}</Typography>
+          </IconButton>
+        ) : (
+          <div className={classes.buttonContainer}>
+            <Button color="inherit" onClick={handleClickOpenLogin}>
+              <Typography>Login</Typography>
+            </Button>
+            <Button color="inherit" onClick={handleClickOpenRegister}>
+              <Typography>Register</Typography>
+            </Button>
+          </div>
+        )}
         <IconButton
           edge="start"
           color="inherit"

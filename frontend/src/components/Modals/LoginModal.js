@@ -12,8 +12,10 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { LOADING_STEPS } from '../../config';
+import { login } from '../../redux/actions/usernameActions';
 
 export default function LoginModal(props) {
   const classes = useStyles();
@@ -23,6 +25,7 @@ export default function LoginModal(props) {
   const [usernameError, toggleUsernameError] = useState(false);
   const [passwordError, togglePasswordError] = useState(false);
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
@@ -34,6 +37,7 @@ export default function LoginModal(props) {
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       setTimeout(() => {
         handleClose();
+        dispatch(login(username));
       }, 1000);
     } catch (err) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
