@@ -24,7 +24,9 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const [openLoginModal, toggleLoginModal] = useState(false);
   const [openRegisterModal, toggleRegisterModal] = useState(false);
-  const [loginConfirmation, toggleLoginCorfirmation] = useState(false);
+  const [loginConfirmation, toggleLoginConfirmation] = useState(false);
+  const [registerConfirmation, toggleRegisterConfirmation] = useState(false);
+  const [logoutConfirmation, toggleLogoutConfirmation] = useState(false);
   const username = useSelector((state) => state.username);
 
   const handleClickOpenLogin = () => {
@@ -36,6 +38,7 @@ export default function Navbar() {
   };
 
   const handleClickLogout = () => {
+    toggleLogoutConfirmation(true);
     dispatch(logout());
   };
 
@@ -91,17 +94,43 @@ export default function Navbar() {
         <LoginModal
           open={openLoginModal}
           setOpen={toggleLoginModal}
-          toggleLoginCorfirmation={toggleLoginCorfirmation}
+          toggleLoginCorfirmation={toggleLoginConfirmation}
         />
-        <RegisterModal open={openRegisterModal} setOpen={toggleRegisterModal} />
+        <RegisterModal
+          open={openRegisterModal}
+          setOpen={toggleRegisterModal}
+          setWarning={toggleRegisterConfirmation}
+        />
         <Snackbar
           open={loginConfirmation}
+          autoHideDuration={5000}
+          style={{ marginTop: '50px' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClose={() => toggleLoginConfirmation(false)}>
+          <MuiAlert elevation={6} variant="filled" severity="success">
+            <Typography>Succesfully logged in</Typography>
+          </MuiAlert>
+        </Snackbar>
+        <Snackbar
+          open={logoutConfirmation}
           autoHideDuration={2500}
           style={{ marginTop: '50px' }}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          onClose={() => toggleLoginCorfirmation(false)}>
+          onClose={() => toggleLogoutConfirmation(false)}>
           <MuiAlert elevation={6} variant="filled" severity="success">
-            <Typography>Succesful login!</Typography>
+            <Typography>Succesfully logged out</Typography>
+          </MuiAlert>
+        </Snackbar>
+        <Snackbar
+          open={registerConfirmation}
+          autoHideDuration={2500}
+          style={{ marginTop: '50px' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          onClose={() => toggleRegisterConfirmation(false)}>
+          <MuiAlert elevation={6} variant="filled" severity="warning">
+            <Typography>
+              Check your email in order to complete registration
+            </Typography>
           </MuiAlert>
         </Snackbar>
       </Toolbar>

@@ -46,9 +46,8 @@ export default function RegisterModal(props) {
         email: email,
       });
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
-      setTimeout(() => {
-        handleClose();
-      }, 1000);
+      props.setWarning(true);
+      handleClose();
     } catch (err) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
