@@ -59,14 +59,14 @@ export default function App() {
             <Route exact path="/chess">
               <RoomList game="chess" />
             </Route>
-            {/*
-          <Route exact path="/chess/:id"></Route>
-          <Route exact path="/charades">
-            <RoomList game="charades" />
-          </Route>
-          <Route exact path="/charades/:id">
+
+            {/* <Route exact path="/chess/:id"></Route> */}
+            <Route exact path="/charades">
+              <RoomList game="charades" />
+            </Route>
+            {/* <Route exact path="/charades/:id">
             <Charades />
-          </Route> */}
+          </Route> } */}
           </Switch>
           {/* <Footer /> */}
         </Router>
