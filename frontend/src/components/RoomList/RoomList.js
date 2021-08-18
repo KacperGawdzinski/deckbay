@@ -1,27 +1,24 @@
 import Collapse from '@material-ui/core/Collapse';
 import Container from '@material-ui/core/Container';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import React, { useEffect, useState, useRef } from 'react';
-import { io } from 'socket.io-client';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
 import { IconButton } from '../../../node_modules/@material-ui/core/index';
 import { Typography } from '../../../node_modules/@material-ui/core/index';
 import theme from '../../theme';
 import RoomListItem from '../RoomListItem/RoomListItem';
-import NewRoom from './NewRoom/NewRoom';
-import './RoomList.css';
+
+// import NewRoom from './NewRoom/NewRoom';
+
+// import './RoomList.css';
 
 const RoomList = ({ game }) => {
   const classes = useState();
   const [rooms, setRooms] = useState([]);
   const [newRoom, setNewRoom] = useState(false);
-  const [setHeight, setHeightState] = useState('0px');
   const [checked, setChecked] = React.useState(false);
 
   const handleChange = () => {

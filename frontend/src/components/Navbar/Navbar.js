@@ -1,10 +1,9 @@
-import { CircularProgress, Fade, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
-import green from '@material-ui/core/colors/green';
 import { makeStyles } from '@material-ui/core/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -44,7 +43,7 @@ export default function Navbar() {
 
   return (
     <AppBar position="static" className={classes.background}>
-      <Toolbar>
+      <Toolbar style={{ paddingLeft: '10px' }}>
         <Link to="/">
           <img src={logo} alt="Deckbay logo" className={classes.logo} />
         </Link>
