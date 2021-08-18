@@ -27,10 +27,11 @@ export default function LoginModal(props) {
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
   const dispatch = useDispatch();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
-      await axios.post('/login', {
+      await axios.post('http://localhost:5000/login', {
         username: username,
         password: password,
       });
@@ -81,60 +82,63 @@ export default function LoginModal(props) {
           />
         )}
       </DialogTitle>
-      <DialogContent className={classes.dialogContent}>
-        {usernameError ? (
-          <TextField
-            error
-            fullWidth
-            margin="dense"
-            label="Username not found"
-            autoComplete="false"
-            type="text"
-            defaultValue={username}
-            onChange={switchUsernameErrorTextField}
-          />
-        ) : (
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Username"
-            type="text"
-            fullWidth
-            defaultValue={username}
-            autoComplete="false"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        )}
-
-        <div className={classes.passwordWrapper}>
-          {passwordError ? (
+      <form onSubmit={handleLogin}>
+        <DialogContent className={classes.dialogContent}>
+          {usernameError ? (
             <TextField
               error
               fullWidth
               margin="dense"
-              label="Incorrect password"
-              type="password"
-              onChange={switchPasswordErrorTextField}
+              label="Username not found"
+              autoComplete="false"
+              type="text"
+              defaultValue={username}
+              onChange={switchUsernameErrorTextField}
             />
           ) : (
             <TextField
+              autoFocus
               margin="dense"
-              label="Password"
-              type="password"
+              label="Username"
+              type="text"
               fullWidth
-              onChange={(e) => setPassword(e.target.value)}
+              defaultValue={username}
+              autoComplete="false"
+              onChange={(e) => setUsername(e.target.value)}
             />
           )}
-        </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleLogin} color="primary">
-          Submit
-        </Button>
-      </DialogActions>
+
+          <div className={classes.passwordWrapper}>
+            {passwordError ? (
+              <TextField
+                error
+                fullWidth
+                margin="dense"
+                label="Incorrect password"
+                type="password"
+                onChange={switchPasswordErrorTextField}
+              />
+            ) : (
+              <TextField
+                margin="dense"
+                label="Password"
+                type="password"
+                fullWidth
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            )}
+          </div>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 }
