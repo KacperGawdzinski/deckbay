@@ -30,17 +30,10 @@ export default function LoginModal(props) {
   const handleLogin = async () => {
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
-      await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username, password: password }),
+      await axios.post('/login', {
+        username: username,
+        password: password,
       });
-      // await axios.post('/login', {
-      //   username: username,
-      //   password: password,
-      // });
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       handleClose();
       props.toggleLoginCorfirmation(true);

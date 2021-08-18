@@ -21,7 +21,8 @@ const server = createServer(app);
 var io = new Server(server);
 
 io.on("connection", (client) => {
-  console.log("connected");
+  console.log("Socket.io is connected");
+
   client.on("event", (data: any) => {
     /* … */
   });
