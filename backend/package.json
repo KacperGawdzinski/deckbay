@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "nodemon ./src/server.js",
-    "server": "nodemon server.js",
-    "client": "cd client && yarn start-client"
+    "start": "ts-node-dev ./src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -39,6 +36,8 @@
     "path": "^0.12.7",
     "read-pkg": "^5.2.0",
     "socket.io": "^3.0.4",
+    "ts-node": "^10.2.0",
+    "ts-node-dev": "^1.1.8",
     "yarn": "^1.22.10"
   },
   "devDependencies": {

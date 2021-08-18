@@ -1,8 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
-import { SALT_ROUNDS } from "../config.js";
+import User from "../models/userModel";
+import { SALT_ROUNDS } from "../config";
 // import Token =("../models/tokenModel");
 
 const accountRouter = express.Router();
@@ -62,7 +62,7 @@ accountRouter.post("/register", async (req, res) => {
       username: req.body.username,
       password: hashed,
     });
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === 11000) {
       const field = Object.keys(err.keyValue)[0];
       if (field == "username")
@@ -76,21 +76,21 @@ accountRouter.post("/register", async (req, res) => {
   res.sendStatus(200);
 });
 
-accountRouter.post("/logout", (req, res) => {
-  try {
-    Token.findOneAndRemove({
-      value: req.cookies["jwtRefresh"],
-    });
-    res.cookie("jwtAccess", 0, {
-      maxAge: -1,
-    });
-    res.cookie("jwtRefresh", 0, {
-      maxAge: -1,
-    });
-    res.sendStatus(200);
-  } catch (err) {
-    res.send(500);
-  }
-});
+// accountRouter.post("/logout", (req, res) => {
+//   try {
+//     Token.findOneAndRemove({
+//       value: req.cookies["jwtRefresh"],
+//     });
+//     res.cookie("jwtAccess", 0, {
+//       maxAge: -1,
+//     });
+//     res.cookie("jwtRefresh", 0, {
+//       maxAge: -1,
+//     });
+//     res.sendStatus(200);
+//   } catch (err) {
+//     res.send(500);
+//   }
+// });
 
 export default accountRouter;

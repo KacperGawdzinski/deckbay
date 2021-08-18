@@ -1,20 +1,20 @@
-import { Server } from "socket.io";
-import { createServer } from "http";
-import express from "express";
-import cookieParser from "cookie-parser";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+// import bcrypt from "bcrypt";
+// import jwt from "jsonwebtoken";
 // import faker from "faker";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
+
 // import Checkers = require("./server-javascript/checkers-server");
 // import { chessGame } = require("./server-javascript/chess-game-server");
 // import charades = require("./routes/charades");
 // import checkers = require("./routes/checkers");
 // import chess = require("./routes/chess");
+import { Server } from "socket.io";
+import { createServer } from "http";
+import express from "express";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 import accountRouter from "./routes/account";
 import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
-const saltRounds = 10;
 
 var app = express();
 const server = createServer(app);
