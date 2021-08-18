@@ -1,6 +1,11 @@
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
+import styled from 'styled-components';
 
+import { Typography } from '../../../node_modules/@material-ui/core/index';
+import theme from '../../theme';
 import RoomListItem from '../RoomListItem/RoomListItem';
 import NewRoom from './NewRoom/NewRoom';
 import './RoomList.css';
@@ -24,22 +29,34 @@ const RoomList = ({ game }) => {
   // }, []);
 
   return (
-    <div className="roomListDiv">
-      <div className="list">
-        <div className="list_header">
-          <button
-            className="add_btn"
-            onClick={() => {
-              setNewRoom(!newRoom);
-              setHeightState(
-                newRoom ? '0px' : `${content.current.scrollHeight}px`,
-              );
+    <GameRoomContainer maxWidth="md">
+      <Grid
+        container
+        diretion="column"
+        alignItems="center"
+        justifyContent="center">
+        <Grid
+          item
+          style={{
+            width: '100%',
+            height: '50px',
+            backgroundColor: '#121858',
+          }}>
+          <Typography
+            style={{
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              width: '300px',
+              fontSize: '30px',
+              color: 'white',
             }}>
-            {newRoom ? '−' : '+'}
-          </button>
+            {game.toUpperCase()} ROOM LIST
+          </Typography>
+        </Grid>
+        {/* <div className="list_header">
           <p> {game.toUpperCase()} ROOM LIST</p>
-        </div>
-        <div
+        </div> */}
+        {/* <div
           ref={content}
           className="animation_wrapper"
           style={{ maxHeight: `${setHeight}` }}>
@@ -51,10 +68,14 @@ const RoomList = ({ game }) => {
               <RoomListItem key={info.fullRoomName} info={info} game={game} />
             );
           })}
-        </div>
-      </div>
-    </div>
+        </div> */}
+      </Grid>
+    </GameRoomContainer>
   );
 };
+
+const GameRoomContainer = styled(Container)`
+  margin-top: 50px;
+`;
 
 export default RoomList;
