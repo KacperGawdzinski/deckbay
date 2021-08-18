@@ -51,5 +51,6 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^2.0.2"
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

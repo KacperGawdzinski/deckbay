@@ -8,6 +8,7 @@ import { SALT_ROUNDS } from "../config.js";
 const accountRouter = express.Router();
 
 accountRouter.post("/login", async (req, res) => {
+  console.log(req.body);
   if (!req.body.username)
     return res.status(401).json({ usernameError: "Username not found" });
   if (!req.body.username)

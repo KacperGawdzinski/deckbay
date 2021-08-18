@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 import './App.css';
 import GameCard from './components/GameCard/GameCard';
 import Navbar from './components/Navbar/Navbar';
+import RoomList from './components/RoomList/RoomList';
 import { GAME_LIST } from './config';
 import rootReducer from './redux/reducers/index';
 import theme from './theme';
@@ -55,9 +56,10 @@ export default function App() {
                 </Grid>
               </Container>
             </Route>
-            {/* <Route exact path="/chess">
-            <RoomList game="chess" />
-          </Route>
+            <Route exact path="/chess">
+              <RoomList game="chess" />
+            </Route>
+            {/*
           <Route exact path="/chess/:id"></Route>
           <Route exact path="/charades">
             <RoomList game="charades" />

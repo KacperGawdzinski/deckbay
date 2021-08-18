@@ -1,11 +1,10 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 import express from "express";
-import path from "path";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import faker from "faker";
+// import faker from "faker";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 // import Checkers = require("./server-javascript/checkers-server");
@@ -13,13 +12,23 @@ import mongoose from "mongoose";
 // import charades = require("./routes/charades");
 // import checkers = require("./routes/checkers");
 // import chess = require("./routes/chess");
-import accountRouter from "./routes/account.js";
-import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config.js";
+import accountRouter from "./routes/account";
+import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
 const saltRounds = 10;
 
 var app = express();
-const httpServer = createServer();
-var io = new Server(httpServer);
+const server = createServer(app);
+var io = new Server(server);
+
+io.on("connection", (client) => {
+  console.log("connected");
+  client.on("event", (data: any) => {
+    /* … */
+  });
+  client.on("disconnect", () => {
+    /* … */
+  });
+});
 
 dotenv.config({ path: "./config.env" });
 app.use(
@@ -50,6 +59,10 @@ const connectWithRetry = () => {
 
 connectWithRetry();
 
+server.listen(process.env.PORT || 5000, () => {
+  console.log("Server turned on");
+});
+
 // //CLEAN IN THE FUTURE
 // var socketLogin = new Map(); //socket.id -> login
 // var loginRoom = new Map(); //player login -> full room name
@@ -74,96 +87,96 @@ connectWithRetry();
 //   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 // });
 
-app.post("/validate-room", async function (req, res) {
-  //maybe some default parameters? + change for other games
-  let ar = availableRooms(req.body.game);
-  let fullRoomName = (req.body.game + "-" + req.body.room).toLowerCase();
-  for (let i = 0; i < ar.length; i++) {
-    if (ar[i][fullRoomName] === fullRoomName) {
-      res.send("Room already exists!");
-      return;
-    }
-  }
+// app.post("/validate-room", async function (req, res) {
+//   //maybe some default parameters? + change for other games
+//   let ar = availableRooms(req.body.game);
+//   let fullRoomName = (req.body.game + "-" + req.body.room).toLowerCase();
+//   for (let i = 0; i < ar.length; i++) {
+//     if (ar[i][fullRoomName] === fullRoomName) {
+//       res.send("Room already exists!");
+//       return;
+//     }
+//   }
 
-  if (req.body.room.length > 15) {
-    res.send("Room name is too long!");
-    return;
-  }
+//   if (req.body.room.length > 15) {
+//     res.send("Room name is too long!");
+//     return;
+//   }
 
-  if (req.body.room === "") {
-    res.send("Insert room name!");
-    return;
-  }
+//   if (req.body.room === "") {
+//     res.send("Insert room name!");
+//     return;
+//   }
 
-  /*if(!req.body.side) {
-        res.send('Choose side!'); return
-    }
+//   /*if(!req.body.side) {
+//         res.send('Choose side!'); return
+//     }
 
-    if(!req.body.length) {
-        res.send('Choose game length!'); return
-    }
+//     if(!req.body.length) {
+//         res.send('Choose game length!'); return
+//     }
 
-    if(req.body.length > 30 || req.body.length < 1) {
-        res.send('Game length should be between 1-30min!'); return
-    }
+//     if(req.body.length > 30 || req.body.length < 1) {
+//         res.send('Game length should be between 1-30min!'); return
+//     }
 
-    if(!req.body.bonus) {
-        res.send('Choose bonus time length!'); return
-    }
+//     if(!req.body.bonus) {
+//         res.send('Choose bonus time length!'); return
+//     }
 
-    if(req.body.bonus > 30 || req.body.bonus < 1) {
-        res.send('Bonus time should be between 1-30s!'); return
-    }*/
+//     if(req.body.bonus > 30 || req.body.bonus < 1) {
+//         res.send('Bonus time should be between 1-30s!'); return
+//     }*/
 
-  if (req.body.password) {
-    const hashed = await bcrypt.hash(req.body.password, saltRounds);
-    roomPasswd.set(fullRoomName, hashed);
-    roomPlayers[fullRoomName] = [req.signedCookies.login];
-  }
+//   if (req.body.password) {
+//     const hashed = await bcrypt.hash(req.body.password, saltRounds);
+//     roomPasswd.set(fullRoomName, hashed);
+//     roomPlayers[fullRoomName] = [req.signedCookies.login];
+//   }
 
-  roomOptions.set(fullRoomName, {
-    side: req.body.side,
-    white: req.body.white,
-    black: req.body.black,
-    readyWhite: req.body.readyWhite,
-    readyBlack: req.body.readyBlack,
-    drawWhite: req.body.drawWhite,
-    drawBlack: req.body.drawBlack,
-    length: Math.floor(req.body.length),
-    bonus: Math.floor(req.body.bonus),
-  });
-  res.send(true);
-});
+//   roomOptions.set(fullRoomName, {
+//     side: req.body.side,
+//     white: req.body.white,
+//     black: req.body.black,
+//     readyWhite: req.body.readyWhite,
+//     readyBlack: req.body.readyBlack,
+//     drawWhite: req.body.drawWhite,
+//     drawBlack: req.body.drawBlack,
+//     length: Math.floor(req.body.length),
+//     bonus: Math.floor(req.body.bonus),
+//   });
+//   res.send(true);
+// });
 
-//verify jwt token - if verification fails return temporary username for player
-app.post("/set-temp-login", async (req, res) => {
-  if (req.cookies["jwtAccess"]) {
-    try {
-      await jwt.verify(req.cookies["jwtAccess"], process.env.JWT_ACCESS_TOKEN);
-      return;
-    } catch (err) {
-      try {
-        await jwt.verify(
-          req.cookies["jwtRefresh"],
-          process.env.JWT_REFRESH_TOKEN
-        );
-        await jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN, {
-          expiresIn: "15s",
-        });
-        return;
-      } catch (err) {
-        res.cookie("tempName", faker.internet.userName(), {
-          signed: true,
-        });
-      }
-    }
-  } else {
-    res.cookie("tempName", faker.internet.userName(), {
-      signed: true,
-    });
-  }
-  res.sendStatus(200);
-});
+// //verify jwt token - if verification fails return temporary username for player
+// app.post("/set-temp-login", async (req, res) => {
+//   if (req.cookies["jwtAccess"]) {
+//     try {
+//       await jwt.verify(req.cookies["jwtAccess"], process.env.JWT_ACCESS_TOKEN);
+//       return;
+//     } catch (err) {
+//       try {
+//         await jwt.verify(
+//           req.cookies["jwtRefresh"],
+//           process.env.JWT_REFRESH_TOKEN
+//         );
+//         await jwt.sign(userObject, process.env.JWT_ACCESS_TOKEN, {
+//           expiresIn: "15s",
+//         });
+//         return;
+//       } catch (err) {
+//         res.cookie("tempName", faker.internet.userName(), {
+//           signed: true,
+//         });
+//       }
+//     }
+//   } else {
+//     res.cookie("tempName", faker.internet.userName(), {
+//       signed: true,
+//     });
+//   }
+//   res.sendStatus(200);
+// });
 
 /*
 app.post('/set-socket-id', (req, res) => {
@@ -190,9 +203,6 @@ app.post('/validate-room-password', (req, res) => {
     });
 });
 */
-app.listen(process.env.PORT || 5000, () => {
-  console.log("Server turned on");
-});
 
 // app.use("/charades", charades);
 /*

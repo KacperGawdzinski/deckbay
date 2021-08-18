@@ -5,3 +5,9 @@ export const LOADING_STEPS = {
   POSITIVE_RESPONSE: 3,
   NEGATIVE_RESPONSE: 4,
 };
+
+export const GAME_MAX_PLAYERS = {
+  chess: 2,
+  checkers: 2,
+  charades: 10,
+};
