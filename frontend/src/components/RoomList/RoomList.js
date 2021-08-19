@@ -4,12 +4,16 @@ import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
 import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
-import { TextField } from '../../../node_modules/@material-ui/core/index';
+import {
+  Button,
+  TextField,
+} from '../../../node_modules/@material-ui/core/index';
 import { RadioGroup } from '../../../node_modules/@material-ui/core/index';
 import { Radio } from '../../../node_modules/@material-ui/core/index';
 import { FormControl } from '../../../node_modules/@material-ui/core/index';
@@ -17,7 +21,6 @@ import { FormLabel } from '../../../node_modules/@material-ui/core/index';
 import { IconButton } from '../../../node_modules/@material-ui/core/index';
 import { Typography } from '../../../node_modules/@material-ui/core/index';
 import { FormControlLabel } from '../../../node_modules/@material-ui/core/index';
-import theme from '../../theme';
 import RoomListItem from '../RoomListItem/RoomListItem';
 
 // import NewRoom from './NewRoom/NewRoom';
@@ -26,6 +29,7 @@ import RoomListItem from '../RoomListItem/RoomListItem';
 
 const RoomList = ({ game }) => {
   const classes = useStyles();
+  const theme = useTheme();
   const [rooms, setRooms] = useState([]);
   const [newRoom, setNewRoom] = useState(false);
   const [checked, setChecked] = React.useState(false);
@@ -112,11 +116,11 @@ const RoomList = ({ game }) => {
         <Collapse
           in={checked}
           collapsedSize={70}
-          style={{ width: '100%', heigth: '400px' }}>
+          style={{ width: '100%', heigth: '340px' }}>
           <Grid
             item
             style={{
-              height: '400px',
+              height: '340px',
               backgroundColor: theme.palette.primary.light,
               display: 'flex',
               flexDirection: 'column',
@@ -205,7 +209,7 @@ const RoomList = ({ game }) => {
                   max={30}
                 />
 
-                <div style={{ paddingTop: '40px' }}>
+                <div style={{ marginTop: '40px' }}>
                   <CssTextField
                     variant="outlined"
                     required
@@ -249,7 +253,7 @@ const RoomList = ({ game }) => {
                   max={30}
                 />
 
-                <div style={{ paddingTop: '40px' }}>
+                <div style={{ marginTop: '40px' }}>
                   <CssTextField
                     variant="outlined"
                     label="Password"
@@ -269,6 +273,19 @@ const RoomList = ({ game }) => {
                     style={{
                       width: '300px',
                     }}></CssTextField>
+                </div>
+
+                <div>
+                  <Button
+                    style={{
+                      color: theme.palette.primary.contrastText,
+                      backgroundColor: '#6f8eff',
+                      marginTop: '20px',
+                      width: '100px',
+                      marginLeft: '200px',
+                    }}>
+                    Submit
+                  </Button>
                 </div>
               </div>
             </div>
