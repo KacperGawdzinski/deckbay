@@ -8,6 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
+import { TextField } from '../../../node_modules/@material-ui/core/index';
 import { RadioGroup } from '../../../node_modules/@material-ui/core/index';
 import { Radio } from '../../../node_modules/@material-ui/core/index';
 import { FormControl } from '../../../node_modules/@material-ui/core/index';
@@ -80,6 +81,15 @@ const RoomList = ({ game }) => {
     },
   })(Slider);
 
+  const CustomRadio = withStyles({
+    root: {
+      color: 'blue',
+    },
+    checked: {
+      color: '#6f8eff !important',
+    },
+  })(Radio);
+
   // useEffect(() => {
   //   socket.emit('join-room-list', game);
   //   socket.emit('load_rooms', game);
@@ -140,7 +150,7 @@ const RoomList = ({ game }) => {
               </IconButton>
             </div>
             <div style={{ display: 'flex' }}>
-              <div style={{ paddingTop: '20px' }}>
+              <div style={{ paddingTop: '22px' }}>
                 <FormControl component="fieldset">
                   <FormLabel component="legend" style={{ color: 'white' }}>
                     Play as
@@ -152,13 +162,13 @@ const RoomList = ({ game }) => {
                     <FormControlLabel
                       value="white"
                       color="default"
-                      control={<Radio style={{ color: 'white' }} />}
+                      control={<CustomRadio />}
                       label="White"
                     />
                     <FormControlLabel
                       style={{ color: 'white' }}
                       value="black"
-                      control={<Radio style={{ color: 'white' }} />}
+                      control={<CustomRadio />}
                       label="Black"
                     />
                   </RadioGroup>
@@ -183,7 +193,31 @@ const RoomList = ({ game }) => {
                   min={1}
                   max={30}
                 />
+
+                <div style={{ paddingTop: '40px' }}>
+                  <CssTextField
+                    variant="outlined"
+                    required
+                    label="Room name"
+                    InputLabelProps={{
+                      classes: {
+                        root: classes.chuj,
+                        focused: classes.chuj,
+                      },
+                    }}
+                    InputProps={{
+                      classes: {
+                        root: classes.chuj,
+                        focused: classes.chuj,
+                        notchedOutline: classes.chuj,
+                      },
+                    }}
+                    style={{
+                      width: '300px',
+                    }}></CssTextField>
+                </div>
               </div>
+
               <div
                 style={{
                   width: '300px',
@@ -203,6 +237,28 @@ const RoomList = ({ game }) => {
                   min={0}
                   max={30}
                 />
+
+                <div style={{ paddingTop: '40px' }}>
+                  <CssTextField
+                    variant="outlined"
+                    label="Password"
+                    InputLabelProps={{
+                      classes: {
+                        root: classes.chuj,
+                        focused: classes.chuj,
+                      },
+                    }}
+                    InputProps={{
+                      classes: {
+                        root: classes.chuj,
+                        focused: classes.chuj,
+                        notchedOutline: classes.chuj,
+                      },
+                    }}
+                    style={{
+                      width: '300px',
+                    }}></CssTextField>
+                </div>
               </div>
             </div>
           </Grid>
@@ -229,11 +285,36 @@ const RoomList = ({ game }) => {
   );
 };
 
+const CssTextField = withStyles({
+  root: {
+    '& label.Mui-focused': {
+      color: 'white',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'yellow',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'white',
+      },
+      '&:hover fieldset': {
+        borderColor: 'white',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'yellow',
+      },
+    },
+  },
+})(TextField);
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: 180,
   },
   slider: {
+    color: 'white',
+  },
+  chuj: {
     color: 'white',
   },
   container: {
