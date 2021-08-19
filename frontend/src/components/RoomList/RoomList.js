@@ -5,6 +5,7 @@ import Slider from '@material-ui/core/Slider';
 import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
@@ -110,7 +111,7 @@ const RoomList = ({ game }) => {
         justifyContent="center">
         <Collapse
           in={checked}
-          collapsedSize={400}
+          collapsedSize={70}
           style={{ width: '100%', heigth: '400px' }}>
           <Grid
             item
@@ -140,13 +141,23 @@ const RoomList = ({ game }) => {
                   height: '60px',
                 }}
                 onClick={handleChange}>
-                <AddIcon
-                  style={{
-                    width: '45px',
-                    height: '45px',
-                    paddingRight: '5px',
-                  }}
-                />
+                {checked ? (
+                  <RemoveIcon
+                    style={{
+                      width: '45px',
+                      height: '45px',
+                      paddingRight: '5px',
+                    }}
+                  />
+                ) : (
+                  <AddIcon
+                    style={{
+                      width: '45px',
+                      height: '45px',
+                      paddingRight: '5px',
+                    }}
+                  />
+                )}
               </IconButton>
             </div>
             <div style={{ display: 'flex' }}>
