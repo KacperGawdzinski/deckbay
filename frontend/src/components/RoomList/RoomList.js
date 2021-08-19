@@ -6,8 +6,13 @@ import AddIcon from '@material-ui/icons/Add';
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
+import { RadioGroup } from '../../../node_modules/@material-ui/core/index';
+import { Radio } from '../../../node_modules/@material-ui/core/index';
+import { FormControl } from '../../../node_modules/@material-ui/core/index';
+import { FormLabel } from '../../../node_modules/@material-ui/core/index';
 import { IconButton } from '../../../node_modules/@material-ui/core/index';
 import { Typography } from '../../../node_modules/@material-ui/core/index';
+import { FormControlLabel } from '../../../node_modules/@material-ui/core/index';
 import theme from '../../theme';
 import RoomListItem from '../RoomListItem/RoomListItem';
 
@@ -23,6 +28,12 @@ const RoomList = ({ game }) => {
 
   const handleChange = () => {
     setChecked((prev) => !prev);
+  };
+
+  const [value, setValue] = React.useState('white');
+
+  const handleRadioChange = (event) => {
+    setValue(event.target.value);
   };
   const content = useRef(null);
 
@@ -52,7 +63,7 @@ const RoomList = ({ game }) => {
             item
             style={{
               height: '200px',
-              backgroundColor: theme.palette.primary.dark,
+              backgroundColor: theme.palette.primary.light,
               display: 'flex',
               flexDirection: 'column',
               paddingLeft: '25px',
@@ -86,7 +97,31 @@ const RoomList = ({ game }) => {
               </IconButton>
             </div>
             <div>
-              <Typography style={{ color: 'white' }}>test</Typography>
+              <div style={{ display: 'flex' }}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend" style={{ color: 'white' }}>
+                    {' '}
+                    Play as
+                  </FormLabel>
+                  <RadioGroup
+                    value={value}
+                    onChange={handleRadioChange}
+                    style={{ color: 'white' }}>
+                    <FormControlLabel
+                      value="white"
+                      color="default"
+                      control={<Radio style={{ color: 'white' }} />}
+                      label="White"
+                    />
+                    <FormControlLabel
+                      style={{ color: 'white' }}
+                      value="black"
+                      control={<Radio style={{ color: 'white' }} />}
+                      label="Black"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
             </div>
           </Grid>
         </Collapse>
