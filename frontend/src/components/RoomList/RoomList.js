@@ -1,6 +1,8 @@
 import Collapse from '@material-ui/core/Collapse';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import Slider from '@material-ui/core/Slider';
+import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import React, { useState, useRef } from 'react';
@@ -21,7 +23,7 @@ import RoomListItem from '../RoomListItem/RoomListItem';
 // import './RoomList.css';
 
 const RoomList = ({ game }) => {
-  const classes = useState();
+  const classes = useStyles();
   const [rooms, setRooms] = useState([]);
   const [newRoom, setNewRoom] = useState(false);
   const [checked, setChecked] = React.useState(false);
@@ -32,10 +34,51 @@ const RoomList = ({ game }) => {
 
   const [value, setValue] = React.useState('white');
 
+  const lengthMarks = [
+    {
+      value: 1,
+      label: '1m',
+    },
+    {
+      value: 30,
+      label: '30m',
+    },
+  ];
+
+  const bonusMarks = [
+    {
+      value: 0,
+      label: '0s',
+    },
+    {
+      value: 30,
+      label: '30s',
+    },
+  ];
+
   const handleRadioChange = (event) => {
     setValue(event.target.value);
   };
   const content = useRef(null);
+
+  const CustomSlider = withStyles({
+    root: {
+      color: '#6f8eff',
+    },
+    track: {
+      height: 4,
+      borderRadius: 2,
+    },
+    thumb: {
+      height: 15,
+      width: 15,
+      border: '1px solid currentColor',
+      // marginTop: 0,
+    },
+    markLabel: {
+      color: 'white',
+    },
+  })(Slider);
 
   // useEffect(() => {
   //   socket.emit('join-room-list', game);
@@ -57,12 +100,12 @@ const RoomList = ({ game }) => {
         justifyContent="center">
         <Collapse
           in={checked}
-          collapsedSize={200}
-          style={{ width: '100%', heigth: '200px' }}>
+          collapsedSize={400}
+          style={{ width: '100%', heigth: '400px' }}>
           <Grid
             item
             style={{
-              height: '200px',
+              height: '400px',
               backgroundColor: theme.palette.primary.light,
               display: 'flex',
               flexDirection: 'column',
@@ -96,11 +139,10 @@ const RoomList = ({ game }) => {
                 />
               </IconButton>
             </div>
-            <div>
-              <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex' }}>
+              <div style={{ paddingTop: '20px' }}>
                 <FormControl component="fieldset">
                   <FormLabel component="legend" style={{ color: 'white' }}>
-                    {' '}
                     Play as
                   </FormLabel>
                   <RadioGroup
@@ -121,6 +163,46 @@ const RoomList = ({ game }) => {
                     />
                   </RadioGroup>
                 </FormControl>
+              </div>
+              <div
+                style={{
+                  width: '300px',
+                  display: 'block',
+                  padding: '20px 0 0 50px',
+                }}>
+                <div
+                  style={{ color: 'white', fontFamily: 'Roboto, sans-serif' }}>
+                  {' '}
+                  Game length{' '}
+                </div>
+                <CustomSlider
+                  defaultValue={10}
+                  step={1}
+                  valueLabelDisplay="auto"
+                  marks={lengthMarks}
+                  min={1}
+                  max={30}
+                />
+              </div>
+              <div
+                style={{
+                  width: '300px',
+                  display: 'block',
+                  padding: '20px 0 0 80px',
+                }}>
+                <div
+                  style={{ color: 'white', fontFamily: 'Roboto, sans-serif' }}>
+                  {' '}
+                  Time bonus{' '}
+                </div>
+                <CustomSlider
+                  defaultValue={10}
+                  step={1}
+                  valueLabelDisplay="auto"
+                  marks={bonusMarks}
+                  min={0}
+                  max={30}
+                />
               </div>
             </div>
           </Grid>
@@ -150,6 +232,9 @@ const RoomList = ({ game }) => {
 const useStyles = makeStyles((theme) => ({
   root: {
     height: 180,
+  },
+  slider: {
+    color: 'white',
   },
   container: {
     display: 'flex',
