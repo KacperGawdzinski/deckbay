@@ -9,7 +9,6 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-
 import {
   Button,
   TextField,
@@ -22,11 +21,8 @@ import { IconButton } from '../../../node_modules/@material-ui/core/index';
 import { Typography } from '../../../node_modules/@material-ui/core/index';
 import { FormControlLabel } from '../../../node_modules/@material-ui/core/index';
 import { LENGTH_MARKS, BONUS_MARKS } from '../../configFiles/chessConfig';
-import RoomListItem from '../RoomListItem/RoomListItem';
 
-// import NewRoom from './NewRoom/NewRoom';
-
-// import './RoomList.css';
+// import RoomListItem from '../RoomListItem/RoomListItem';
 
 interface Props {
   game: string;

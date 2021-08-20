@@ -6,6 +6,6 @@ module.exports = {
   jsxBracketSameLine: true,
   semi: true,
   importOrder: ['^@core/(.*)$', '^@server/(.*)$', '^@ui/(.*)$', '^[./]'],
-  importOrderSeparation: true,
+  importOrderSeparation: false,
   experimentalBabelParserPluginsList: ['jsx', 'typescript'],
 };
