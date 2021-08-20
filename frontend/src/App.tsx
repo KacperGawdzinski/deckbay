@@ -11,7 +11,7 @@ import GameCard from './components/GameCard/GameCard';
 import Navbar from './components/Navbar/Navbar';
 import RoomList from './components/RoomList/RoomList';
 import { GAME_LIST } from './configFiles/rootConfig';
-import rootReducer from './redux/reducers/index';
+import { rootReducer } from './redux/reducers/index';
 import theme from './theme';
 
 export default function App() {
@@ -43,7 +43,7 @@ export default function App() {
                   {GAME_LIST.map((game) => (
                     <Grid item key={game} xs={10} md={4} sm={5}>
                       <GameCard
-                        className={classes.card}
+                        // className={classes.card}
                         game={game.toUpperCase()}
                       />
                     </Grid>
@@ -87,12 +87,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  card: {
-    height: '100%',
-    width: '25px',
-    display: 'flex',
-    flexDirection: 'column',
-  },
+  // card: {
+  //   height: '100%',
+  //   width: '25px',
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  // },
 
   cardMedia: {
     paddingTop: '56.25%', // 16:9

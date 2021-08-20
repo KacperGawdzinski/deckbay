@@ -1,8 +1,15 @@
 import { Typography } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert, { Color } from '@material-ui/lab/Alert';
 
-const Alert = (props) => {
+interface Props {
+  close: () => void;
+  open: boolean;
+  severity: Color;
+  message: string;
+}
+
+const Alert: React.FC<Props> = (props) => {
   return (
     <Snackbar
       open={props.open}

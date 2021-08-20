@@ -16,7 +16,13 @@ import React, { useState } from 'react';
 
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
 
-export default function RegisterModal(props) {
+interface Props {
+  setWarning: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+}
+
+const RegisterModal: React.FC<Props> = (props) => {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');
@@ -27,7 +33,7 @@ export default function RegisterModal(props) {
   const [emailError, toggleEmailError] = useState(false);
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(email);
   };
@@ -48,7 +54,7 @@ export default function RegisterModal(props) {
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       props.setWarning(true);
       handleClose();
-    } catch (err) {
+    } catch (err: any) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
       else if (err.response.data.passwordError) togglePasswordError(true);
@@ -56,18 +62,24 @@ export default function RegisterModal(props) {
     }
   };
 
-  const switchUsernameErrorTextField = (e) => {
+  const switchUsernameErrorTextField = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     setUsername(e.target.value);
     toggleUsernameError(false);
   };
 
-  const switchPasswordErrorTextField = (e) => {
+  const switchPasswordErrorTextField = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     togglePasswordError(false);
   };
 
-  const switchEmailErrorTextField = (e) => {
+  const switchEmailErrorTextField = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     toggleEmailError(false);
   };
@@ -183,7 +195,9 @@ export default function RegisterModal(props) {
       </DialogActions>
     </Dialog>
   );
-}
+};
+
+export default RegisterModal;
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {

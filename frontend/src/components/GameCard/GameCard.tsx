@@ -2,13 +2,16 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 import theme from '../../theme';
 import { getImage } from '../../utils/getImage';
 
-export default function GameCard(props) {
+interface Props {
+  game: string;
+}
+
+const GameCard: React.FC<Props> = (props) => {
   const classes = useStyles();
 
   return (
@@ -22,7 +25,7 @@ export default function GameCard(props) {
       </Link>
     </Card>
   );
-}
+};
 
 const useStyles = makeStyles({
   root: {
@@ -73,3 +76,5 @@ const useStyles = makeStyles({
     textDecoration: 'none !important',
   },
 });
+
+export default GameCard;

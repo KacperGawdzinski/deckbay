@@ -1,6 +1,8 @@
+import IUsernameAction from '../actionTypes/IUsernameAction';
+
 const initialState = '';
 
-const usernameReducer = (state = initialState, action) => {
+const usernameReducer = (state = initialState, action: IUsernameAction) => {
   switch (action.type) {
     case 'LOG_IN':
       return action.payload;

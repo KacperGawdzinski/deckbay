@@ -28,7 +28,11 @@ import RoomListItem from '../RoomListItem/RoomListItem';
 
 // import './RoomList.css';
 
-const RoomList = ({ game }) => {
+interface Props {
+  game: string;
+}
+
+const RoomList: React.FC<Props> = (props) => {
   const classes = useStyles();
   const theme = useTheme();
   const [rooms, setRooms] = useState([]);
@@ -41,7 +45,7 @@ const RoomList = ({ game }) => {
 
   const [value, setValue] = React.useState('white');
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
   const content = useRef(null);
@@ -89,13 +93,13 @@ const RoomList = ({ game }) => {
     <GameRoomContainer maxWidth="md">
       <Grid
         container
-        diretion="column"
+        direction="column"
         alignItems="center"
         justifyContent="center">
         <Collapse
           in={checked}
           collapsedSize={70}
-          style={{ width: '100%', heigth: '340px' }}>
+          style={{ width: '100%', height: '340px' }}>
           <Grid
             item
             style={{
@@ -115,7 +119,7 @@ const RoomList = ({ game }) => {
                   paddingTop: '15px',
                   width: '300px',
                 }}>
-                {game.toUpperCase()} ROOM LIST
+                {props.game.toUpperCase()} ROOM LIST
               </Typography>
               <IconButton
                 style={{
@@ -183,7 +187,7 @@ const RoomList = ({ game }) => {
                   defaultValue={10}
                   step={1}
                   valueLabelDisplay="auto"
-                  marks={lengthMarks}
+                  marks={LENGTH_MARKS}
                   min={1}
                   max={30}
                 />
@@ -227,7 +231,7 @@ const RoomList = ({ game }) => {
                   defaultValue={10}
                   step={1}
                   valueLabelDisplay="auto"
-                  marks={bonusMarks}
+                  marks={BONUS_MARKS}
                   min={0}
                   max={30}
                 />

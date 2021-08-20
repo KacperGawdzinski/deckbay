@@ -17,7 +17,13 @@ import { useDispatch } from 'react-redux';
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
 import { login } from '../../redux/actions/usernameActions';
 
-export default function LoginModal(props) {
+interface Props {
+  toggleLoginConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+}
+
+const LoginModal: React.FC<Props> = (props) => {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');
@@ -27,7 +33,7 @@ export default function LoginModal(props) {
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
   const dispatch = useDispatch();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
@@ -37,22 +43,26 @@ export default function LoginModal(props) {
       });
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       handleClose();
-      props.toggleLoginCorfirmation(true);
+      props.toggleLoginConfirmation(true);
       dispatch(login(username));
-    } catch (err) {
+    } catch (err: any) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
-      if (err.response.data.usernameError) toggleUsernameError(true);
-      else if (err.response.data.passwordError) togglePasswordError(true);
+      if (err.response?.data?.usernameError) toggleUsernameError(true);
+      else if (err.response?.data?.passwordError) togglePasswordError(true);
     }
   };
 
-  const switchUsernameErrorTextField = (e) => {
+  const switchUsernameErrorTextField = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     setUsername(e.target.value);
     toggleUsernameError(false);
   };
 
-  const switchPasswordErrorTextField = (e) => {
+  const switchPasswordErrorTextField = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     togglePasswordError(false);
   };
@@ -141,7 +151,9 @@ export default function LoginModal(props) {
       </form>
     </Dialog>
   );
-}
+};
+
+export default LoginModal;
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {

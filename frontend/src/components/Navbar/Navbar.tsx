@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import { logout } from '../../redux/actions/usernameActions';
+import { RootState } from '../../redux/reducers';
 import LoginModal from '../Modals/LoginModal';
 import RegisterModal from '../Modals/RegisterModal';
 
@@ -26,7 +27,7 @@ export default function Navbar() {
   const [loginConfirmation, toggleLoginConfirmation] = useState(false);
   const [registerConfirmation, toggleRegisterConfirmation] = useState(false);
   const [logoutConfirmation, toggleLogoutConfirmation] = useState(false);
-  const username = useSelector((state) => state.username);
+  const username = useSelector((state: RootState) => state.username);
 
   const handleClickOpenLogin = () => {
     toggleLoginModal(true);
@@ -93,7 +94,7 @@ export default function Navbar() {
         <LoginModal
           open={openLoginModal}
           setOpen={toggleLoginModal}
-          toggleLoginCorfirmation={toggleLoginConfirmation}
+          toggleLoginConfirmation={toggleLoginConfirmation}
         />
         <RegisterModal
           open={openRegisterModal}

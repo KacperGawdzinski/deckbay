@@ -58,7 +58,8 @@
     "@trivago/prettier-plugin-sort-imports": "^2.0.2",
     "@tsconfig/node14": "^1.0.1",
     "@types/react-helmet": "^6.1.2",
-    "@types/react-router-dom": "^5.1.8"
+    "@types/react-router-dom": "^5.1.8",
+    "@types/styled-components": "^5.1.12"
   },
   "proxy": "http://localhost:5000"
 }
