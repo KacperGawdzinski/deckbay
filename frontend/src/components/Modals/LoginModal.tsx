@@ -1,5 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core';
+import { CircularProgress, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,46 +12,37 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { LOADING_STEPS } from '../../config';
+import { LOADING_STEPS } from '../../configFiles/rootConfig';
+import { login } from '../../redux/actions/usernameActions';
 
-export default function RegisterModal(props) {
+export default function LoginModal(props) {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
   const [usernameError, toggleUsernameError] = useState(false);
   const [passwordError, togglePasswordError] = useState(false);
-  const [emailError, toggleEmailError] = useState(false);
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
+  const dispatch = useDispatch();
 
-  const validateEmail = (email) => {
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return emailRegex.test(email);
-  };
-
-  const handleRegister = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
-    if (!validateEmail(email)) {
-      setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
-      toggleEmailError(true);
-      return;
-    }
     try {
-      await axios.post('http://localhost:5000/register', {
+      await axios.post('http://localhost:5000/login', {
         username: username,
         password: password,
-        email: email,
       });
       setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
-      props.setWarning(true);
       handleClose();
+      props.toggleLoginCorfirmation(true);
+      dispatch(login(username));
     } catch (err) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
       if (err.response.data.usernameError) toggleUsernameError(true);
       else if (err.response.data.passwordError) togglePasswordError(true);
-      else if (err.response.data.emailError) toggleEmailError(true);
     }
   };
 
@@ -67,37 +57,24 @@ export default function RegisterModal(props) {
     togglePasswordError(false);
   };
 
-  const switchEmailErrorTextField = (e) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
-    toggleEmailError(false);
-  };
-
   const handleClose = () => {
     props.setOpen(false);
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     setUsername('');
     setPassword('');
-    setEmail('');
     toggleUsernameError(false);
     togglePasswordError(false);
-    toggleEmailError(false);
   };
 
-  // TODO: custom error message for email on register
   return (
     <Dialog
       open={props.open}
       onClose={handleClose}
       aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
-        Register
+        Login
         {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
           <CircularProgress className={classes.iconWrapper} />
-        )}
-        {loadingStep === LOADING_STEPS.POSITIVE_RESPONSE && (
-          <CheckCircleOutlineIcon
-            className={clsx(classes.largeIcon, classes.successIcon)}
-          />
         )}
         {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
           <HighlightOffIcon
@@ -105,36 +82,14 @@ export default function RegisterModal(props) {
           />
         )}
       </DialogTitle>
-
-      <DialogContent className={classes.dialogContent}>
-        {emailError ? (
-          <TextField
-            error
-            fullWidth
-            margin="dense"
-            label="Incorrect email"
-            type="text"
-            onChange={switchEmailErrorTextField}
-          />
-        ) : (
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            autoComplete="false"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        )}
-
-        <div className={classes.inputWrapper}>
+      <form onSubmit={handleLogin}>
+        <DialogContent className={classes.dialogContent}>
           {usernameError ? (
             <TextField
               error
               fullWidth
               margin="dense"
-              label="Username already taken"
+              label="Username not found"
               autoComplete="false"
               type="text"
               defaultValue={username}
@@ -142,6 +97,7 @@ export default function RegisterModal(props) {
             />
           ) : (
             <TextField
+              autoFocus
               margin="dense"
               label="Username"
               type="text"
@@ -151,36 +107,38 @@ export default function RegisterModal(props) {
               onChange={(e) => setUsername(e.target.value)}
             />
           )}
-        </div>
-        <div className={classes.inputWrapper}>
-          {passwordError ? (
-            <TextField
-              error
-              fullWidth
-              margin="dense"
-              label="Incorrect password"
-              type="password"
-              onChange={switchPasswordErrorTextField}
-            />
-          ) : (
-            <TextField
-              margin="dense"
-              label="Password"
-              type="password"
-              fullWidth
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          )}
-        </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleRegister} color="primary">
-          Submit
-        </Button>
-      </DialogActions>
+
+          <div className={classes.passwordWrapper}>
+            {passwordError ? (
+              <TextField
+                error
+                fullWidth
+                margin="dense"
+                label="Incorrect password"
+                type="password"
+                onChange={switchPasswordErrorTextField}
+              />
+            ) : (
+              <TextField
+                margin="dense"
+                label="Password"
+                type="password"
+                fullWidth
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            )}
+          </div>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 }
@@ -190,7 +148,7 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: 'center',
     paddingBottom: 0,
   },
-  inputWrapper: {
+  passwordWrapper: {
     paddingTop: 5,
   },
   dialogContent: {

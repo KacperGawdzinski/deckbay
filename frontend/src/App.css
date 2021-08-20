@@ -1,37 +1,6 @@
-/* @font-face {
-  font-family: SuperNintendo;
-  src: url("./SN.ttf");
-} */
-
-* {
+html {
+  background-color: #36393e;
   margin: 0;
   padding: 0;
   outline: 0 !important;
 }
-
-html {
-  background-color: #36393e;
-  /* position: relative;
-    min-height: 100%; */
-}
-
-/* body {
-    background-color: #36393e;
-    overflow: auto !important;
-    padding-right: 0 !important;
-    line-height: 1 !important;
-}
-
-p {
-    margin-bottom: 0;
-}
-
-label {
-    margin-bottom: 0;
-}
-
-*,
-::after,
-::before {
-    box-sizing: content-box;
-} */

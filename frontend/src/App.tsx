@@ -10,17 +10,12 @@ import './App.css';
 import GameCard from './components/GameCard/GameCard';
 import Navbar from './components/Navbar/Navbar';
 import RoomList from './components/RoomList/RoomList';
-import { GAME_LIST } from './config';
+import { GAME_LIST } from './configFiles/rootConfig';
 import rootReducer from './redux/reducers/index';
 import theme from './theme';
 
 export default function App() {
-  const store = createStore(
-    rootReducer,
-    {},
-    window.__REDUX_DEVTOOLS_EXTENSION__ &&
-      window.__REDUX_DEVTOOLS_EXTENSION__(),
-  );
+  const store = createStore(rootReducer, {});
   const classes = useStyles();
 
   return (

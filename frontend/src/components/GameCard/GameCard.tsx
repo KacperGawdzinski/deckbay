@@ -5,8 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import getImage from '../../getImage';
 import theme from '../../theme';
+import { getImage } from '../../utils/getImage';
 
 export default function GameCard(props) {
   const classes = useStyles();

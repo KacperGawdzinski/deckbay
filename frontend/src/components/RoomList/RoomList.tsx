@@ -21,6 +21,7 @@ import { FormLabel } from '../../../node_modules/@material-ui/core/index';
 import { IconButton } from '../../../node_modules/@material-ui/core/index';
 import { Typography } from '../../../node_modules/@material-ui/core/index';
 import { FormControlLabel } from '../../../node_modules/@material-ui/core/index';
+import { LENGTH_MARKS, BONUS_MARKS } from '../../configFiles/chessConfig';
 import RoomListItem from '../RoomListItem/RoomListItem';
 
 // import NewRoom from './NewRoom/NewRoom';
@@ -39,28 +40,6 @@ const RoomList = ({ game }) => {
   };
 
   const [value, setValue] = React.useState('white');
-
-  const lengthMarks = [
-    {
-      value: 1,
-      label: '1m',
-    },
-    {
-      value: 30,
-      label: '30m',
-    },
-  ];
-
-  const bonusMarks = [
-    {
-      value: 0,
-      label: '0s',
-    },
-    {
-      value: 30,
-      label: '30s',
-    },
-  ];
 
   const handleRadioChange = (event) => {
     setValue(event.target.value);
