@@ -13,12 +13,11 @@ import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
 import { login } from '../../redux/actions/usernameActions';
 
 interface Props {
-  toggleLoginConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoginConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
 }

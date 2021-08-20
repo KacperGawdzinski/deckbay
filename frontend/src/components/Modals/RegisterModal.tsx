@@ -13,11 +13,10 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
 
 interface Props {
-  setWarning: React.Dispatch<React.SetStateAction<boolean>>;
+  setEmailWarning: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
 }

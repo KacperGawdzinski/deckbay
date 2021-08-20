@@ -12,78 +12,24 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import styled from 'styled-components';
 import logo from '../../assets/images/logo.png';
 import { logout } from '../../redux/actions/usernameActions';
-import { RootState } from '../../redux/reducers';
 import LoginModal from '../Modals/LoginModal';
 import RegisterModal from '../Modals/RegisterModal';
+import AccountButtons from './AccountButtons/AccountButtons';
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const [openLoginModal, toggleLoginModal] = useState(false);
-  const [openRegisterModal, toggleRegisterModal] = useState(false);
-  const [loginConfirmation, toggleLoginConfirmation] = useState(false);
-  const [registerConfirmation, toggleRegisterConfirmation] = useState(false);
-  const [logoutConfirmation, toggleLogoutConfirmation] = useState(false);
-  const username = useSelector((state: RootState) => state.username);
-
-  const handleClickOpenLogin = () => {
-    toggleLoginModal(true);
-  };
-
-  const handleClickOpenRegister = () => {
-    toggleRegisterModal(true);
-  };
-
-  const handleClickLogout = () => {
-    toggleLogoutConfirmation(true);
-    dispatch(logout());
-  };
 
   return (
-    <AppBar position="static" className={classes.background}>
-      <Toolbar style={{ paddingLeft: '10px' }}>
-        <Link to="/">
-          <img src={logo} alt="Deckbay logo" className={classes.logo} />
+    <AppBar position="static" className={classes.appbar}>
+      <Toolbar className={classes.toolbar}>
+        <Link to="/" className={classes.logoLink}>
+          <DeckbayLogo src={logo} alt="Deckbay logo" />
         </Link>
-        <div style={{ flexGrow: 1 }} />
-        {username ? (
-          <div className={classes.buttonContainer}>
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              endIcon={<AccountCircleIcon />}>
-              <Typography>{username}</Typography>
-            </Button>
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={handleClickLogout}>
-              <Typography>Log out</Typography>
-            </Button>
-          </div>
-        ) : (
-          <div className={classes.buttonContainer}>
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={handleClickOpenLogin}>
-              <Typography>Login</Typography>
-            </Button>
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={handleClickOpenRegister}>
-              <Typography>Register</Typography>
-            </Button>
-          </div>
-        )}
+        <SpacingDiv />
+        <AccountButtons />
         <IconButton
           edge="start"
           color="inherit"
@@ -91,17 +37,8 @@ export default function Navbar() {
           className={classes.hamburgerMenu}>
           <MenuIcon />
         </IconButton>
-        <LoginModal
-          open={openLoginModal}
-          setOpen={toggleLoginModal}
-          toggleLoginConfirmation={toggleLoginConfirmation}
-        />
-        <RegisterModal
-          open={openRegisterModal}
-          setOpen={toggleRegisterModal}
-          setWarning={toggleRegisterConfirmation}
-        />
-        <Snackbar
+
+        {/* <Snackbar
           open={loginConfirmation}
           autoHideDuration={5000}
           style={{ marginTop: '50px' }}
@@ -132,15 +69,27 @@ export default function Navbar() {
               Check your email in order to complete registration
             </Typography>
           </MuiAlert>
-        </Snackbar>
+        </Snackbar>  */}
       </Toolbar>
     </AppBar>
   );
-}
+};
+export default Navbar;
 
 const useStyles = makeStyles((theme) => ({
-  background: {
+  appbar: {
     backgroundColor: theme.palette.primary.dark,
+  },
+
+  toolbar: {
+    paddingLeft: '10px',
+  },
+
+  logoLink: {
+    width: '215px',
+    [theme.breakpoints.down('xs')]: {
+      width: '150px',
+    },
   },
 
   buttonContainer: {
@@ -157,15 +106,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  logo: {
-    width: '215px',
-    height: 'auto',
-    paddingTop: 3,
-    [theme.breakpoints.down('xs')]: {
-      width: '150px',
-    },
-  },
-
   hamburgerMenu: {
     display: 'none',
     [theme.breakpoints.down('xs')]: {
@@ -178,3 +118,13 @@ const useStyles = makeStyles((theme) => ({
     color: 'inherit',
   },
 }));
+
+const DeckbayLogo = styled.img`
+  width: 100%;
+  height: auto;
+  padding-top: 3;
+`;
+
+const SpacingDiv = styled.div`
+  flex: 1;
+`;
