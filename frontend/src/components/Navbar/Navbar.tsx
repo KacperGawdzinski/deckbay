@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import logo from '../../assets/images/logo.png';
 import AccountButtons from './AccountButtons/AccountButtons';
 
@@ -15,10 +14,10 @@ const Navbar: React.FC = () => {
   return (
     <AppBar position="static" className={classes.appbar}>
       <Toolbar className={classes.toolbar}>
-        <Link to="/" className={classes.logoLink}>
-          <DeckbayLogo src={logo} alt="Deckbay logo" />
+        <Link to="/">
+          <img src={logo} alt="Deckbay logo" className={classes.logo} />
         </Link>
-        <SpacingDiv />
+        <div className={classes.spacingDiv} />
         <AccountButtons />
         <IconButton
           edge="start"
@@ -27,7 +26,6 @@ const Navbar: React.FC = () => {
           className={classes.hamburgerMenu}>
           <MenuIcon />
         </IconButton>
-        <AccountButtons />
       </Toolbar>
     </AppBar>
   );
@@ -43,11 +41,17 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: '10px',
   },
 
-  logoLink: {
+  logo: {
     width: '215px',
+    height: 'auto',
+    paddingTop: 3,
     [theme.breakpoints.down('xs')]: {
       width: '150px',
     },
+  },
+
+  spacingDiv: {
+    flex: 1,
   },
 
   buttonContainer: {
@@ -72,13 +76,3 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
-const DeckbayLogo = styled.img`
-  width: 100%;
-  height: auto;
-  padding-top: 3;
-`;
-
-const SpacingDiv = styled.div`
-  flex: 1;
-`;

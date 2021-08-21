@@ -7,7 +7,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import clsx from 'clsx';
@@ -15,22 +14,24 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
 import { login } from '../../redux/actions/usernameActions';
+import Alert from '../Alert/Alert';
 
 interface Props {
-  setLoginConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
 }
 
 const LoginModal: React.FC<Props> = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [usernameError, toggleUsernameError] = useState(false);
-  const [passwordError, togglePasswordError] = useState(false);
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [loginAlert, setLoginAlert] = useState(false);
+
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
-  const dispatch = useDispatch();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,30 +41,30 @@ const LoginModal: React.FC<Props> = (props) => {
         username: username,
         password: password,
       });
-      setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
       handleClose();
-      props.toggleLoginConfirmation(true);
       dispatch(login(username));
+      setLoginAlert(true);
     } catch (err: any) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
-      if (err.response?.data?.usernameError) toggleUsernameError(true);
-      else if (err.response?.data?.passwordError) togglePasswordError(true);
+      if (err.response?.data?.usernameError)
+        setUsernameErrorMessage(err.response.data.usernameError);
+      else if (err.response?.data?.passwordError)
+        setPasswordErrorMessage(err.response.data.passwordError);
     }
   };
 
-  const switchUsernameErrorTextField = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
+  const handleUsernameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsernameErrorMessage('');
     setUsername(e.target.value);
-    toggleUsernameError(false);
   };
 
-  const switchPasswordErrorTextField = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
-    togglePasswordError(false);
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordErrorMessage('');
+    setPassword(e.target.value);
+  };
+
+  const handleLoginAlertClose = () => {
+    setLoginAlert(false);
   };
 
   const handleClose = () => {
@@ -71,87 +72,62 @@ const LoginModal: React.FC<Props> = (props) => {
     setLoadingStep(LOADING_STEPS.INPUT_DATA);
     setUsername('');
     setPassword('');
-    toggleUsernameError(false);
-    togglePasswordError(false);
+    setUsernameErrorMessage('');
+    setPasswordErrorMessage('');
   };
 
   return (
-    <Dialog
-      open={props.open}
-      onClose={handleClose}
-      aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
-        Login
-        {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
-          <CircularProgress className={classes.iconWrapper} />
-        )}
-        {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
-          <HighlightOffIcon
-            className={clsx(classes.largeIcon, classes.failIcon)}
-          />
-        )}
-      </DialogTitle>
-      <form onSubmit={handleLogin}>
-        <DialogContent className={classes.dialogContent}>
-          {usernameError ? (
-            <TextField
-              error
-              fullWidth
-              margin="dense"
-              label="Username not found"
-              autoComplete="false"
-              type="text"
-              defaultValue={username}
-              onChange={switchUsernameErrorTextField}
-            />
-          ) : (
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Username"
-              type="text"
-              fullWidth
-              defaultValue={username}
-              autoComplete="false"
-              onChange={(e) => setUsername(e.target.value)}
+    <>
+      <Dialog open={props.open} onClose={handleClose}>
+        <DialogTitle className={classes.dialogTitle}>
+          Login
+          {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
+            <CircularProgress className={classes.loadingIcon} />
+          )}
+          {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
+            <HighlightOffIcon
+              className={clsx(classes.largeIcon, classes.failIcon)}
             />
           )}
-
-          <div className={classes.passwordWrapper}>
-            {passwordError ? (
+        </DialogTitle>
+        <form onSubmit={handleLogin}>
+          <DialogContent className={classes.dialogContent}>
+            <TextField
+              error={(usernameErrorMessage as unknown) as boolean}
+              fullWidth
+              margin="dense"
+              label={usernameErrorMessage ? usernameErrorMessage : 'Username'}
+              autoComplete="false"
+              type="text"
+              autoFocus
+              onChange={handleUsernameInput}
+            />
+            <div className={classes.inputWrapper}>
               <TextField
-                error
+                error={(passwordErrorMessage as unknown) as boolean}
                 fullWidth
                 margin="dense"
-                label="Incorrect password"
+                label={passwordErrorMessage ? passwordErrorMessage : 'Password'}
                 type="password"
-                onChange={switchPasswordErrorTextField}
+                onChange={handlePasswordInput}
               />
-            ) : (
-              <TextField
-                margin="dense"
-                label="Password"
-                type="password"
-                fullWidth
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            )}
-          </div>
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button type="submit" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Submit</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Alert
+        open={loginAlert}
+        close={handleLoginAlertClose}
+        severity={'success'}
+        message={'Succesfully logged in'}
+      />
+    </>
   );
 };
-
 export default LoginModal;
 
 const useStyles = makeStyles((theme) => ({
@@ -159,16 +135,14 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: 'center',
     paddingBottom: 0,
   },
-  passwordWrapper: {
-    paddingTop: 5,
-  },
+  inputWrapper: { paddingTop: 5 },
   dialogContent: {
     width: '400px',
     [theme.breakpoints.down('xs')]: {
       width: '70vw',
     },
   },
-  iconWrapper: {
+  loadingIcon: {
     position: 'absolute',
     right: 10,
   },

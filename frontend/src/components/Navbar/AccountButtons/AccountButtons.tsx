@@ -5,7 +5,6 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { logout } from '../../../redux/actions/usernameActions';
 import { RootState } from '../../../redux/reducers';
 import Alert from '../../Alert/Alert';
@@ -17,17 +16,15 @@ const AccountButtons: React.FC = () => {
   const classes = useStyles();
   const [openLoginModal, setLoginModal] = useState(false);
   const [openRegisterModal, setRegisterModal] = useState(false);
-  const [loginConfirmation, setLoginConfirmation] = useState(false);
-  const [registerConfirmation, setRegisterConfirmation] = useState(false);
   const [logoutConfirmation, setLogoutConfirmation] = useState(false);
 
   const username = useSelector((state: RootState) => state.username);
 
-  const handleClickOpenLogin = () => {
+  const handleClickLogin = () => {
     setLoginModal(true);
   };
 
-  const handleClickOpenRegister = () => {
+  const handleClickRegister = () => {
     setRegisterModal(true);
   };
 
@@ -36,78 +33,54 @@ const AccountButtons: React.FC = () => {
     dispatch(logout());
   };
 
-  const handleLoginAlertClose = () => {
-    setLoginConfirmation(false);
-  };
-
-  const handleLogoutAlertClose = () => {
+  const handleAlertClose = () => {
     setLogoutConfirmation(false);
-  };
-
-  const handleRegisterAlertClose = () => {
-    setRegisterConfirmation(false);
   };
 
   return (
     <div className={classes.accountButtons}>
       {username ? (
-        <ButtonWrapper>
+        <div className={classes.buttonWrapper}>
           <Button
             className={classes.button}
             variant="contained"
-            endIcon={<AccountCircleIcon />}>
+            endIcon={<AccountCircleIcon />}
+            color="primary">
             <Typography>{username}</Typography>
           </Button>
           <Button
             className={classes.button}
             variant="contained"
-            onClick={handleClickLogout}>
+            onClick={handleClickLogout}
+            color="primary">
             <Typography>Log out</Typography>
           </Button>
-        </ButtonWrapper>
+        </div>
       ) : (
-        <ButtonWrapper>
+        <div className={classes.buttonWrapper}>
           <Button
             className={classes.button}
             variant="contained"
-            onClick={handleClickOpenLogin}>
+            onClick={handleClickLogin}
+            color="primary">
             <Typography>Login</Typography>
           </Button>
           <Button
             className={classes.button}
             variant="contained"
-            onClick={handleClickOpenRegister}>
+            onClick={handleClickRegister}
+            color="primary">
             <Typography>Register</Typography>
           </Button>
-        </ButtonWrapper>
+        </div>
       )}
-      <LoginModal
-        open={openLoginModal}
-        setOpen={setLoginModal}
-        setLoginConfirmation={setLoginConfirmation}
-      />
-      <RegisterModal
-        open={openRegisterModal}
-        setOpen={setRegisterModal}
-        setEmailWarning={setRegisterConfirmation}
-      />
-      <Alert
-        open={loginConfirmation}
-        close={handleLoginAlertClose}
-        severity={'success'}
-        message={'Succesfully logged in'}
-      />
+      <LoginModal open={openLoginModal} setOpen={setLoginModal} />
+      <RegisterModal open={openRegisterModal} setOpen={setRegisterModal} />
       <Alert
         open={logoutConfirmation}
-        close={handleLogoutAlertClose}
+        close={handleAlertClose}
         severity={'success'}
         message={'Succesfully logged out'}
-      />
-      <Alert
-        open={registerConfirmation}
-        close={handleRegisterAlertClose}
-        severity={'warning'}
-        message={'Check your email in order to complete registration'}
       />
     </div>
   );
@@ -121,14 +94,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
+  buttonWrapper: {
+    display: 'flex',
+    gap: '10px',
+  },
+
   button: {
     '&:hover': {
       backgroundColor: 'grey',
     },
   },
 }));
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  gap: 10px;
-`;

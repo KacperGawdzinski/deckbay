@@ -8,15 +8,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { LOADING_STEPS } from '../../configFiles/rootConfig';
+import { EMAIL_REGEX } from '../../configFiles/rootConfig';
+import Alert from '../Alert/Alert';
 
 interface Props {
-  setEmailWarning: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
 }
@@ -25,23 +25,24 @@ const RegisterModal: React.FC<Props> = (props) => {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
   const [email, setEmail] = useState('');
-  const [usernameError, toggleUsernameError] = useState(false);
-  const [passwordError, togglePasswordError] = useState(false);
-  const [emailError, toggleEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [registerAlert, setRegisterAlert] = useState(false);
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS.INPUT_DATA);
 
   const validateEmail = (email: string) => {
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return emailRegex.test(email);
+    return EMAIL_REGEX.test(email);
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     if (!validateEmail(email)) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
-      toggleEmailError(true);
+      setEmailErrorMessage('Invalid email');
       return;
     }
     try {
@@ -50,37 +51,36 @@ const RegisterModal: React.FC<Props> = (props) => {
         password: password,
         email: email,
       });
-      setLoadingStep(LOADING_STEPS.POSITIVE_RESPONSE);
-      props.setWarning(true);
+      setRegisterAlert(true);
       handleClose();
     } catch (err: any) {
       setLoadingStep(LOADING_STEPS.NEGATIVE_RESPONSE);
-      if (err.response.data.usernameError) toggleUsernameError(true);
-      else if (err.response.data.passwordError) togglePasswordError(true);
-      else if (err.response.data.emailError) toggleEmailError(true);
+      if (err.response?.data?.usernameError)
+        setUsernameErrorMessage(err.response.data.usernameError);
+      else if (err.response?.data?.passwordError)
+        setPasswordErrorMessage(err.response.data.passwordError);
+      else if (err.response?.data?.emailError)
+        setEmailErrorMessage(err.response.data.emailError);
     }
   };
 
-  const switchUsernameErrorTextField = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
+  const handleEmailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailErrorMessage('');
+    setEmail(e.target.value);
+  };
+
+  const handleUsernameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsernameErrorMessage('');
     setUsername(e.target.value);
-    toggleUsernameError(false);
   };
 
-  const switchPasswordErrorTextField = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
-    togglePasswordError(false);
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordErrorMessage('');
+    setPassword(e.target.value);
   };
 
-  const switchEmailErrorTextField = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setLoadingStep(LOADING_STEPS.INPUT_DATA);
-    toggleEmailError(false);
+  const handleRegisterAlertClose = () => {
+    setRegisterAlert(false);
   };
 
   const handleClose = () => {
@@ -89,113 +89,72 @@ const RegisterModal: React.FC<Props> = (props) => {
     setUsername('');
     setPassword('');
     setEmail('');
-    toggleUsernameError(false);
-    togglePasswordError(false);
-    toggleEmailError(false);
+    setUsernameErrorMessage('');
+    setPasswordErrorMessage('');
+    setEmailErrorMessage('');
   };
 
-  // TODO: custom error message for email on register
   return (
-    <Dialog
-      open={props.open}
-      onClose={handleClose}
-      aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
-        Register
-        {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
-          <CircularProgress className={classes.iconWrapper} />
-        )}
-        {loadingStep === LOADING_STEPS.POSITIVE_RESPONSE && (
-          <CheckCircleOutlineIcon
-            className={clsx(classes.largeIcon, classes.successIcon)}
-          />
-        )}
-        {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
-          <HighlightOffIcon
-            className={clsx(classes.largeIcon, classes.failIcon)}
-          />
-        )}
-      </DialogTitle>
-
-      <DialogContent className={classes.dialogContent}>
-        {emailError ? (
-          <TextField
-            error
-            fullWidth
-            margin="dense"
-            label="Incorrect email"
-            type="text"
-            onChange={switchEmailErrorTextField}
-          />
-        ) : (
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            autoComplete="false"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        )}
-
-        <div className={classes.inputWrapper}>
-          {usernameError ? (
-            <TextField
-              error
-              fullWidth
-              margin="dense"
-              label="Username already taken"
-              autoComplete="false"
-              type="text"
-              defaultValue={username}
-              onChange={switchUsernameErrorTextField}
-            />
-          ) : (
-            <TextField
-              margin="dense"
-              label="Username"
-              type="text"
-              fullWidth
-              defaultValue={username}
-              autoComplete="false"
-              onChange={(e) => setUsername(e.target.value)}
+    <div>
+      <Dialog open={props.open} onClose={handleClose}>
+        <DialogTitle className={classes.dialogTitle}>
+          Register
+          {loadingStep === LOADING_STEPS.FETCHING_RESPONSE && (
+            <CircularProgress className={classes.iconWrapper} />
+          )}
+          {loadingStep === LOADING_STEPS.NEGATIVE_RESPONSE && (
+            <HighlightOffIcon
+              className={clsx(classes.largeIcon, classes.failIcon)}
             />
           )}
-        </div>
-        <div className={classes.inputWrapper}>
-          {passwordError ? (
+        </DialogTitle>
+        <form onSubmit={handleRegister}>
+          <DialogContent className={classes.dialogContent}>
             <TextField
-              error
+              error={(emailErrorMessage as unknown) as boolean}
               fullWidth
               margin="dense"
-              label="Incorrect password"
-              type="password"
-              onChange={switchPasswordErrorTextField}
+              label={emailErrorMessage ? emailErrorMessage : 'Email'}
+              type="email"
+              onChange={handleEmailInput}
             />
-          ) : (
-            <TextField
-              margin="dense"
-              label="Password"
-              type="password"
-              fullWidth
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          )}
-        </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleRegister} color="primary">
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
+            <div className={classes.inputWrapper}>
+              <TextField
+                error={(usernameErrorMessage as unknown) as boolean}
+                fullWidth
+                margin="dense"
+                label={usernameErrorMessage ? usernameErrorMessage : 'Username'}
+                autoComplete="false"
+                type="text"
+                onChange={handleUsernameInput}
+              />
+            </div>
+            <div className={classes.inputWrapper}>
+              <TextField
+                error={(passwordErrorMessage as unknown) as boolean}
+                fullWidth
+                margin="dense"
+                label={passwordErrorMessage ? passwordErrorMessage : 'Password'}
+                type="password"
+                onChange={handlePasswordInput}
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Submit</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Alert
+        open={registerAlert}
+        close={handleRegisterAlertClose}
+        severity={'warning'}
+        message={'Check your email in order to complete registration'}
+      />
+    </div>
   );
 };
-
 export default RegisterModal;
 
 const useStyles = makeStyles((theme) => ({
@@ -203,19 +162,23 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: 'center',
     paddingBottom: 0,
   },
+
   inputWrapper: {
     paddingTop: 5,
   },
+
   dialogContent: {
     width: '400px',
     [theme.breakpoints.down('xs')]: {
       width: '70vw',
     },
   },
+
   iconWrapper: {
     position: 'absolute',
     right: 10,
   },
+
   largeIcon: {
     width: '50px',
     height: '50px',
@@ -223,9 +186,11 @@ const useStyles = makeStyles((theme) => ({
     right: 10,
     top: 10,
   },
+
   failIcon: {
     color: red[500],
   },
+
   successIcon: {
     color: green[500],
   },
