@@ -1,22 +1,12 @@
-import { Typography } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
-import MuiAlert from '@material-ui/lab/Alert';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import logo from '../../assets/images/logo.png';
-import { logout } from '../../redux/actions/usernameActions';
-import LoginModal from '../Modals/LoginModal';
-import RegisterModal from '../Modals/RegisterModal';
 import AccountButtons from './AccountButtons/AccountButtons';
 
 const Navbar: React.FC = () => {
@@ -37,39 +27,7 @@ const Navbar: React.FC = () => {
           className={classes.hamburgerMenu}>
           <MenuIcon />
         </IconButton>
-
-        {/* <Snackbar
-          open={loginConfirmation}
-          autoHideDuration={5000}
-          style={{ marginTop: '50px' }}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          onClose={() => toggleLoginConfirmation(false)}>
-          <MuiAlert elevation={6} variant="filled" severity="success">
-            <Typography>Succesfully logged in</Typography>
-          </MuiAlert>
-        </Snackbar>
-        <Snackbar
-          open={logoutConfirmation}
-          autoHideDuration={2500}
-          style={{ marginTop: '50px' }}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          onClose={() => toggleLogoutConfirmation(false)}>
-          <MuiAlert elevation={6} variant="filled" severity="success">
-            <Typography>Succesfully logged out</Typography>
-          </MuiAlert>
-        </Snackbar>
-        <Snackbar
-          open={registerConfirmation}
-          autoHideDuration={2500}
-          style={{ marginTop: '50px' }}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          onClose={() => toggleRegisterConfirmation(false)}>
-          <MuiAlert elevation={6} variant="filled" severity="warning">
-            <Typography>
-              Check your email in order to complete registration
-            </Typography>
-          </MuiAlert>
-        </Snackbar>  */}
+        <AccountButtons />
       </Toolbar>
     </AppBar>
   );
@@ -112,10 +70,6 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
       marginLeft: 'auto',
     },
-  },
-
-  inputRoot: {
-    color: 'inherit',
   },
 }));
 

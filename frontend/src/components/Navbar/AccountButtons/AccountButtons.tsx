@@ -44,6 +44,10 @@ const AccountButtons: React.FC = () => {
     setLogoutConfirmation(false);
   };
 
+  const handleRegisterAlertClose = () => {
+    setRegisterConfirmation(false);
+  };
+
   return (
     <div className={classes.accountButtons}>
       {username ? (
@@ -100,10 +104,10 @@ const AccountButtons: React.FC = () => {
         message={'Succesfully logged out'}
       />
       <Alert
-        open={loginConfirmation}
-        close={handleLoginAlertClose}
-        severity={'success'}
-        message={'Succesfully logged in'}
+        open={registerConfirmation}
+        close={handleRegisterAlertClose}
+        severity={'warning'}
+        message={'Check your email in order to complete registration'}
       />
     </div>
   );
