@@ -3,7 +3,6 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-
 import theme from '../../theme';
 import { getImage } from '../../utils/getImage';
 
@@ -26,6 +25,7 @@ const GameCard: React.FC<Props> = (props) => {
     </Card>
   );
 };
+export default GameCard;
 
 const useStyles = makeStyles({
   root: {
@@ -40,6 +40,7 @@ const useStyles = makeStyles({
       height: '240px',
     },
   },
+
   gameText: {
     textAlign: 'center',
     fontSize: '40px',
@@ -53,6 +54,7 @@ const useStyles = makeStyles({
       fontSize: '25px',
     },
   },
+
   image: {
     maxWidth: '280px',
     maxHeight: '280px',
@@ -72,9 +74,8 @@ const useStyles = makeStyles({
       maxWidth: '200px',
     },
   },
+
   link: {
     textDecoration: 'none !important',
   },
 });
-
-export default GameCard;

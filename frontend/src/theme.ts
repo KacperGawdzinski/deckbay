@@ -4,10 +4,10 @@ const theme = createTheme({
   palette: {
     primary: {
       main: '#35383d',
-      light: '#14181f',
       dark: '#0f1217',
       contrastText: '#ffffff',
     },
+    contrastThreshold: 3,
   },
   breakpoints: {
     values: {
