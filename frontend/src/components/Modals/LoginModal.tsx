@@ -37,10 +37,16 @@ const LoginModal: React.FC<Props> = (props) => {
     e.preventDefault();
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
-      await axios.post('http://localhost:5000/login', {
-        username: username,
-        password: password,
-      });
+      await axios.post(
+        'http://localhost:5000/login',
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
       handleClose();
       dispatch(login(username));
       setLoginAlert(true);

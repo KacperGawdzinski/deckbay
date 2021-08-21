@@ -3,7 +3,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { SALT_ROUNDS } from "../config";
-// import Token =("../models/tokenModel");
+import dotenv from "dotenv";
+
+dotenv.config({ path: "./config.env" });
 
 const accountRouter = express.Router();
 
@@ -25,26 +27,29 @@ accountRouter.post("/login", async (req, res) => {
   if (!validPassword)
     return res.status(401).send({ passwordError: "Invalid password" });
 
-  //   const accessToken = jwt.sign(
-  //     req.body.username,
-  //     process.env.JWT_ACCESS_TOKEN,
-  //     {
-  //       expiresIn: "15s",
-  //     }
-  //   );
-  //   const refreshToken = jwt.sign(userObject, process.env.JWT_REFRESH_TOKEN);
+  const userObject = {
+    username: req.body.username,
+  };
 
-  //   await Token.create({
-  //     value: refreshToken,
-  //   });
+  const accessToken = jwt.sign(
+    userObject,
+    process.env.JWT_ACCESS_TOKEN as string,
+    {
+      expiresIn: "15s",
+    }
+  );
+  const refreshToken = jwt.sign(
+    userObject,
+    process.env.JWT_REFRESH_TOKEN as string
+  );
 
-  //   res.cookie("jwtAccess", accessToken, {
-  //     //httpOnly: true,
-  //   });
-  //   res.cookie("jwtRefresh", refreshToken, {
-  //     //path: '/refresh',
-  //   });
-  res.status(200).send("OK");
+  res.cookie("jwtAccess", accessToken, {
+    expires: new Date(Date.now() + 9999999),
+  });
+  res.cookie("jwtRefresh", refreshToken, {
+    //path: '/refresh',
+  });
+  res.sendStatus(200);
 });
 
 accountRouter.post("/register", async (req, res) => {
