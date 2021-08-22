@@ -78,7 +78,7 @@ accountRouter.post("/register", async (req, res) => {
         return res.status(401).send({ emailError: "Email already exists" });
     }
   }
-  res.sendStatus(200);
+  return res.sendStatus(200);
 });
 
 // accountRouter.post("/logout", (req, res) => {

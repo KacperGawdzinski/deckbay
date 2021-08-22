@@ -28,13 +28,13 @@ var io = new Server(server, {
 });
 
 io.on("connection", (client) => {
-  console.log("Socket.io is connected");
+  console.log("Client connected");
 
   client.on("event", (data: any) => {
     /* … */
   });
   client.on("disconnect", () => {
-    /* … */
+    console.log("Client disconnected");
   });
 });
 

@@ -13,21 +13,6 @@ interface Props {
 
 const RoomList: React.FC<Props> = (props) => {
   const classes = useStyles();
-  const theme = useTheme();
-  const [rooms, setRooms] = useState([]);
-  const [newRoom, setNewRoom] = useState(false);
-  const [checked, setChecked] = React.useState(false);
-
-  const handleChange = () => {
-    setChecked((prev) => !prev);
-  };
-
-  const [value, setValue] = React.useState('white');
-
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const content = useRef(null);
 
   return (
     <Container maxWidth="md" className={classes.container}>

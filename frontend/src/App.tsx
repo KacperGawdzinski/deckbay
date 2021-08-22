@@ -1,86 +1,62 @@
 import { Container, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { Helmet } from 'react-helmet';
-import { Provider } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { createStore } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
 import './App.css';
 import GameCard from './components/GameCard/GameCard';
 import Navbar from './components/Navbar/Navbar';
 import RoomList from './components/RoomList/RoomList';
 import { GAME_LIST } from './configFiles/rootConfig';
-import { rootReducer } from './redux/reducers/index';
-import theme from './theme';
+import { connect } from './redux/actions/socketioActions';
 
 export default function App() {
   const classes = useStyles();
-
-  const persistConfig = {
-    key: 'root',
-    storage,
-  };
-
-  const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-  const store = createStore(persistedReducer, {});
-
-  const persistor = persistStore(store);
+  const dispatch = useDispatch();
+  dispatch(connect());
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider theme={theme}>
-          <Router>
-            <Helmet>
-              <meta charSet="utf-8" />
-              <meta name="description" content="Free online board games" />
-              <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-              />
-              <title>Deckbay</title>
-            </Helmet>
-            <Navbar />
-            <Switch>
-              <Route exact path="/">
-                <Container className={classes.cardGrid} maxWidth="lg">
-                  <Grid
-                    container
-                    alignItems="center"
-                    justifyContent="center"
-                    spacing={3}>
-                    {GAME_LIST.map((game) => (
-                      <Grid item key={game} xs={10} md={4} sm={5}>
-                        <GameCard
-                          // className={classes.card}
-                          game={game.toUpperCase()}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Container>
-              </Route>
-              <Route exact path="/chess">
-                <RoomList game="chess" />
-              </Route>
+    <Router>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="description" content="Free online board games" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Deckbay</title>
+      </Helmet>
+      <Navbar />
+      <Switch>
+        <Route exact path="/">
+          <Container className={classes.cardGrid} maxWidth="lg">
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              spacing={3}>
+              {GAME_LIST.map((game) => (
+                <Grid item key={game} xs={10} md={4} sm={5}>
+                  <GameCard
+                    // className={classes.card}
+                    game={game.toUpperCase()}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </Route>
+        <Route exact path="/chess">
+          <RoomList game="chess" />
+        </Route>
 
-              {/* <Route exact path="/chess/:id"></Route> */}
-              <Route exact path="/charades">
-                <RoomList game="charades" />
-              </Route>
-              {/* <Route exact path="/charades/:id">
+        {/* <Route exact path="/chess/:id"></Route> */}
+        <Route exact path="/charades">
+          <RoomList game="charades" />
+        </Route>
+        {/* <Route exact path="/charades/:id">
             <Charades />
           </Route> } */}
-            </Switch>
-            {/* <Footer /> */}
-          </Router>
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
+      </Switch>
+      {/* <Footer /> */}
+    </Router>
   );
 }
 
