@@ -1,8 +1,10 @@
 import { Collapse, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import LockIcon from '@material-ui/icons/Lock';
 import PersonIcon from '@material-ui/icons/Person';
+import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
 import React, { useState, useRef } from 'react';
@@ -26,6 +28,13 @@ const RoomListItem: React.FC<Props> = (props) => {
   const [infoLabel, setInfoLabel] = useState('Password');
   const [infoValue, setInfoValue] = useState('');
   let playerIcons = [];
+
+  const calculateTimersMargin = () => {
+    if (props.game.observators === 0 && !props.game.password) {
+      return 135;
+    }
+    return 40;
+  };
 
   //   if (game === 'chess' || game === 'checkers') {
   //     for (let i = 1; i <= maxPlayers.get(game); i++) {
@@ -61,7 +70,7 @@ const RoomListItem: React.FC<Props> = (props) => {
             item
             style={{
               backgroundColor: color,
-              height: '200px',
+              height: '120px',
               padding: '20px 25px 20px 25px',
               display: 'flex',
             }}>
@@ -69,18 +78,31 @@ const RoomListItem: React.FC<Props> = (props) => {
             <div style={{ flex: 1 }} />
             <Typography
               style={{
-                marginRight: '40px',
-              }}>{`Time: ${props.game.gameLength}m Bonus: ${props.game.bonusTime}s`}</Typography>
-            <Typography>{`${props.game.players}/2`}</Typography>
-            <PersonIcon style={{ marginRight: '10px' }} />
+                marginRight: '20px',
+              }}>
+              {`Time: ${props.game.gameLength}m`}
+            </Typography>
+            <Typography
+              style={{
+                marginRight: calculateTimersMargin(),
+              }}>
+              {`Bonus: ${props.game.bonusTime}s`}
+            </Typography>
+
+            <LockIcon style={{ marginRight: '10px' }} />
             {props.game.observators > 0 ? (
               <div style={{ display: 'flex' }}>
                 <Typography>{props.game.observators}</Typography>
                 <VisibilityIcon style={{ marginRight: '10px' }} />
               </div>
             ) : null}
-
-            <LockIcon />
+            <Typography>{`${props.game.players}/2`}</Typography>
+            <PersonIcon />
+            {props.game.hasStarted ? (
+              <SportsEsportsIcon />
+            ) : (
+              <HourglassEmptyIcon />
+            )}
           </Grid>
         </Collapse>
       ) : (
@@ -96,10 +118,17 @@ const RoomListItem: React.FC<Props> = (props) => {
           <div style={{ flex: 1 }} />
           <Typography
             style={{
-              marginRight: '40px',
-            }}>{`Time: ${props.game.gameLength}m Bonus: ${props.game.bonusTime}s`}</Typography>
-          <Typography>{`${props.game.players}/2`}</Typography>
-          <PersonIcon style={{ marginRight: '10px' }} />
+              marginRight: '20px',
+            }}>
+            {`Time: ${props.game.gameLength}m`}
+          </Typography>
+          <Typography
+            style={{
+              marginRight: calculateTimersMargin(),
+            }}>
+            {`Bonus: ${props.game.bonusTime}s`}
+          </Typography>
+
           {props.game.observators > 0 ? (
             <div style={{ display: 'flex' }}>
               <Typography>{props.game.observators}</Typography>
@@ -107,7 +136,13 @@ const RoomListItem: React.FC<Props> = (props) => {
             </div>
           ) : null}
 
-          <LockIcon />
+          <Typography>{`${props.game.players}/2`}</Typography>
+          <PersonIcon />
+          {props.game.hasStarted ? (
+            <SportsEsportsIcon />
+          ) : (
+            <HourglassEmptyIcon />
+          )}
         </Grid>
       )}
     </div>
