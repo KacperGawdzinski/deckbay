@@ -1,8 +1,13 @@
-import { Typography } from '@material-ui/core';
+import { Collapse, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import LockIcon from '@material-ui/icons/Lock';
+import PersonIcon from '@material-ui/icons/Person';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
 import React, { useState, useRef } from 'react';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
+import theme from '../../theme';
 // import { useHistory } from 'react-router-dom';
 // import InactiveUser from '../../assets/images/inactive-user.png';
 // import Lock from '../../assets/images/lock.png';
@@ -17,7 +22,7 @@ interface Props {
 
 const RoomListItem: React.FC<Props> = (props) => {
   const [color, setColor] = useState(randomColor());
-  const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
   const [infoLabel, setInfoLabel] = useState('Password');
   const [infoValue, setInfoValue] = useState('');
   let playerIcons = [];
@@ -46,21 +51,79 @@ const RoomListItem: React.FC<Props> = (props) => {
   //   }
 
   return (
-    <Grid item xl={12} style={{ backgroundColor: color }}>
-      <div style={{ backgroundColor: color }}>
-        <p>{props.game.roomName}</p>
-        <p>{`${props.game.gameLength} ┃ ${props.game.bonusTime}`}</p>
+    <div onClick={() => setOpen((prev) => !prev)}>
+      {props.game.password ? (
+        <Collapse
+          in={open}
+          collapsedSize={window.innerWidth < 600 ? 55 : 60}
+          style={{ width: '100%' }}>
+          <Grid
+            item
+            style={{
+              backgroundColor: color,
+              height: '200px',
+              padding: '20px 25px 20px 25px',
+              display: 'flex',
+            }}>
+            <Typography>{props.game.roomName}</Typography>
+            <div style={{ flex: 1 }} />
+            <Typography
+              style={{
+                marginRight: '40px',
+              }}>{`Time: ${props.game.gameLength}m Bonus: ${props.game.bonusTime}s`}</Typography>
+            <Typography>{`${props.game.players}/2`}</Typography>
+            <PersonIcon style={{ marginRight: '10px' }} />
+            {props.game.observators > 0 ? (
+              <div style={{ display: 'flex' }}>
+                <Typography>{props.game.observators}</Typography>
+                <VisibilityIcon style={{ marginRight: '10px' }} />
+              </div>
+            ) : null}
 
-        {/* {game === 'chess' || game === 'checkers' ? (
+            <LockIcon />
+          </Grid>
+        </Collapse>
+      ) : (
+        <Grid
+          item
+          style={{
+            backgroundColor: color,
+            height: '60px',
+            padding: '20px 25px 20px 25px',
+            display: 'flex',
+          }}>
+          <Typography>{props.game.roomName}</Typography>
+          <div style={{ flex: 1 }} />
+          <Typography
+            style={{
+              marginRight: '40px',
+            }}>{`Time: ${props.game.gameLength}m Bonus: ${props.game.bonusTime}s`}</Typography>
+          <Typography>{`${props.game.players}/2`}</Typography>
+          <PersonIcon style={{ marginRight: '10px' }} />
+          {props.game.observators > 0 ? (
+            <div style={{ display: 'flex' }}>
+              <Typography>{props.game.observators}</Typography>
+              <VisibilityIcon style={{ marginRight: '10px' }} />
+            </div>
+          ) : null}
+
+          <LockIcon />
+        </Grid>
+      )}
+    </div>
+  );
+  {
+    /* {game === 'chess' || game === 'checkers' ? (
           <React.Fragment> {playerIcons} </React.Fragment>
         ) : (
           <React.Fragment>
             <p>{`${info.playerCount} / ${maxPlayers.get(game)}`}</p>
             <img className="user_img" src={ActiveUser} />
           </React.Fragment>
-        )} */}
-      </div>
-      {/* {info.password && (
+        )} */
+  }
+  {
+    /* {info.password && (
         <div
           ref={wrapper}
           className="animation_wrapper"
@@ -99,9 +162,8 @@ const RoomListItem: React.FC<Props> = (props) => {
             </form>
           </div>
         </div>
-      )} */}
-    </Grid>
-  );
+      )} */
+  }
 };
 
 export default RoomListItem;
