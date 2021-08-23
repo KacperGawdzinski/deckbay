@@ -8,9 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
 import { connect } from '../../redux/actions/socketioActions';
 import { RootState } from '../../redux/reducers/index';
-import ChessRoomListheader from './RoomListHeaders/ChessRoomListHeader';
-
-// import RoomListItem from '../RoomListItem/RoomListItem';
+import RoomListItem from '../RoomListItem/RoomListItem';
+import ChessRoomListHeader from './RoomListHeaders/ChessRoomListHeader';
 
 interface Props {
   game: string;
@@ -24,21 +23,11 @@ const RoomList: React.FC<Props> = (props) => {
   socket.on('getChessRoomList', (data: ChessRoomInfo[]) => setRoomList(data));
   return (
     <Container maxWidth="md" className={classes.container}>
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        justifyContent="center">
-        <ChessRoomListheader game={props.game} />
+      <Grid container direction="column" justifyContent="center">
+        <ChessRoomListHeader game={props.game} />
         <div>
           {roomList.map((roomInfo) => {
-            return (
-              <Typography key={roomInfo.roomName}>
-                {' '}
-                {roomInfo.roomName}
-              </Typography>
-              /* // <RoomListItem key={info.fullRoomName} info={info} game={game} /> */
-            );
+            return <RoomListItem key={roomInfo.roomName} game={roomInfo} />;
           })}
         </div>
       </Grid>

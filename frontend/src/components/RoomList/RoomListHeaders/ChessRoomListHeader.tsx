@@ -215,6 +215,7 @@ const Side = withStyles({
 const useStyles = makeStyles((theme) => ({
   grid: {
     height: 'auto',
+    width: '100%',
     backgroundColor: '#14181f',
     display: 'flex',
     flexDirection: 'column',

@@ -1,21 +1,25 @@
+import { Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 import React, { useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { ChessRoomInfo } from '../../dataTypes/chessTypes';
+// import { useHistory } from 'react-router-dom';
+// import InactiveUser from '../../assets/images/inactive-user.png';
+// import Lock from '../../assets/images/lock.png';
+// import ActiveUser from '../../assets/images/user.png';
+import { randomColor } from '../../utils/randomColor';
 
-import InactiveUser from '../../assets/images/inactive-user.png';
-import Lock from '../../assets/images/lock.png';
-import ActiveUser from '../../assets/images/user.png';
-import Colors from '../../colors';
-import './RoomListItem.css';
+// import './RoomListItem.css';
 
-const RoomListItem = ({ info, game }) => {
-  const [color, setColor] = useState(Colors.random());
+interface Props {
+  game: ChessRoomInfo;
+}
+
+const RoomListItem: React.FC<Props> = (props) => {
+  const [color, setColor] = useState(randomColor());
   const [expanded, setExpanded] = useState(false);
-  const [setHeight, setHeightState] = useState('0px');
   const [infoLabel, setInfoLabel] = useState('Password');
   const [infoValue, setInfoValue] = useState('');
-  const wrapper = useRef(null);
-  const history = useHistory();
   let playerIcons = [];
 
   //   if (game === 'chess' || game === 'checkers') {
@@ -41,55 +45,11 @@ const RoomListItem = ({ info, game }) => {
   //     }
   //   }
 
-  function Expand() {
-    setExpanded(!expanded);
-    if (info.password)
-      setHeightState(expanded ? '0px' : `${wrapper.current.scrollHeight}px`);
-  }
-
-  const Submit = (e) => {
-    e.preventDefault();
-    var targetElement = e.target;
-    let roomFullName = targetElement.childNodes[2].value;
-    let roomName = roomFullName.substring(roomFullName.indexOf('-') + 1);
-
-    axios
-      .post('validate-room-password', {
-        fullRoomName: roomFullName,
-        password: targetElement.firstChild.value,
-      })
-      .then((res) => {
-        if (res.data === true) history.push(`/${roomName}`);
-        else {
-          setInfoValue('');
-          setInfoLabel(res.data);
-        }
-      });
-  };
-
   return (
-    <div>
-      <div
-        style={{ backgroundColor: color }}
-        className="list_item"
-        onClick={Expand}>
-        <p className="room_name">
-          {' '}
-          {info.fullRoomName.substr(
-            info.fullRoomName.indexOf('-') + 1,
-            info.fullRoomName.length,
-          )}{' '}
-        </p>
-        {(game === 'chess' || game === 'checkers') && (
-          <React.Fragment>
-            <p className="time">
-              {' '}
-              {`${info.options.length} ┃ ${info.options.bonus}`}{' '}
-            </p>
-          </React.Fragment>
-        )}
-
-        {info.password ? <img className="lock_img" src={Lock} /> : null}
+    <Grid item xl={12} style={{ backgroundColor: color }}>
+      <div style={{ backgroundColor: color }}>
+        <p>{props.game.roomName}</p>
+        <p>{`${props.game.gameLength} ┃ ${props.game.bonusTime}`}</p>
 
         {/* {game === 'chess' || game === 'checkers' ? (
           <React.Fragment> {playerIcons} </React.Fragment>
@@ -100,7 +60,7 @@ const RoomListItem = ({ info, game }) => {
           </React.Fragment>
         )} */}
       </div>
-      {info.password && (
+      {/* {info.password && (
         <div
           ref={wrapper}
           className="animation_wrapper"
@@ -139,8 +99,8 @@ const RoomListItem = ({ info, game }) => {
             </form>
           </div>
         </div>
-      )}
-    </div>
+      )} */}
+    </Grid>
   );
 };
 
