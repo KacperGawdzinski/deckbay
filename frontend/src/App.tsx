@@ -1,19 +1,15 @@
 import { Container, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import GameCard from './components/GameCard/GameCard';
 import Navbar from './components/Navbar/Navbar';
 import RoomList from './components/RoomList/RoomList';
 import { GAME_LIST } from './configFiles/rootConfig';
-import { connect } from './redux/actions/socketioActions';
 
 export default function App() {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  dispatch(connect());
 
   return (
     <Router>

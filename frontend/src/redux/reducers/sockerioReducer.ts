@@ -1,10 +1,10 @@
 import { Action } from 'redux';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-const socketioReducer = (state = {}, action: Action) => {
+const initialState = io('http://localhost:5000');
+
+const socketioReducer = (state = initialState, action: Action) => {
   switch (action.type) {
-    case 'CONNECT_SOCKET':
-      return io('http://localhost:5000');
     case 'RESET_SOCKET':
       return io('http://localhost:5000');
     default:

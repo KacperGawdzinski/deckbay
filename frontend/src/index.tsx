@@ -19,19 +19,20 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['socket'],
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-const store = createStore(persistedReducer, composeEnhancers());
+// const persistedReducer = persistReducer(persistConfig, rootReducer);
+const store = createStore(rootReducer, composeEnhancers());
 const persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </PersistGate>
+    {/* <PersistGate loading={null} persistor={persistor}> */}
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+    {/* </PersistGate> */}
   </Provider>,
   document.getElementById('root'),
 );

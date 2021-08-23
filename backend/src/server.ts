@@ -6,20 +6,44 @@
 // import { chessGame } = require("./server-javascript/chess-game-server");
 // import charades = require("./routes/charades");
 // import checkers = require("./routes/checkers");
-// import chess = require("./routes/chess");
+
 import { Server } from "socket.io";
 import { createServer } from "http";
-import express from "express";
+import express, { Express } from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import accountRouter from "./routes/account";
+import chessRouter from "./routes/chess";
 import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
 import cors from "cors";
+import { func } from "./routes/chesss";
+import { ChessRoomInfo } from "./dataTypes/chessTypes";
+
+const chessGames: ChessRoomInfo[] = [
+  {
+    password: true,
+    roomName: "locked",
+    gameLength: 10,
+    bonusTime: 10,
+    players: 1,
+    observators: 3,
+    hasStarted: false,
+  },
+  {
+    password: false,
+    roomName: "unlocked",
+    gameLength: 1,
+    bonusTime: 1,
+    players: 2,
+    observators: 0,
+    hasStarted: true,
+  },
+];
 
 var app = express();
 const server = createServer(app);
-var io = new Server(server, {
+const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
@@ -27,13 +51,18 @@ var io = new Server(server, {
   },
 });
 
-io.on("connection", (client) => {
+app.set("io", io);
+app.set("chessGames", chessGames);
+
+io.on("connection", (socket) => {
   console.log("Client connected");
 
-  client.on("event", (data: any) => {
-    /* … */
+  socket.on("joinChessRoomList", (data: any) => {
+    socket.join("chessRoomList");
+    io.to("chessRoomList").emit("getChessRoomList", chessGames);
   });
-  client.on("disconnect", () => {
+
+  socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
@@ -53,6 +82,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
+app.use("/chess", chessRouter);
 app.use(accountRouter);
 
 app.use("/", (req, res) => {
