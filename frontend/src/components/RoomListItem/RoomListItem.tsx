@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import LockIcon from '@material-ui/icons/Lock';
 import PersonIcon from '@material-ui/icons/Person';
+import SettingsIcon from '@material-ui/icons/Settings';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
@@ -60,7 +61,9 @@ const RoomListItem: React.FC<Props> = (props) => {
   //   }
 
   return (
-    <div onClick={() => setOpen((prev) => !prev)}>
+    <div
+      onClick={() => setOpen((prev) => !prev)}
+      style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
         <Collapse
           in={open}
@@ -76,19 +79,6 @@ const RoomListItem: React.FC<Props> = (props) => {
             }}>
             <Typography>{props.game.roomName}</Typography>
             <div style={{ flex: 1 }} />
-            <Typography
-              style={{
-                marginRight: '20px',
-              }}>
-              {`Time: ${props.game.gameLength}m`}
-            </Typography>
-            <Typography
-              style={{
-                marginRight: calculateTimersMargin(),
-              }}>
-              {`Bonus: ${props.game.bonusTime}s`}
-            </Typography>
-
             <LockIcon style={{ marginRight: '10px' }} />
             {props.game.observators > 0 ? (
               <div style={{ display: 'flex' }}>
@@ -96,8 +86,11 @@ const RoomListItem: React.FC<Props> = (props) => {
                 <VisibilityIcon style={{ marginRight: '10px' }} />
               </div>
             ) : null}
+            <Typography style={{ marginRight: '10px' }}>
+              {`${props.game.gameLength}m/${props.game.bonusTime}s`}
+            </Typography>
             <Typography>{`${props.game.players}/2`}</Typography>
-            <PersonIcon />
+            <PersonIcon style={{ marginRight: '10px' }} />
             {props.game.hasStarted ? (
               <SportsEsportsIcon />
             ) : (
@@ -116,28 +109,17 @@ const RoomListItem: React.FC<Props> = (props) => {
           }}>
           <Typography>{props.game.roomName}</Typography>
           <div style={{ flex: 1 }} />
-          <Typography
-            style={{
-              marginRight: '20px',
-            }}>
-            {`Time: ${props.game.gameLength}m`}
-          </Typography>
-          <Typography
-            style={{
-              marginRight: calculateTimersMargin(),
-            }}>
-            {`Bonus: ${props.game.bonusTime}s`}
-          </Typography>
-
           {props.game.observators > 0 ? (
             <div style={{ display: 'flex' }}>
               <Typography>{props.game.observators}</Typography>
               <VisibilityIcon style={{ marginRight: '10px' }} />
             </div>
           ) : null}
-
+          <Typography style={{ marginRight: '10px' }}>
+            {`${props.game.gameLength}m/${props.game.bonusTime}s`}
+          </Typography>
           <Typography>{`${props.game.players}/2`}</Typography>
-          <PersonIcon />
+          <PersonIcon style={{ marginRight: '10px' }} />
           {props.game.hasStarted ? (
             <SportsEsportsIcon />
           ) : (
