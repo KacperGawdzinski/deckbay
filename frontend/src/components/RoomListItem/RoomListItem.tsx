@@ -1,6 +1,7 @@
 import { Collapse, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import LockIcon from '@material-ui/icons/Lock';
 import PersonIcon from '@material-ui/icons/Person';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const RoomListItem: React.FC<Props> = (props) => {
+  const classes = useStyles();
   const [color, setColor] = useState(randomColor());
   const [open, setOpen] = useState(false);
   const [infoLabel, setInfoLabel] = useState('Password');
@@ -69,33 +71,45 @@ const RoomListItem: React.FC<Props> = (props) => {
           in={open}
           collapsedSize={window.innerWidth < 600 ? 55 : 60}
           style={{ width: '100%' }}>
-          <Grid
-            item
-            style={{
-              backgroundColor: color,
-              height: '120px',
-              padding: '20px 25px 20px 25px',
-              display: 'flex',
-            }}>
-            <Typography>{props.game.roomName}</Typography>
+          <Grid item className={classes.grid}>
+            <div style={{ padding: '10px 0px 10px 0px', display: 'flex' }}>
+              <Typography>{props.game.roomName}</Typography>
+
+              <Typography className={classes.iconMargin}>
+                {`${props.game.gameLength}m/${props.game.bonusTime}s`}
+              </Typography>
+            </div>
             <div style={{ flex: 1 }} />
-            <LockIcon style={{ marginRight: '10px' }} />
-            {props.game.observators > 0 ? (
-              <div style={{ display: 'flex' }}>
-                <Typography>{props.game.observators}</Typography>
-                <VisibilityIcon style={{ marginRight: '10px' }} />
+
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                marginLeft: 'auto',
+                width: '30%',
+                height: '55px',
+              }}>
+              <div style={{ flexBasis: '50%', display: 'flex' }}>
+                {props.game.observators > 0 ? (
+                  <div style={{ display: 'flex' }}>
+                    <Typography>{props.game.observators}</Typography>
+                    <VisibilityIcon className={classes.iconMargin} />
+                  </div>
+                ) : null}
+                <div style={{ display: 'flex' }}>
+                  <Typography>{`${props.game.players}/2`}</Typography>
+                  <PersonIcon className={classes.iconMargin} />
+                </div>
               </div>
-            ) : null}
-            <Typography style={{ marginRight: '10px' }}>
-              {`${props.game.gameLength}m/${props.game.bonusTime}s`}
-            </Typography>
-            <Typography>{`${props.game.players}/2`}</Typography>
-            <PersonIcon style={{ marginRight: '10px' }} />
-            {props.game.hasStarted ? (
-              <SportsEsportsIcon />
-            ) : (
-              <HourglassEmptyIcon />
-            )}
+              <div style={{ flexBasis: '50%', display: 'flex' }}>
+                <LockIcon className={classes.iconMargin} />
+                {props.game.hasStarted ? (
+                  <SportsEsportsIcon />
+                ) : (
+                  <HourglassEmptyIcon />
+                )}
+              </div>
+            </div>
           </Grid>
         </Collapse>
       ) : (
@@ -112,14 +126,14 @@ const RoomListItem: React.FC<Props> = (props) => {
           {props.game.observators > 0 ? (
             <div style={{ display: 'flex' }}>
               <Typography>{props.game.observators}</Typography>
-              <VisibilityIcon style={{ marginRight: '10px' }} />
+              <VisibilityIcon className={classes.iconMargin} />
             </div>
           ) : null}
-          <Typography style={{ marginRight: '10px' }}>
+          <Typography className={classes.iconMargin}>
             {`${props.game.gameLength}m/${props.game.bonusTime}s`}
           </Typography>
           <Typography>{`${props.game.players}/2`}</Typography>
-          <PersonIcon style={{ marginRight: '10px' }} />
+          <PersonIcon className={classes.iconMargin} />
           {props.game.hasStarted ? (
             <SportsEsportsIcon />
           ) : (
@@ -182,5 +196,23 @@ const RoomListItem: React.FC<Props> = (props) => {
       )} */
   }
 };
-
 export default RoomListItem;
+
+const useStyles = makeStyles((theme) => ({
+  grid: {
+    backgroundColor: randomColor(),
+    height: '120px',
+    padding: '20px 25px 20px 25px',
+    display: 'flex',
+    [theme.breakpoints.only('xs')]: {
+      padding: '0',
+    },
+  },
+
+  iconMargin: {
+    marginRight: '10px',
+    [theme.breakpoints.only('xs')]: {
+      marginRight: '5px',
+    },
+  },
+}));
