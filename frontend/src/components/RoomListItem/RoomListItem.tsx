@@ -89,9 +89,13 @@ const RoomListItem: React.FC<Props> = (props) => {
                 width: '30%',
                 height: '55px',
               }}>
-              <div style={{ flexBasis: '50%', display: 'flex' }}>
+              <div
+                style={{
+                  flexBasis: '100%',
+                  display: 'flex',
+                }}>
                 {props.game.observators > 0 ? (
-                  <div style={{ display: 'flex' }}>
+                  <div style={{ display: 'flex', marginLeft: 'auto' }}>
                     <Typography>{props.game.observators}</Typography>
                     <VisibilityIcon className={classes.iconMargin} />
                   </div>
@@ -101,8 +105,15 @@ const RoomListItem: React.FC<Props> = (props) => {
                   <PersonIcon className={classes.iconMargin} />
                 </div>
               </div>
-              <div style={{ flexBasis: '50%', display: 'flex' }}>
-                <LockIcon className={classes.iconMargin} />
+              <div
+                style={{
+                  flexBasis: '100%',
+                  display: 'flex',
+                }}>
+                <LockIcon
+                  className={classes.iconMargin}
+                  style={{ marginLeft: 'auto' }}
+                />
                 {props.game.hasStarted ? (
                   <SportsEsportsIcon />
                 ) : (
@@ -205,7 +216,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '20px 25px 20px 25px',
     display: 'flex',
     [theme.breakpoints.only('xs')]: {
-      padding: '0',
+      padding: '0px 10px 0px 10px',
     },
   },
 
