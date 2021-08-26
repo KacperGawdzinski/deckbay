@@ -16,6 +16,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { LENGTH_MARKS, BONUS_MARKS } from '../../../configFiles/chessConfig';
+import { useWidth } from '../../../utils/useWidth';
 
 interface Props {
   game: string;
@@ -23,6 +24,7 @@ interface Props {
 
 const ChessRoomListheader: React.FC<Props> = (props) => {
   const classes = useStyles();
+  const width = useWidth();
   const [open, setOpen] = useState(false);
   const [gameSide, setGameSide] = useState('white');
 
@@ -37,7 +39,7 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
   return (
     <Collapse
       in={open}
-      collapsedSize={window.innerWidth < 600 ? 55 : 70}
+      collapsedSize={width < 600 ? 55 : 70}
       style={{ width: '100%' }}>
       <Grid item className={classes.grid}>
         <div className={classes.flexbox}>

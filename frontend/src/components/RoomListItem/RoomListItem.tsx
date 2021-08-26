@@ -17,6 +17,7 @@ import theme from '../../theme';
 // import Lock from '../../assets/images/lock.png';
 // import ActiveUser from '../../assets/images/user.png';
 import { randomColor } from '../../utils/randomColor';
+import { useWidth } from '../../utils/useWidth';
 
 // import './RoomListItem.css';
 
@@ -26,6 +27,7 @@ interface Props {
 
 const RoomListItem: React.FC<Props> = (props) => {
   const classes = useStyles();
+  const width = useWidth();
   const [color, setColor] = useState(randomColor());
   const [open, setOpen] = useState(false);
   const [infoLabel, setInfoLabel] = useState('Password');
@@ -81,39 +83,43 @@ const RoomListItem: React.FC<Props> = (props) => {
             </div>
             <div style={{ flex: 1 }} />
 
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                marginLeft: 'auto',
-                width: '30%',
-                height: '55px',
-              }}>
-              <div
-                style={{
-                  flexBasis: '100%',
-                  display: 'flex',
-                }}>
+            <div className={classes.iconPanel}>
+              <div className={classes.iconWrapper}>
                 {props.game.observators > 0 ? (
-                  <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                  <div style={{ display: 'flex' }}>
                     <Typography>{props.game.observators}</Typography>
                     <VisibilityIcon className={classes.iconMargin} />
                   </div>
                 ) : null}
-                <div style={{ display: 'flex' }}>
-                  <Typography>{`${props.game.players}/2`}</Typography>
-                  <PersonIcon className={classes.iconMargin} />
-                </div>
+
+                {width <= theme.breakpoints.values.sm ? (
+                  <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                    <Typography>{`${props.game.players}/2`}</Typography>
+                    <PersonIcon />
+                  </div>
+                ) : (
+                  <LockIcon
+                    className={classes.iconMargin}
+                    // style={{ marginLeft: 'auto' }}
+                  />
+                )}
               </div>
               <div
                 style={{
                   flexBasis: '100%',
                   display: 'flex',
                 }}>
-                <LockIcon
-                  className={classes.iconMargin}
-                  style={{ marginLeft: 'auto' }}
-                />
+                {width <= theme.breakpoints.values.sm ? (
+                  <LockIcon
+                    className={classes.iconMargin}
+                    style={{ marginLeft: 'auto' }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex' }}>
+                    <Typography>{`${props.game.players}/2`}</Typography>
+                    <PersonIcon className={classes.iconMargin} />
+                  </div>
+                )}
                 {props.game.hasStarted ? (
                   <SportsEsportsIcon />
                 ) : (
@@ -224,6 +230,22 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '10px',
     [theme.breakpoints.only('xs')]: {
       marginRight: '5px',
+    },
+  },
+
+  iconPanel: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginLeft: 'auto',
+    width: '20%',
+    height: '55px',
+    flexBasis: '100%',
+  },
+
+  iconWrapper: {
+    display: 'flex',
+    [theme.breakpoints.only('xs')]: {
+      marginLeft: 'auto',
     },
   },
 }));
