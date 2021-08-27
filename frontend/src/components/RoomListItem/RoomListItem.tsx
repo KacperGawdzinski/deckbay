@@ -1,6 +1,7 @@
-import { Collapse, Typography } from '@material-ui/core';
+import { Collapse, IconButton, TextField, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Input from '@material-ui/core/Input';
 import { makeStyles } from '@material-ui/core/styles';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import LockIcon from '@material-ui/icons/Lock';
@@ -102,6 +103,20 @@ const RoomListItem: React.FC<Props> = (props) => {
                 )}
               </div>
             </div>
+            <div style={{ position: 'absolute', left: 25, top: 60 }}>
+              <Input placeholder="Enter password..." />
+            </div>
+            <Button
+              style={{
+                position: 'absolute',
+                right: 40,
+                top: 60,
+                backgroundColor: theme.palette.primary.main,
+                color: 'white',
+                width: '200px',
+              }}>
+              Submit
+            </Button>
           </Grid>
         </Collapse>
       ) : (

@@ -39,7 +39,7 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
   return (
     <Collapse
       in={open}
-      collapsedSize={width < 600 ? 55 : 70}
+      collapsedSize={width < 600 ? 60 : 70}
       style={{ width: '100%' }}>
       <Grid item className={classes.grid}>
         <div className={classes.flexbox}>
