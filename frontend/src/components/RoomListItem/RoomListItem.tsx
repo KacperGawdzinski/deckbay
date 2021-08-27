@@ -9,7 +9,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
 import theme from '../../theme';
 // import { useHistory } from 'react-router-dom';
@@ -26,17 +26,29 @@ interface Props {
 const RoomListItem: React.FC<Props> = (props) => {
   const classes = useStyles();
   const width = useWidth();
-  const [color, setColor] = useState(randomColor());
+  const [color, setColor] = useState('');
   const [open, setOpen] = useState(false);
   const [infoLabel, setInfoLabel] = useState('Password');
   const [infoValue, setInfoValue] = useState('');
+
+  useEffect(() => {
+    setColor(randomColor());
+    setTimeout(() => console.log(color), 2000);
+  }, []);
 
   return (
     <div
       onClick={() => setOpen((prev) => !prev)}
       style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
-        <Collapse in={open} collapsedSize={60} style={{ width: '100%' }}>
+        <Collapse
+          in={open}
+          collapsedSize={60}
+          style={{
+            width: '100%',
+            zIndex: 100,
+            boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+          }}>
           <Grid
             item
             className={classes.expandableGrid}
@@ -152,6 +164,8 @@ const useStyles = makeStyles((theme) => ({
     height: '120px',
     padding: '20px 25px 20px 25px',
     display: 'flex',
+    zIndex: 100,
+    boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
     [theme.breakpoints.only('xs')]: {
       padding: '0px 10px 0px 10px',
     },
@@ -161,6 +175,8 @@ const useStyles = makeStyles((theme) => ({
     height: '60px',
     padding: '20px 25px 20px 25px',
     display: 'flex',
+    boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+    zIndex: 100,
     [theme.breakpoints.only('xs')]: {
       padding: '0px 10px 0px 10px',
     },
@@ -187,6 +203,10 @@ const useStyles = makeStyles((theme) => ({
   roomName: {
     [theme.breakpoints.only('xs')]: {
       paddingTop: '18px',
+      textOverflow: 'ellipsis',
+      width: '38vw',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden !important',
     },
   },
 
@@ -194,8 +214,8 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: '220px',
     [theme.breakpoints.only('xs')]: {
-      right: '130px',
-      paddingTop: '15px',
+      right: '110px',
+      paddingTop: '18px',
     },
   },
 

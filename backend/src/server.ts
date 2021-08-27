@@ -50,7 +50,7 @@ const chessGames: ChessRoomInfo[] = [
   },
   {
     password: false,
-    roomName: "unlocked",
+    roomName: "unlocked2",
     gameLength: 1,
     bonusTime: 1,
     players: 2,
