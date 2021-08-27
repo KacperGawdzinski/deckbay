@@ -19,8 +19,6 @@ import theme from '../../theme';
 import { randomColor } from '../../utils/randomColor';
 import { useWidth } from '../../utils/useWidth';
 
-// import './RoomListItem.css';
-
 interface Props {
   game: ChessRoomInfo;
 }
@@ -32,83 +30,48 @@ const RoomListItem: React.FC<Props> = (props) => {
   const [open, setOpen] = useState(false);
   const [infoLabel, setInfoLabel] = useState('Password');
   const [infoValue, setInfoValue] = useState('');
-  let playerIcons = [];
-
-  const calculateTimersMargin = () => {
-    if (props.game.observators === 0 && !props.game.password) {
-      return 135;
-    }
-    return 40;
-  };
-
-  //   if (game === 'chess' || game === 'checkers') {
-  //     for (let i = 1; i <= maxPlayers.get(game); i++) {
-  //       if (i <= info.playerCount)
-  //         playerIcons.push(
-  //           <img
-  //             key={i}
-  //             className="user_img"
-  //             src={ActiveUser}
-  //             alt="activeUser"
-  //           />,
-  //         );
-  //       else
-  //         playerIcons.push(
-  //           <img
-  //             key={i}
-  //             className="user_img"
-  //             src={InactiveUser}
-  //             alt="inactiveUser"
-  //           />,
-  //         );
-  //     }
-  //   }
 
   return (
     <div
       onClick={() => setOpen((prev) => !prev)}
       style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
-        <Collapse
-          in={open}
-          collapsedSize={window.innerWidth < 600 ? 55 : 60}
-          style={{ width: '100%' }}>
-          <Grid item className={classes.grid}>
-            <div style={{ padding: '10px 0px 10px 0px', display: 'flex' }}>
-              <Typography>{props.game.roomName}</Typography>
-
-              <Typography className={classes.iconMargin}>
-                {`${props.game.gameLength}m/${props.game.bonusTime}s`}
-              </Typography>
-            </div>
+        <Collapse in={open} collapsedSize={60} style={{ width: '100%' }}>
+          <Grid
+            item
+            className={classes.expandableGrid}
+            style={{ backgroundColor: color }}>
+            <Typography className={classes.roomName}>
+              {props.game.roomName}
+            </Typography>
+            <Typography className={classes.timers}>
+              {`${props.game.gameLength}m/${props.game.bonusTime}s`}
+            </Typography>
             <div style={{ flex: 1 }} />
 
             <div className={classes.iconPanel}>
               <div className={classes.iconWrapper}>
                 {props.game.observators > 0 ? (
-                  <div style={{ display: 'flex' }}>
+                  <div style={{ display: 'flex', marginLeft: 'auto' }}>
                     <Typography>{props.game.observators}</Typography>
                     <VisibilityIcon className={classes.iconMargin} />
                   </div>
                 ) : null}
 
                 {width <= theme.breakpoints.values.sm ? (
-                  <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      marginLeft: props.game.observators > 0 ? '0' : 'auto',
+                    }}>
                     <Typography>{`${props.game.players}/2`}</Typography>
                     <PersonIcon />
                   </div>
                 ) : (
-                  <LockIcon
-                    className={classes.iconMargin}
-                    // style={{ marginLeft: 'auto' }}
-                  />
+                  <LockIcon className={classes.iconMargin} />
                 )}
               </div>
-              <div
-                style={{
-                  flexBasis: '100%',
-                  display: 'flex',
-                }}>
+              <div className={classes.iconWrapper}>
                 {width <= theme.breakpoints.values.sm ? (
                   <LockIcon
                     className={classes.iconMargin}
@@ -132,93 +95,70 @@ const RoomListItem: React.FC<Props> = (props) => {
       ) : (
         <Grid
           item
-          style={{
-            backgroundColor: color,
-            height: '60px',
-            padding: '20px 25px 20px 25px',
-            display: 'flex',
-          }}>
-          <Typography>{props.game.roomName}</Typography>
-          <div style={{ flex: 1 }} />
-          {props.game.observators > 0 ? (
-            <div style={{ display: 'flex' }}>
-              <Typography>{props.game.observators}</Typography>
-              <VisibilityIcon className={classes.iconMargin} />
-            </div>
-          ) : null}
-          <Typography className={classes.iconMargin}>
+          className={classes.staticGrid}
+          style={{ backgroundColor: color }}>
+          <Typography className={classes.roomName}>
+            {props.game.roomName}
+          </Typography>
+
+          <Typography className={classes.timers}>
             {`${props.game.gameLength}m/${props.game.bonusTime}s`}
           </Typography>
-          <Typography>{`${props.game.players}/2`}</Typography>
-          <PersonIcon className={classes.iconMargin} />
-          {props.game.hasStarted ? (
-            <SportsEsportsIcon />
-          ) : (
-            <HourglassEmptyIcon />
-          )}
+          <div style={{ flex: 1 }} />
+
+          <div className={classes.iconPanel}>
+            <div className={classes.iconWrapper}>
+              {props.game.observators > 0 ? (
+                <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                  <Typography>{props.game.observators}</Typography>
+                  <VisibilityIcon className={classes.iconMargin} />
+                </div>
+              ) : null}
+
+              {width <= theme.breakpoints.values.sm ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    marginLeft: props.game.observators > 0 ? '0' : 'auto',
+                  }}>
+                  <Typography>{`${props.game.players}/2`}</Typography>
+                  <PersonIcon />
+                </div>
+              ) : null}
+            </div>
+            <div className={classes.iconWrapper}>
+              {width <= theme.breakpoints.values.sm ? null : (
+                <div style={{ display: 'flex' }}>
+                  <Typography>{`${props.game.players}/2`}</Typography>
+                  <PersonIcon className={classes.iconMargin} />
+                </div>
+              )}
+              {props.game.hasStarted ? (
+                <SportsEsportsIcon style={{ marginLeft: 'auto' }} />
+              ) : (
+                <HourglassEmptyIcon style={{ marginLeft: 'auto' }} />
+              )}
+            </div>
+          </div>
         </Grid>
       )}
     </div>
   );
-  {
-    /* {game === 'chess' || game === 'checkers' ? (
-          <React.Fragment> {playerIcons} </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <p>{`${info.playerCount} / ${maxPlayers.get(game)}`}</p>
-            <img className="user_img" src={ActiveUser} />
-          </React.Fragment>
-        )} */
-  }
-  {
-    /* {info.password && (
-        <div
-          ref={wrapper}
-          className="animation_wrapper"
-          style={{ maxHeight: `${setHeight}` }}>
-          <div style={{ backgroundColor: color }} className="list_item">
-            <form method="POST" style={{ width: '100%' }} onSubmit={Submit}>
-              <input
-                name="password"
-                style={{
-                  display: 'inline',
-                  width: '50%',
-                  maxWidth: '400px',
-                  marginLeft: '10%',
-                  height: '30px',
-                  fontSize: '16px',
-                }}
-                type="password"
-                placeholder={infoLabel}
-                value={infoValue}
-                onChange={(e) => setInfoValue(e.target.value)}
-              />
-              <input
-                style={{
-                  display: 'inline',
-                  width: '30%',
-                  marginRight: '10%',
-                  height: '30px',
-                  marginBottom: 0,
-                  padding: 0,
-                  fontSize: '16px',
-                }}
-                type="submit"
-                value="Join"
-              />
-              <input type="hidden" name="room" value={info.fullRoomName} />
-            </form>
-          </div>
-        </div>
-      )} */
-  }
 };
 export default RoomListItem;
 
 const useStyles = makeStyles((theme) => ({
-  grid: {
-    backgroundColor: randomColor(),
+  expandableGrid: {
     height: '120px',
+    padding: '20px 25px 20px 25px',
+    display: 'flex',
+    [theme.breakpoints.only('xs')]: {
+      padding: '0px 10px 0px 10px',
+    },
+  },
+
+  staticGrid: {
+    height: '60px',
     padding: '20px 25px 20px 25px',
     display: 'flex',
     [theme.breakpoints.only('xs')]: {
@@ -237,15 +177,33 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
     marginLeft: 'auto',
-    width: '20%',
+    width: 'auto',
     height: '55px',
-    flexBasis: '100%',
+    [theme.breakpoints.only('xs')]: {
+      paddingTop: '3px',
+    },
+  },
+
+  roomName: {
+    [theme.breakpoints.only('xs')]: {
+      paddingTop: '18px',
+    },
+  },
+
+  timers: {
+    position: 'absolute',
+    right: '220px',
+    [theme.breakpoints.only('xs')]: {
+      right: '130px',
+      paddingTop: '15px',
+    },
   },
 
   iconWrapper: {
     display: 'flex',
+    marginLeft: 'auto',
     [theme.breakpoints.only('xs')]: {
-      marginLeft: 'auto',
+      flexBasis: '100%',
     },
   },
 }));

@@ -23,7 +23,7 @@ import { ChessRoomInfo } from "./dataTypes/chessTypes";
 const chessGames: ChessRoomInfo[] = [
   {
     password: true,
-    roomName: "locked",
+    roomName: "MMMMMMMMMM",
     gameLength: 10,
     bonusTime: 10,
     players: 1,
