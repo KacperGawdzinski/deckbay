@@ -1,12 +1,9 @@
-import { Typography } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core/styles';
-import React, { useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
-import { connect } from '../../redux/actions/socketioActions';
 import { RootState } from '../../redux/reducers/index';
 import RoomListItem from '../RoomListItem/RoomListItem';
 import ChessRoomListHeader from './RoomListHeaders/ChessRoomListHeader';

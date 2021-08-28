@@ -69,7 +69,7 @@ const RoomListItem: React.FC<Props> = (props) => {
     const element = e.target as HTMLElement;
     if (
       element.id !== 'submitPasswordButton' &&
-      element.id !== 'inputPasswordField' &&
+      element.id !== `${props.game.roomName}InputPasswordField` &&
       element.parentElement?.id !== 'submitPasswordButton'
     ) {
       setOpen((prev) => !prev);
@@ -143,7 +143,7 @@ const RoomListItem: React.FC<Props> = (props) => {
               </div>
             </div>
             <Input
-              id="inputPasswordField"
+              id={`${props.game.roomName}InputPasswordField`}
               autoComplete="off"
               error={roomPasswordPlaceholder !== 'Enter password...'}
               value={roomPassword}

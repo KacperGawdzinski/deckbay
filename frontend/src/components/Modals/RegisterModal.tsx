@@ -111,7 +111,7 @@ const RegisterModal: React.FC<Props> = (props) => {
         <form onSubmit={handleRegister}>
           <DialogContent className={classes.dialogContent}>
             <TextField
-              error={(emailErrorMessage as unknown) as boolean}
+              error={emailErrorMessage !== ''}
               fullWidth
               margin="dense"
               label={emailErrorMessage ? emailErrorMessage : 'Email'}
@@ -120,7 +120,7 @@ const RegisterModal: React.FC<Props> = (props) => {
             />
             <div className={classes.inputWrapper}>
               <TextField
-                error={(usernameErrorMessage as unknown) as boolean}
+                error={usernameErrorMessage !== ''}
                 fullWidth
                 margin="dense"
                 label={usernameErrorMessage ? usernameErrorMessage : 'Username'}
@@ -131,7 +131,7 @@ const RegisterModal: React.FC<Props> = (props) => {
             </div>
             <div className={classes.inputWrapper}>
               <TextField
-                error={(passwordErrorMessage as unknown) as boolean}
+                error={passwordErrorMessage !== ''}
                 fullWidth
                 margin="dense"
                 label={passwordErrorMessage ? passwordErrorMessage : 'Password'}

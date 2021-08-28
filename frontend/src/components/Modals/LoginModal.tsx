@@ -99,7 +99,7 @@ const LoginModal: React.FC<Props> = (props) => {
         <form onSubmit={handleLogin}>
           <DialogContent className={classes.dialogContent}>
             <TextField
-              error={(usernameErrorMessage as unknown) as boolean}
+              error={usernameErrorMessage !== ''}
               fullWidth
               margin="dense"
               label={usernameErrorMessage ? usernameErrorMessage : 'Username'}
@@ -110,7 +110,7 @@ const LoginModal: React.FC<Props> = (props) => {
             />
             <div className={classes.inputWrapper}>
               <TextField
-                error={(passwordErrorMessage as unknown) as boolean}
+                error={passwordErrorMessage !== ''}
                 fullWidth
                 margin="dense"
                 label={passwordErrorMessage ? passwordErrorMessage : 'Password'}

@@ -22,17 +22,17 @@ const persistConfig = {
   blacklist: ['socket'],
 };
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer);
-const store = createStore(rootReducer, composeEnhancers());
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+const store = createStore(persistedReducer, composeEnhancers());
 const persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    {/* <PersistGate loading={null} persistor={persistor}> */}
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
-    {/* </PersistGate> */}
+    <PersistGate loading={null} persistor={persistor}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );

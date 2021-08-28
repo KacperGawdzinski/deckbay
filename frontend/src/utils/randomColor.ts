@@ -11,7 +11,5 @@ export const randomColor = () => {
   // return result;
   // return COLORS.a;
   const random = Math.random();
-  console.log(COLORS_TAB[(random * COLORS_TAB.length) | 0]);
-
   return COLORS_TAB[(random * COLORS_TAB.length) | 0];
 };
