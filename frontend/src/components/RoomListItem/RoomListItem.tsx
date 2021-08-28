@@ -27,31 +27,41 @@ const RoomListItem: React.FC<Props> = (props) => {
   const [color, setColor] = useState('');
   const [open, setOpen] = useState(false);
   const [roomPassword, setRoomPassword] = useState('');
-  const [roomPasswordError, setRoomPasswordError] = useState('');
+  const [roomPasswordPlaceholder, setRoomPasswordPlaceholderError] = useState(
+    'Enter password...',
+  );
 
   useEffect(() => {
     setColor(randomColor());
   }, []);
 
   const handleRoomPasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomPasswordPlaceholderError('Enter password...');
     setRoomPassword(e.target.value);
   };
 
   const handleRoomPasswordSubmit = async () => {
+    if (roomPassword === '') {
+      setRoomPasswordPlaceholderError('Password field is empty');
+      return;
+    }
     try {
-      const response = await axios.post('/room-password', {
+      await axios.post('/room-password', {
         roomName: props.game.roomName,
         password: roomPassword,
         game: 'chess',
       });
-      if (response.status === 200) {
-        history.push(`/${props.game.roomName}`);
-      } else {
-        console.log(response);
-        setRoomPasswordError(response.statusText);
-      }
-    } catch (error) {
-      console.log('err');
+      history.push(`/${props.game.roomName}`);
+    } catch (error: any) {
+      setRoomPassword('');
+      console.log(error.response?.data);
+
+      if (error.response?.data?.roomNameError)
+        setRoomPasswordPlaceholderError(error.response.data.roomNameError);
+      else if (error.response?.data?.passwordError)
+        setRoomPasswordPlaceholderError(error.response.data.passwordError);
+      else if (error.response?.data?.gameError)
+        setRoomPasswordPlaceholderError(error.response.data.gameError);
     }
   };
 
@@ -134,8 +144,11 @@ const RoomListItem: React.FC<Props> = (props) => {
             </div>
             <Input
               id="inputPasswordField"
+              autoComplete="off"
+              error={roomPasswordPlaceholder !== 'Enter password...'}
+              value={roomPassword}
               className={classes.passwordBox}
-              placeholder="Enter password..."
+              placeholder={roomPasswordPlaceholder}
               onChange={handleRoomPasswordInput}
             />
             <Button

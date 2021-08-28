@@ -18,7 +18,7 @@ import chessRouter from "./routes/chess";
 import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
 import cors from "cors";
 import { func } from "./routes/chesss";
-import { ChessRoomInfo } from "./dataTypes/chessTypes";
+import { ChessRoomInfo, ChessRoomGame } from "./dataTypes/chessTypes";
 
 const chessGames: ChessRoomInfo[] = [
   {
@@ -59,6 +59,14 @@ const chessGames: ChessRoomInfo[] = [
   },
 ];
 
+const chessRooms: ChessRoomGame[] = [
+  {
+    roomName: "MMMMMMMMMM",
+    players: ["a"],
+    password: "abc",
+  },
+];
+
 var app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -71,6 +79,7 @@ const io = new Server(server, {
 
 app.set("io", io);
 app.set("chessGames", chessGames);
+app.set("chessRooms", chessRooms);
 
 io.on("connection", (socket) => {
   console.log("Client connected");

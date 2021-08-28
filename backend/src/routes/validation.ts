@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { SALT_ROUNDS } from "../config";
 import dotenv from "dotenv";
+import { ChessRoomGame } from "../dataTypes/chessTypes";
 
 dotenv.config({ path: "./config.env" });
 
@@ -81,8 +82,23 @@ validationRouter.post("/register", async (req, res) => {
 });
 
 validationRouter.post("/room-password", async (req, res) => {
-  console.log(req.body);
-  res.status(500).send("ok");
+  if (!req.body.roomName)
+    return res.status(401).send({ roomNameError: "Room name not found" });
+  if (!req.body.game)
+    return res.status(401).send({ gameError: "Game not found" });
+  if (!req.body.password)
+    return res.status(401).send({ passwordError: "Password not found" });
+
+  for (const room of req.app.get("chessRooms")) {
+    if (room.roomName === req.body.roomName) {
+      if (room.password === req.body.password) {
+        return res.status(200).send({ passwordError: "Invalid password" });
+      } else {
+        return res.status(401).send({ passwordError: "Invalid password" });
+      }
+    }
+  }
+  return res.status(400).send({ roomNameError: "Invalid room" });
 });
 
 // accountRouter.post("/logout", (req, res) => {
