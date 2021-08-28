@@ -1,4 +1,4 @@
-import { Collapse, IconButton, TextField, Typography } from '@material-ui/core';
+import { Collapse, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
@@ -6,17 +6,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import LockIcon from '@material-ui/icons/Lock';
 import PersonIcon from '@material-ui/icons/Person';
-import SettingsIcon from '@material-ui/icons/Settings';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
 import theme from '../../theme';
-// import { useHistory } from 'react-router-dom';
-// import InactiveUser from '../../assets/images/inactive-user.png';
-// import Lock from '../../assets/images/lock.png';
-// import ActiveUser from '../../assets/images/user.png';
 import { randomColor } from '../../utils/randomColor';
 import { useWidth } from '../../utils/useWidth';
 
@@ -103,20 +98,13 @@ const RoomListItem: React.FC<Props> = (props) => {
                 )}
               </div>
             </div>
-            <div style={{ position: 'absolute', left: 25, top: 60 }}>
-              <Input placeholder="Enter password..." />
-            </div>
-            <Button
-              style={{
-                position: 'absolute',
-                right: 40,
-                top: 60,
-                backgroundColor: theme.palette.primary.main,
-                color: 'white',
-                width: '200px',
-              }}>
-              Submit
-            </Button>
+            {/* <div className={classes.passwordBox}> */}
+            <Input
+              className={classes.passwordBox}
+              placeholder="Enter password..."
+            />
+            {/* </div> */}
+            <Button className={classes.submitPasswordButton}>Submit</Button>
           </Grid>
         </Collapse>
       ) : (
@@ -239,6 +227,30 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 'auto',
     [theme.breakpoints.only('xs')]: {
       flexBasis: '100%',
+    },
+  },
+
+  passwordBox: {
+    position: 'absolute',
+    left: 25,
+    top: 60,
+
+    [theme.breakpoints.only('xs')]: {
+      left: 10,
+      width: '50vw',
+    },
+  },
+
+  submitPasswordButton: {
+    position: 'absolute',
+    right: 25,
+    top: 60,
+    backgroundColor: theme.palette.primary.main,
+    color: 'white',
+    width: '200px',
+    [theme.breakpoints.only('xs')]: {
+      width: '30vw',
+      right: 10,
     },
   },
 }));
