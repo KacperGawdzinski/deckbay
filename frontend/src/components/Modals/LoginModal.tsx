@@ -38,7 +38,7 @@ const LoginModal: React.FC<Props> = (props) => {
     setLoadingStep(LOADING_STEPS.FETCHING_RESPONSE);
     try {
       await axios.post(
-        'http://localhost:5000/login',
+        '/login',
         {
           username: username,
           password: password,

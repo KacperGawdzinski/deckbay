@@ -13,7 +13,7 @@ import express, { Express } from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import accountRouter from "./routes/account";
+import validationRouter from "./routes/validation";
 import chessRouter from "./routes/chess";
 import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
 import cors from "cors";
@@ -101,7 +101,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
 app.use("/chess", chessRouter);
-app.use(accountRouter);
+app.use(validationRouter);
 
 app.use("/", (req, res) => {
   res.send("OK");

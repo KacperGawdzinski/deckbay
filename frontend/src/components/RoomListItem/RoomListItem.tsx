@@ -9,7 +9,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ChessRoomInfo } from '../../dataTypes/chessTypes';
 import theme from '../../theme';
 import { randomColor } from '../../utils/randomColor';
@@ -22,15 +23,39 @@ interface Props {
 const RoomListItem: React.FC<Props> = (props) => {
   const classes = useStyles();
   const width = useWidth();
+  const history = useHistory();
   const [color, setColor] = useState('');
   const [open, setOpen] = useState(false);
-  const [infoLabel, setInfoLabel] = useState('Password');
-  const [infoValue, setInfoValue] = useState('');
+  const [roomPassword, setRoomPassword] = useState('');
+  const [roomPasswordError, setRoomPasswordError] = useState('');
 
   useEffect(() => {
     setColor(randomColor());
-    setTimeout(() => console.log(color), 2000);
   }, []);
+
+  const handleRoomPasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomPassword(e.target.value);
+  };
+
+  const handleRoomPasswordSubmit = async () => {
+    try {
+      const response = await axios.post('/room-password', {
+        roomName: props.game.roomName,
+        password: roomPassword,
+        game: 'chess',
+      });
+      if (response.status === 200) {
+        console.log(response);
+
+        history.push(`/${props.game.roomName}`);
+      } else {
+        console.log(response);
+        setRoomPasswordError(response.statusText);
+      }
+    } catch (error) {
+      console.log('err');
+    }
+  };
 
   return (
     <div
@@ -98,13 +123,16 @@ const RoomListItem: React.FC<Props> = (props) => {
                 )}
               </div>
             </div>
-            {/* <div className={classes.passwordBox}> */}
             <Input
               className={classes.passwordBox}
               placeholder="Enter password..."
+              onChange={handleRoomPasswordInput}
             />
-            {/* </div> */}
-            <Button className={classes.submitPasswordButton}>Submit</Button>
+            <Button
+              className={classes.submitPasswordButton}
+              onClick={handleRoomPasswordSubmit}>
+              Submit
+            </Button>
           </Grid>
         </Collapse>
       ) : (

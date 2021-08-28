@@ -7,10 +7,9 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: "./config.env" });
 
-const accountRouter = express.Router();
+const validationRouter = express.Router();
 
-accountRouter.post("/login", async (req, res) => {
-  console.log(req.body);
+validationRouter.post("/login", async (req, res) => {
   if (!req.body.username)
     return res.status(401).json({ usernameError: "Username not found" });
   if (!req.body.username)
@@ -52,7 +51,7 @@ accountRouter.post("/login", async (req, res) => {
   res.sendStatus(200);
 });
 
-accountRouter.post("/register", async (req, res) => {
+validationRouter.post("/register", async (req, res) => {
   if (!req.body.email)
     return res.status(401).send({ emailError: "Email not found" });
   if (!req.body.username)
@@ -81,6 +80,11 @@ accountRouter.post("/register", async (req, res) => {
   return res.sendStatus(200);
 });
 
+validationRouter.post("/room-password", async (req, res) => {
+  console.log(req.body);
+  res.status(200).send("ok");
+});
+
 // accountRouter.post("/logout", (req, res) => {
 //   try {
 //     Token.findOneAndRemove({
@@ -98,4 +102,4 @@ accountRouter.post("/register", async (req, res) => {
 //   }
 // });
 
-export default accountRouter;
+export default validationRouter;

@@ -46,7 +46,7 @@ const RegisterModal: React.FC<Props> = (props) => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/register', {
+      await axios.post('/register', {
         username: username,
         password: password,
         email: email,
