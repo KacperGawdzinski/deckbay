@@ -82,7 +82,7 @@ validationRouter.post("/register", async (req, res) => {
 
 validationRouter.post("/room-password", async (req, res) => {
   console.log(req.body);
-  res.status(200).send("ok");
+  res.status(500).send("ok");
 });
 
 // accountRouter.post("/logout", (req, res) => {

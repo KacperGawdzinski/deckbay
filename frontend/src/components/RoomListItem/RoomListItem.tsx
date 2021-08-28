@@ -45,8 +45,6 @@ const RoomListItem: React.FC<Props> = (props) => {
         game: 'chess',
       });
       if (response.status === 200) {
-        console.log(response);
-
         history.push(`/${props.game.roomName}`);
       } else {
         console.log(response);
@@ -57,9 +55,20 @@ const RoomListItem: React.FC<Props> = (props) => {
     }
   };
 
+  const handleCollapseClose = (e: React.MouseEvent<HTMLElement>) => {
+    const element = e.target as HTMLElement;
+    if (
+      element.id !== 'submitPasswordButton' &&
+      element.id !== 'inputPasswordField' &&
+      element.parentElement?.id !== 'submitPasswordButton'
+    ) {
+      setOpen((prev) => !prev);
+    }
+  };
+
   return (
     <div
-      onClick={() => setOpen((prev) => !prev)}
+      onClick={handleCollapseClose}
       style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
         <Collapse
@@ -124,11 +133,13 @@ const RoomListItem: React.FC<Props> = (props) => {
               </div>
             </div>
             <Input
+              id="inputPasswordField"
               className={classes.passwordBox}
               placeholder="Enter password..."
               onChange={handleRoomPasswordInput}
             />
             <Button
+              id="submitPasswordButton"
               className={classes.submitPasswordButton}
               onClick={handleRoomPasswordSubmit}>
               Submit
