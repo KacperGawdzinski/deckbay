@@ -1,4 +1,5 @@
 import express from "express";
+import { appendFile } from "fs";
 const chessRouter = express.Router();
 
 chessRouter.get("/", (req, res) => {
@@ -18,13 +19,26 @@ chessRouter.post("/", (req, res) => {
   if (!req.body.bonus)
     return res.status(401).send({ bonusError: "Game bonus time not found" });
 
-  req.app.get("chessRoomGameTab").push({
+  const chessRoomGameTab = req.app.get("chessRoomGameTab");
+  const chessRoomInfoTab = req.app.get("chessRoomInfoTab");
+  chessRoomGameTab.push({
     roomName: req.body.roomName,
-    players: [],
     password: req.body.password,
-    //insert options
+    players: [],
   });
-  //trigger io send rooms
+  chessRoomInfoTab.push({
+    roomName: req.body.roomName,
+    password: req.body.password ? true : false,
+    gameLength: req.body.length,
+    bonusTime: req.body.bonus,
+    players: 1,
+    observators: 0,
+    hasStarted: false,
+  });
+  req.app
+    .get("io")
+    .to("chessRoomList")
+    .emit("getChessRoomList", chessRoomInfoTab);
   return res.sendStatus(200);
 });
 

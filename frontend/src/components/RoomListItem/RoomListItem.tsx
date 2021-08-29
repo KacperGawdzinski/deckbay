@@ -72,6 +72,10 @@ const RoomListItem: React.FC<Props> = (props) => {
     }
   };
 
+  const handleJoinRoom = () => {
+    history.push(`/chess/${props.game.roomName}`);
+  };
+
   return (
     <div onClick={handleCollapseClose} style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
@@ -142,7 +146,11 @@ const RoomListItem: React.FC<Props> = (props) => {
           </Grid>
         </Collapse>
       ) : (
-        <Grid item className={classes.staticGrid} style={{ backgroundColor: color }}>
+        <Grid
+          item
+          className={classes.staticGrid}
+          style={{ backgroundColor: color }}
+          onClick={handleJoinRoom}>
           <Typography className={classes.roomName}>{props.game.roomName}</Typography>
 
           <Typography className={classes.timers}>

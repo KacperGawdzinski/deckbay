@@ -30,6 +30,7 @@ const io = new Server(server, CORS_OPTIONS);
 
 dotenv.config({ path: "./config.env" });
 
+app.set("io", io);
 app.set("chessRoomGameTab", chessRoomGameTab);
 app.set("chessRoomInfoTab", chessRoomInfoTab);
 app.use(

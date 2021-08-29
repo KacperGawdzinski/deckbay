@@ -31,6 +31,7 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
 
   const [open, setOpen] = useState(false);
   const [roomName, setRoomName] = useState('');
+  const [roomNameError, setRoomNameError] = useState(false);
   const [roomPassword, setRoomPassword] = useState('');
 
   const [gameSide, setGameSide] = useState('white');
@@ -58,19 +59,15 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
   };
 
   const handleRoomNameInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomNameError(false);
     setRoomName(event.target.value);
   };
 
   const handleSubmitRoomOptions = async () => {
     if (roomName === '') {
-      //err
+      setRoomNameError(true);
+      return;
     }
-    console.log(roomName);
-    console.log(roomPassword);
-    console.log(gameSide);
-    console.log(gameLength);
-    console.log(gameBonus);
-
     try {
       await axios.post('chess', {
         roomName: roomName,
@@ -80,7 +77,9 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
         bonus: gameBonus,
       });
       history.push(`/chess/${roomName}`);
-    } catch (error: any) {}
+    } catch (error: any) {
+      console.log(`Server renponded with error:\n${error}`);
+    }
   };
 
   return (
@@ -105,6 +104,7 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
           <div className={classes.leftOptions}>
             <div>
               <RoomInput
+                error={roomNameError}
                 variant="outlined"
                 autoComplete="off"
                 required
