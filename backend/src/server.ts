@@ -9,112 +9,44 @@
 
 import { Server } from "socket.io";
 import { createServer } from "http";
-import express, { Express } from "express";
+import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import validationRouter from "./routes/validation";
 import chessRouter from "./routes/chess";
-import { MONGO_CONNECTION_OPTIONS, MONGO_CONNECTION_STRING } from "./config";
+import {
+  MONGO_CONNECTION_OPTIONS,
+  MONGO_CONNECTION_STRING,
+  CORS_OPTIONS,
+} from "./config";
 import cors from "cors";
-import { func } from "./routes/chesss";
-import { ChessRoomInfo, ChessRoomGame } from "./dataTypes/chessTypes";
-
-const chessGames: ChessRoomInfo[] = [
-  {
-    password: true,
-    roomName: "MMMMMMMMMM",
-    gameLength: 10,
-    bonusTime: 10,
-    players: 1,
-    observators: 3,
-    hasStarted: false,
-  },
-  {
-    password: false,
-    roomName: "unlocked",
-    gameLength: 1,
-    bonusTime: 1,
-    players: 2,
-    observators: 0,
-    hasStarted: true,
-  },
-  {
-    password: true,
-    roomName: "locked",
-    gameLength: 10,
-    bonusTime: 10,
-    players: 1,
-    observators: 0,
-    hasStarted: false,
-  },
-  {
-    password: false,
-    roomName: "unlocked2",
-    gameLength: 1,
-    bonusTime: 1,
-    players: 2,
-    observators: 3,
-    hasStarted: true,
-  },
-];
-
-const chessRooms: ChessRoomGame[] = [
-  {
-    roomName: "MMMMMMMMMM",
-    players: ["a"],
-    password: "abc",
-  },
-];
+import { chessRoomInfoTab } from "./mocks/chessRoomInfoTab";
+import { chessRoomGameTab } from "./mocks/chessGameInfoTab";
 
 var app = express();
 const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-app.set("io", io);
-app.set("chessGames", chessGames);
-app.set("chessRooms", chessRooms);
-
-io.on("connection", (socket) => {
-  console.log("Client connected");
-
-  socket.on("joinChessRoomList", (data: any) => {
-    socket.join("chessRoomList");
-    io.to("chessRoomList").emit("getChessRoomList", chessGames);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
-});
+const io = new Server(server, CORS_OPTIONS);
 
 dotenv.config({ path: "./config.env" });
+
+app.set("chessRoomGameTab", chessRoomGameTab);
+app.set("chessRoomInfoTab", chessRoomInfoTab);
 app.use(
   express.urlencoded({
     extended: true,
   })
 );
 const corsOptions = {
-  origin: true, //included origin as true
-  credentials: true, //included credentials as true
+  origin: true,
+  credentials: true,
 };
-
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_KEY));
-app.use("/chess", chessRouter);
-app.use(validationRouter);
 
-app.use("/", (req, res) => {
-  res.send("OK");
-});
+app.use(validationRouter);
+app.use("/chess", chessRouter);
 
 const connectWithRetry = () => {
   mongoose
@@ -127,8 +59,20 @@ const connectWithRetry = () => {
       setTimeout(connectWithRetry, 5000);
     });
 };
-
 connectWithRetry();
+
+io.on("connection", (socket) => {
+  console.log("Client connected");
+
+  socket.on("joinChessRoomList", (data: any) => {
+    socket.join("chessRoomList");
+    io.to("chessRoomList").emit("getChessRoomList", chessRoomInfoTab);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
 
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server turned on");

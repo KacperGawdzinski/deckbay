@@ -2,16 +2,6 @@ import express from "express";
 const chessRouter = express.Router();
 
 chessRouter.get("/", (req, res) => {
-  req.app.get("io").on("connection", (client: any) => {
-    console.log("Client connected");
-
-    client.on("chess ev", (data: any) => {
-      console.log("UDALO SIE");
-    });
-    client.on("disconnect", () => {
-      console.log("Client disconnected");
-    });
-  });
   //   //set random nick
   //   if (!req.signedCookies.username)
   //     res.cookie("username", faker.name.findName(), { signed: true });
