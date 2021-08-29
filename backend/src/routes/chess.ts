@@ -8,6 +8,26 @@ chessRouter.get("/", (req, res) => {
   //   res.render("room_list.ejs", { game_type: "CHESS", user_login: req.login });
 });
 
+chessRouter.post("/", (req, res) => {
+  if (!req.body.roomName)
+    return res.status(401).send({ roomNameError: "Room name not found" });
+  if (!req.body.side)
+    return res.status(401).send({ sideError: "Side not found" });
+  if (!req.body.length)
+    return res.status(401).send({ lengthError: "Game length not found" });
+  if (!req.body.bonus)
+    return res.status(401).send({ bonusError: "Game bonus time not found" });
+
+  req.app.get("chessRoomGameTab").push({
+    roomName: req.body.roomName,
+    players: [],
+    password: req.body.password,
+    //insert options
+  });
+  //trigger io send rooms
+  return res.sendStatus(200);
+});
+
 chessRouter.get("/:id", (req, res) => {
   //   //if two players have the same nick may be problem - remove spaces
   //   if (req.body.game_type != "chess") {

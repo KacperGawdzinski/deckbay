@@ -13,8 +13,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import axios from 'axios';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { LENGTH_MARKS, BONUS_MARKS } from '../../../configFiles/chessConfig';
 import { useWidth } from '../../../utils/useWidth';
 
@@ -25,22 +27,64 @@ interface Props {
 const ChessRoomListheader: React.FC<Props> = (props) => {
   const classes = useStyles();
   const width = useWidth();
+  const history = useHistory();
+
   const [open, setOpen] = useState(false);
+  const [roomName, setRoomName] = useState('');
+  const [roomPassword, setRoomPassword] = useState('');
+
   const [gameSide, setGameSide] = useState('white');
+  const [gameLength, setGameLength] = useState(10);
+  const [gameBonus, setGameBonus] = useState(10);
 
   const handleCollapse = () => {
     setOpen((prev) => !prev);
   };
 
-  const handleGameSideChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRoomSideChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGameSide(event.target.value);
   };
 
+  const handleGameLengthInput = (event: any, value: number | number[]) => {
+    setGameLength(value as number);
+  };
+
+  const handleGameBonusInput = (event: any, value: number | number[]) => {
+    setGameBonus(value as number);
+  };
+
+  const handleRoomPasswordInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomPassword(event.target.value);
+  };
+
+  const handleRoomNameInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomName(event.target.value);
+  };
+
+  const handleSubmitRoomOptions = async () => {
+    if (roomName === '') {
+      //err
+    }
+    console.log(roomName);
+    console.log(roomPassword);
+    console.log(gameSide);
+    console.log(gameLength);
+    console.log(gameBonus);
+
+    try {
+      await axios.post('chess', {
+        roomName: roomName,
+        password: roomPassword,
+        side: gameSide,
+        length: gameLength,
+        bonus: gameBonus,
+      });
+      history.push(`/chess/${roomName}`);
+    } catch (error: any) {}
+  };
+
   return (
-    <Collapse
-      in={open}
-      collapsedSize={width < 600 ? 60 : 70}
-      style={{ width: '100%' }}>
+    <Collapse in={open} collapsedSize={width < 600 ? 60 : 70} style={{ width: '100%' }}>
       <Grid item className={classes.grid}>
         <div className={classes.flexbox}>
           <Typography className={clsx(classes.title, classes.text)}>
@@ -62,8 +106,11 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
             <div>
               <RoomInput
                 variant="outlined"
+                autoComplete="off"
                 required
                 label="Room name"
+                value={roomName}
+                onChange={handleRoomNameInput}
                 InputLabelProps={{
                   classes: {
                     root: classes.text,
@@ -88,6 +135,8 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
                 label="Password"
                 type="password"
                 autoComplete="off"
+                value={roomPassword}
+                onChange={handleRoomPasswordInput}
                 InputLabelProps={{
                   classes: {
                     root: classes.text,
@@ -114,17 +163,17 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
               defaultValue={10}
               step={1}
               valueLabelDisplay="auto"
+              onChange={handleGameLengthInput}
               marks={LENGTH_MARKS}
               min={1}
               max={30}
             />
-            <div className={clsx(classes.text, classes.timeBonusWrapper)}>
-              Time bonus
-            </div>
+            <div className={clsx(classes.text, classes.timeBonusWrapper)}>Time bonus</div>
             <TimePicker
               defaultValue={10}
               step={1}
               valueLabelDisplay="auto"
+              onChange={handleGameBonusInput}
               marks={BONUS_MARKS}
               min={0}
               max={30}
@@ -138,7 +187,7 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
                 </FormLabel>
                 <RadioGroup
                   value={gameSide}
-                  onChange={handleGameSideChange}
+                  onChange={handleRoomSideChange}
                   style={{ color: 'white' }}
                   row>
                   <FormControlLabel
@@ -155,7 +204,9 @@ const ChessRoomListheader: React.FC<Props> = (props) => {
                   />
                 </RadioGroup>
               </FormControl>
-              <Button className={classes.submitButton}>Submit</Button>
+              <Button className={classes.submitButton} onClick={handleSubmitRoomOptions}>
+                Submit
+              </Button>
             </div>
           </div>
         </div>

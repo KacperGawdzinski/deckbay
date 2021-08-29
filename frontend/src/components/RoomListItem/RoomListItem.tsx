@@ -27,9 +27,7 @@ const RoomListItem: React.FC<Props> = (props) => {
   const [color, setColor] = useState('');
   const [open, setOpen] = useState(false);
   const [roomPassword, setRoomPassword] = useState('');
-  const [roomPasswordPlaceholder, setRoomPasswordPlaceholderError] = useState(
-    'Enter password...',
-  );
+  const [roomPasswordPlaceholder, setRoomPasswordPlaceholderError] = useState('Enter password...');
 
   useEffect(() => {
     setColor(randomColor());
@@ -51,11 +49,9 @@ const RoomListItem: React.FC<Props> = (props) => {
         password: roomPassword,
         game: 'chess',
       });
-      history.push(`/${props.game.roomName}`);
+      history.push(`/chess/${props.game.roomName}`);
     } catch (error: any) {
       setRoomPassword('');
-      console.log(error.response?.data);
-
       if (error.response?.data?.roomNameError)
         setRoomPasswordPlaceholderError(error.response.data.roomNameError);
       else if (error.response?.data?.passwordError)
@@ -77,9 +73,7 @@ const RoomListItem: React.FC<Props> = (props) => {
   };
 
   return (
-    <div
-      onClick={handleCollapseClose}
-      style={{ cursor: 'pointer', position: 'relative' }}>
+    <div onClick={handleCollapseClose} style={{ cursor: 'pointer', position: 'relative' }}>
       {props.game.password ? (
         <Collapse
           in={open}
@@ -89,13 +83,8 @@ const RoomListItem: React.FC<Props> = (props) => {
             zIndex: 100,
             boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
           }}>
-          <Grid
-            item
-            className={classes.expandableGrid}
-            style={{ backgroundColor: color }}>
-            <Typography className={classes.roomName}>
-              {props.game.roomName}
-            </Typography>
+          <Grid item className={classes.expandableGrid} style={{ backgroundColor: color }}>
+            <Typography className={classes.roomName}>{props.game.roomName}</Typography>
             <Typography className={classes.timers}>
               {`${props.game.gameLength}m/${props.game.bonusTime}s`}
             </Typography>
@@ -125,21 +114,14 @@ const RoomListItem: React.FC<Props> = (props) => {
               </div>
               <div className={classes.iconWrapper}>
                 {width <= theme.breakpoints.values.sm ? (
-                  <LockIcon
-                    className={classes.iconMargin}
-                    style={{ marginLeft: 'auto' }}
-                  />
+                  <LockIcon className={classes.iconMargin} style={{ marginLeft: 'auto' }} />
                 ) : (
                   <div style={{ display: 'flex' }}>
                     <Typography>{`${props.game.players}/2`}</Typography>
                     <PersonIcon className={classes.iconMargin} />
                   </div>
                 )}
-                {props.game.hasStarted ? (
-                  <SportsEsportsIcon />
-                ) : (
-                  <HourglassEmptyIcon />
-                )}
+                {props.game.hasStarted ? <SportsEsportsIcon /> : <HourglassEmptyIcon />}
               </div>
             </div>
             <Input
@@ -160,13 +142,8 @@ const RoomListItem: React.FC<Props> = (props) => {
           </Grid>
         </Collapse>
       ) : (
-        <Grid
-          item
-          className={classes.staticGrid}
-          style={{ backgroundColor: color }}>
-          <Typography className={classes.roomName}>
-            {props.game.roomName}
-          </Typography>
+        <Grid item className={classes.staticGrid} style={{ backgroundColor: color }}>
+          <Typography className={classes.roomName}>{props.game.roomName}</Typography>
 
           <Typography className={classes.timers}>
             {`${props.game.gameLength}m/${props.game.bonusTime}s`}
